@@ -1,0 +1,14 @@
+{{- define "avatar" -}}
+{{/* A Primer Avatar (docs/primer.md 5.8). Markspace has no profile images, so the
+     avatar shows initials on the stored user colour. It sits beside the
+     person's name, so it is decorative. Size is "sm" (32), "lg" (64), or one
+     of Primer's sizes 16, 20, 24, 28, 32, 40, 48 and 64. */}}
+{{- $size := "32" -}}
+{{- with .Size -}}{{- if eq . "lg" -}}{{- $size = "64" -}}{{- else if eq . "sm" -}}{{- $size = "32" -}}{{- else -}}{{- $size = . -}}{{- end -}}{{- end -}}
+{{ with .User }}
+<span class="avatar" data-size="{{ $size }}" aria-hidden="true"
+  {{- with cssColor .AvatarColor }} style="--avatar-bg: {{ . }}"{{ end }}><span>{{ initials . }}</span></span>
+{{ else }}
+<span class="avatar avatar-anon" data-size="{{ $size }}" aria-hidden="true">{{ octicon "person" 16 }}</span>
+{{ end }}
+{{- end -}}

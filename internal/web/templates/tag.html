@@ -1,0 +1,33 @@
+{{ define "title" }}#{{ .Get "Tag" }}{{ end }}
+{{ define "content" }}
+{{ $current := .Get "Tag" }}
+<div class="browse-page">
+{{ with .Space }}{{ template "ui_page_header" dict "Title" (printf "#%v" $current) "Description" (printf "Notes in %s with this tag." .Name) "Border" true }}{{ end }}
+{{ with .Get "Notes" }}
+<ul class="rows" role="list" aria-labelledby="page-title">
+  {{ range . }}
+  <li>
+    <div class="note-row">
+      <span class="note-row-icon" aria-hidden="true">{{ with .Icon }}{{ . }}{{ else }}{{ octicon "note" 16 }}{{ end }}</span>
+      <div class="note-row-body">
+        <a class="note-row-link note-row-title" href="{{ noteURL $.Space . }}">{{ .Title }}</a>
+        <span class="note-row-meta">Updated {{ timeAgo .UpdatedAt }}</span>
+        {{ with .Excerpt }}<span class="note-row-snippet">{{ truncate 160 . }}</span>{{ end }}
+      </div>
+    </div>
+  </li>
+  {{ end }}
+</ul>
+{{ else }}
+{{ template "ui_blankslate" dict "Icon" "tag" "Title" "No notes carry this tag" "Description" "A note gets the tag when its text contains it, such as #planning." }}
+{{ end }}
+{{ with .Get "Tags" }}
+<section class="browse-section" aria-labelledby="other-tags-title">
+  <div class="section-heading"><h2 class="section-heading-title" id="other-tags-title">Other tags</h2></div>
+  <ul class="token-list" role="list">
+    {{ range . }}{{ if ne .Tag $current }}<li><a class="token" href="{{ tagURL $.Space .Tag }}"><span class="token-text">#{{ .Tag }}</span><span class="token-count"><span aria-hidden="true">{{ .Count }}</span><span class="sr-only">({{ .Count }})</span></span></a></li>{{ end }}{{ end }}
+  </ul>
+</section>
+{{ end }}
+</div>
+{{ end }}

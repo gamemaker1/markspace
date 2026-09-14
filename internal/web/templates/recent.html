@@ -1,0 +1,23 @@
+{{ define "title" }}Recent{{ end }}
+{{ define "content" }}
+<div class="browse-page">
+{{ template "ui_page_header" dict "Title" "Recent" "Border" true }}
+{{ with .Get "Notes" }}
+<ul class="rows" role="list" aria-labelledby="page-title">
+  {{ range . }}
+  <li>
+    <div class="note-row">
+      <span class="note-row-icon" aria-hidden="true">{{ with .Icon }}{{ . }}{{ else }}{{ octicon "note" 16 }}{{ end }}</span>
+      <div class="note-row-body">
+        <a class="note-row-link note-row-title" href="{{ noteURL . . }}">{{ .Title }}</a>
+        <span class="note-row-meta">{{ .SpaceSlug }} &middot; Updated {{ timeAgo .UpdatedAt }}</span>
+      </div>
+    </div>
+  </li>
+  {{ end }}
+</ul>
+{{ else }}
+{{ template "ui_blankslate" dict "Icon" "clock" "Title" "No recent notes" "Description" (.Get "Empty") }}
+{{ end }}
+</div>
+{{ end }}

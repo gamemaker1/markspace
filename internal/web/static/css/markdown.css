@@ -1,0 +1,153 @@
+/* Rendered markdown and diffs on Primer (docs/primer.md 3.2 and 5.10). Values
+   follow dist/markdown.css of @primer/css 22.3.1 with Primer tokens. */
+
+/* ---------- Rendered markdown ---------- */
+
+.md-body {
+  font-size: var(--text-body-size-large); line-height: 1.5; color: var(--fgColor-default);
+  overflow-wrap: break-word; word-wrap: break-word;
+}
+
+.md-body > *:first-child { margin-top: 0 !important; }
+.md-body > *:last-child { margin-bottom: 0 !important; }
+
+.md-body :is(h1, h2, h3, h4, h5, h6) {
+  margin: var(--base-size-24) 0 var(--base-size-16); font-weight: var(--base-text-weight-semibold);
+  line-height: 1.25; letter-spacing: 0; scroll-margin-top: var(--base-size-24);
+}
+
+.md-body h1 { padding-bottom: 0.3em; font-size: 2em; border-bottom: var(--borderWidth-thin) solid var(--borderColor-muted); }
+.md-body h2 { padding-bottom: 0.3em; font-size: 1.5em; border-bottom: var(--borderWidth-thin) solid var(--borderColor-muted); }
+.md-body h3 { font-size: 1.25em; }
+.md-body h4 { font-size: 1em; }
+.md-body h5 { font-size: 0.875em; }
+.md-body h6 { font-size: 0.85em; color: var(--fgColor-muted); }
+.md-body :is(p, blockquote, ul, ol, dl, table, pre, details) { margin-top: 0; margin-bottom: var(--base-size-16); }
+.md-body :is(ul, ol) { padding-left: 2em; }
+.md-body :is(ul, ol) :is(ul, ol) { margin-top: 0; margin-bottom: 0; }
+.md-body li + li { margin-top: 0.25em; }
+.md-body li > p { margin-top: var(--base-size-16); }
+.md-body dl { padding: 0; }
+.md-body dt { margin-top: var(--base-size-16); padding: 0; font-style: italic; font-weight: var(--base-text-weight-semibold); }
+.md-body dd { margin-bottom: var(--base-size-16); padding: 0 var(--base-size-16); }
+.md-body strong, .md-body b { font-weight: var(--base-text-weight-semibold); }
+
+/* Links in running text are underlined. */
+.md-body a { color: var(--fgColor-link); text-decoration: underline; text-underline-offset: 0.2em; }
+.md-body a:hover { color: var(--fgColor-link); }
+.md-body a:focus-visible { outline-offset: 0; border-radius: var(--borderRadius-small); }
+.md-body a.wikilink { color: var(--fgColor-link); text-decoration: underline; text-underline-offset: 0.2em; border: 0; }
+.md-body a.wikilink-new, .md-body a.wikilink.wikilink-new { color: var(--fgColor-muted); text-decoration-style: dashed; cursor: pointer; }
+.md-body a.tag, .md-body .hashtag { text-decoration: none; }
+
+/* Task list items: the checkbox sits in the marker column. */
+.md-body li:has(> input[type="checkbox"]), .md-body li.task-list-item { position: relative; list-style: none; }
+
+.md-body li > input[type="checkbox"] {
+  position: absolute; left: -1.5em; top: calc((1lh - 16px) / 2); margin: 0; cursor: default;
+}
+
+.md-body.tasks-editable li > input[type="checkbox"] { cursor: pointer; }
+
+/* Task checkboxes keep a 44px hit area on narrow viewports and coarse
+   pointers (docs/primer.md 9.2). 6px between task items gives each box its own
+   44px of height. */
+@media (pointer: coarse), (max-width: calc(48rem - 0.02px)) {
+  .md-body li > input[type="checkbox"]::after {
+    content: ""; position: absolute; top: 50%; left: 50%; width: var(--control-minTarget-coarse); height: var(--control-minTarget-coarse); transform: translate(-50%, -50%);
+  }
+  .md-body li:has(> input[type="checkbox"]) + li { margin-top: 6px; }
+}
+.md-body li:has(> input[type="checkbox"]:checked) { color: var(--fgColor-muted); }
+
+/* Code. */
+.md-body code, .md-body tt {
+  margin: 0; padding: 0.2em 0.4em; font-family: var(--fontStack-monospace); font-size: 85%; white-space: break-spaces;
+  background-color: var(--bgColor-neutral-muted); border-radius: var(--borderRadius-medium);
+}
+
+.md-body pre, .md-body pre.chroma {
+  position: relative; padding: var(--base-size-16); overflow: auto; font: var(--text-codeBlock-shorthand); font-family: var(--fontStack-monospace);
+  color: var(--fgColor-default); background-color: var(--bgColor-muted); border-radius: var(--borderRadius-medium); word-wrap: normal; -webkit-overflow-scrolling: touch;
+}
+
+/* Syntax colours follow Primer's prettylights tokens, which the light and
+   dark themes define. The rules outrank the chroma classes in
+   /static/highlight.css, whose dark rules need a "dark" class the page does
+   not set. */
+.md-body :is(pre.chroma, .chroma) { color: var(--fgColor-default); background-color: var(--bgColor-muted); }
+.md-body :is(pre.chroma, .chroma) :is(.k, .kd, .kn, .kp, .kr, .ow) { color: var(--color-prettylights-syntax-keyword); }
+.md-body :is(pre.chroma, .chroma) :is(.kc, .kt, .m, .mb, .mf, .mh, .mi, .il, .mo, .na, .nb, .bp, .no, .ni, .py, .se, .ss, .nv, .vc, .vg, .vi, .vm) { color: var(--color-prettylights-syntax-constant); }
+.md-body :is(pre.chroma, .chroma) :is(.nc, .nd, .ne, .nf, .fm, .nl, .nn) { color: var(--color-prettylights-syntax-entity); }
+.md-body :is(pre.chroma, .chroma) .nt { color: var(--color-prettylights-syntax-entity-tag); }
+.md-body :is(pre.chroma, .chroma) :is(.s, .sa, .sb, .sc, .dl, .sd, .s1, .s2, .sh, .si, .sx) { color: var(--color-prettylights-syntax-string); }
+.md-body :is(pre.chroma, .chroma) .sr { color: var(--color-prettylights-syntax-string-regexp); }
+.md-body :is(pre.chroma, .chroma) :is(.c, .ch, .cm, .c1, .cs, .cp, .cpf, .go, .gp) { color: var(--color-prettylights-syntax-comment); }
+.md-body :is(pre.chroma, .chroma) :is(.n, .nx, .o, .p, .w, .x, .l, .ld, .t) { color: var(--fgColor-default); }
+.md-body :is(pre.chroma, .chroma) :is(.err, .gr, .gt) { color: var(--color-prettylights-syntax-invalid-illegal-text); background-color: var(--color-prettylights-syntax-invalid-illegal-bg); }
+.md-body :is(pre.chroma, .chroma) .gd { color: var(--color-prettylights-syntax-markup-deleted-text); background-color: var(--color-prettylights-syntax-markup-deleted-bg); }
+.md-body :is(pre.chroma, .chroma) .gi { color: var(--color-prettylights-syntax-markup-inserted-text); background-color: var(--color-prettylights-syntax-markup-inserted-bg); }
+.md-body :is(pre.chroma, .chroma) :is(.gh, .gu) { font-weight: var(--base-text-weight-semibold); color: var(--color-prettylights-syntax-markup-heading); }
+.md-body :is(pre.chroma, .chroma) .ge { font-style: italic; color: var(--color-prettylights-syntax-markup-italic); }
+.md-body :is(pre.chroma, .chroma) .gs { font-weight: var(--base-text-weight-semibold); color: var(--color-prettylights-syntax-markup-bold); }
+.md-body :is(pre.chroma, .chroma) :is(.ln, .lnt) { color: var(--fgColor-muted); }
+.md-body :is(pre.chroma, .chroma) .hl { background-color: var(--bgColor-neutral-muted); }
+
+.md-body pre code, .md-body pre tt { display: inline; max-width: auto; padding: 0; margin: 0; overflow: visible; font-size: 100%; line-height: inherit; white-space: pre; background: transparent; border: 0; word-wrap: normal; }
+.md-body .code-lang { display: block; margin-bottom: var(--base-size-8); font-family: var(--fontStack-system); font-size: var(--text-body-size-small); color: var(--fgColor-muted); }
+
+/* Quotes and callouts. Callouts reuse the quote shape with a title row. */
+.md-body blockquote { margin-left: 0; margin-right: 0; padding: 0 1em; color: var(--fgColor-muted); border-left: 0.25em solid var(--borderColor-default); }
+.md-body blockquote > :first-child { margin-top: 0; }
+.md-body blockquote > :last-child { margin-bottom: 0; }
+.md-body :is(.markdown-alert, .callout) { --callout-color: var(--fgColor-accent); --callout-border: var(--borderColor-accent-emphasis); margin-bottom: var(--base-size-16); padding: var(--base-size-8) var(--base-size-16); color: inherit; border-left: 0.25em solid var(--callout-border); }
+.md-body :is(.markdown-alert, .callout) > :last-child { margin-bottom: 0; }
+.md-body :is(.markdown-alert-title, .callout-title) { display: flex; align-items: center; gap: var(--base-size-8); margin-bottom: var(--base-size-4); font-weight: var(--base-text-weight-semibold); line-height: 1; color: var(--callout-color); }
+.md-body :is(.markdown-alert-tip, .callout-tip) { --callout-color: var(--fgColor-success); --callout-border: var(--borderColor-success-emphasis); }
+.md-body :is(.markdown-alert-important, .callout-important) { --callout-color: var(--fgColor-done); --callout-border: var(--borderColor-done-emphasis); }
+.md-body :is(.markdown-alert-warning, .callout-warning) { --callout-color: var(--fgColor-attention); --callout-border: var(--borderColor-attention-emphasis); }
+.md-body :is(.markdown-alert-caution, .callout-caution) { --callout-color: var(--fgColor-danger); --callout-border: var(--borderColor-danger-emphasis); }
+
+.md-body hr { box-sizing: content-box; height: 0.25em; margin: var(--base-size-24) 0; padding: 0; overflow: hidden; background-color: var(--borderColor-default); border: 0; }
+
+/* Tables. */
+.md-body table { display: block; width: max-content; max-width: 100%; overflow: auto; border-spacing: 0; border-collapse: collapse; font-variant: tabular-nums; -webkit-overflow-scrolling: touch; }
+.md-body :is(th, td) { padding: 6px 13px; text-align: start; border: var(--borderWidth-thin) solid var(--borderColor-default); }
+.md-body th { font-weight: var(--base-text-weight-semibold); }
+.md-body tr { background-color: var(--bgColor-default); border-top: var(--borderWidth-thin) solid var(--borderColor-muted); }
+.md-body tr:nth-child(2n) { background-color: var(--bgColor-muted); }
+.md-body table img { background-color: transparent; }
+
+.md-body img { max-width: 100%; height: auto; box-sizing: content-box; background-color: var(--bgColor-default); }
+.md-body img.wikilink-embed { display: block; margin: var(--base-size-8) 0; }
+.md-body mark { color: var(--fgColor-default); background-color: var(--highlight-neutral-bgColor); }
+.md-body kbd { display: inline-block; padding: var(--base-size-4); font: 11px var(--fontStack-monospace); line-height: 10px; color: var(--fgColor-default); vertical-align: middle; background-color: var(--bgColor-muted); border: var(--borderWidth-thin) solid var(--borderColor-neutral-muted); border-bottom-color: var(--borderColor-neutral-muted); border-radius: var(--borderRadius-medium); box-shadow: inset 0 -1px 0 var(--borderColor-neutral-muted); }
+.md-body details summary { cursor: pointer; }
+.md-body ::selection { background-color: var(--selection-bgColor); }
+
+/* Footnotes. */
+.md-body .footnotes { margin-top: var(--base-size-32); padding-top: var(--base-size-16); font-size: var(--text-body-size-small); color: var(--fgColor-muted); border-top: var(--borderWidth-thin) solid var(--borderColor-default); }
+.md-body .footnotes ol { padding-left: var(--base-size-16); }
+.md-body .footnote-ref { font-size: 0.75em; line-height: 0; vertical-align: super; }
+.md-body .footnote-backref { margin-left: var(--base-size-4); text-decoration: none; }
+.md-body [id^="fn:"], .md-body [id^="fnref:"] { scroll-margin-top: var(--base-size-24); }
+
+/* ---------- Diffs ---------- */
+
+.diff {
+  margin: 0 0 var(--base-size-16); overflow-x: auto; font-family: var(--fontStack-monospace); font-size: var(--text-body-size-small);
+  line-height: 20px; color: var(--fgColor-default); background-color: var(--bgColor-default);
+  border: var(--borderWidth-thin) solid var(--borderColor-default); border-radius: var(--borderRadius-medium);
+}
+
+.diff-line { display: block; min-height: 20px; padding: 0 var(--base-size-12) 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.diff-mark { display: inline-block; width: 2.4ch; color: var(--fgColor-muted); text-align: center; user-select: none; -webkit-user-select: none; }
+.diff-add { background-color: var(--diffBlob-additionLine-bgColor); }
+.diff-add .diff-mark { color: var(--fgColor-success); }
+.diff-del { background-color: var(--diffBlob-deletionLine-bgColor); }
+.diff-del .diff-mark { color: var(--fgColor-danger); }
+.diff-eq { color: var(--fgColor-muted); }
+.diff-skip { display: block; padding: 2px var(--base-size-12); color: var(--fgColor-muted); background-color: var(--diffBlob-hunkLine-bgColor, var(--bgColor-accent-muted)); }
+.diff-word, .diff ins, .diff mark { padding: 0 1px; color: inherit; text-decoration: none; background-color: var(--diffBlob-additionWord-bgColor); border-radius: 2px; }
+.diff del { padding: 0 1px; color: inherit; text-decoration: line-through; background-color: var(--diffBlob-deletionWord-bgColor); border-radius: 2px; }
+.diff-del .diff-word { background-color: var(--diffBlob-deletionWord-bgColor); }

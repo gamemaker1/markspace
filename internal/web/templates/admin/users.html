@@ -1,0 +1,294 @@
+{{ define "title" }}Users{{ end }}
+{{ define "sidebar" }}{{ template "admin_sidebar" . }}{{ end }}
+{{ define "content" }}
+{{ $users := .Get "Users" }}
+{{ $pages := .Get "Pagination" }}
+{{ $me := "" }}{{ with .User }}{{ $me = .ID }}{{ end }}
+{{/* The create and invite Dialogs: which is open, its values and errors. */}}
+{{ $dialog := "" }}{{ $message := "" }}
+{{ $name := "" }}{{ $email := "" }}{{ $admin := "" }}{{ $space := "" }}{{ $role := "editor" }}{{ $ttl := "7" }}
+{{ $nameErr := "" }}{{ $emailErr := "" }}{{ $passErr := "" }}{{ $spaceErr := "" }}{{ $roleErr := "" }}{{ $ttlErr := "" }}
+{{ with .Get "Form" }}
+  {{ $dialog = .Dialog }}{{ $message = .Message }}
+  {{ $name = .Value "name" }}{{ $email = .Value "email" }}{{ $admin = .Value "isAdmin" }}
+  {{ with .Value "spaceId" }}{{ $space = . }}{{ end }}{{ with .Value "role" }}{{ $role = . }}{{ end }}{{ with .Value "ttlDays" }}{{ $ttl = . }}{{ end }}
+  {{ with .Errors }}
+    {{ $nameErr = index . "name" }}{{ $emailErr = index . "email" }}{{ $passErr = index . "password" }}
+    {{ $spaceErr = index . "spaceId" }}{{ $roleErr = index . "role" }}{{ $ttlErr = index . "ttlDays" }}
+  {{ end }}
+{{ end }}
+<div class="admin-page">
+  <div class="page-header" data-border="true">
+    {{ template "admin_parent" }}
+    <div class="page-header-title-area"><h1 class="page-header-title" tabindex="-1">Users</h1></div>
+    <div class="page-header-actions">
+      <a class="btn admin-wide-only" href="/admin/users?dialog=invite#invite-dialog" data-dialog-open="invite-dialog">Invite someone</a>
+      <a class="btn btn-primary" href="/admin/users?dialog=create#create-dialog" data-dialog-open="create-dialog"><span class="btn-visual" aria-hidden="true">{{ octicon "plus" 16 }}</span><span class="btn-label">Create account</span></a>
+      <button class="icon-btn admin-narrow-only" type="button" popovertarget="users-page-menu" aria-label="More actions" data-tooltip="More actions">{{ octicon "kebab-horizontal" 16 }}</button>
+      <div class="row-menu" id="users-page-menu" popover>
+        <a class="menu-item" href="/admin/users?dialog=invite#invite-dialog" data-dialog-open="invite-dialog">Invite someone</a>
+      </div>
+    </div>
+    <p class="page-header-description">Accounts on {{ .InstanceName }} and the invites that wait for a person to sign up.</p>
+  </div>
+  {{ with .Get "Result" }}<p class="sr-only" data-saved-message>{{ . }}</p>{{ end }}
+
+  <section class="admin-section" aria-labelledby="users-title">
+    <div class="data-table-header">
+      <div class="data-table-titles">
+        {{ $count := 0 }}{{ if and $pages $pages.Total }}{{ $count = $pages.Total }}{{ else if $users }}{{ $count = len $users }}{{ end }}
+        <h2 class="data-table-title" id="users-title">Accounts <span class="counter-label"><span aria-hidden="true">{{ $count }}</span><span class="sr-only">({{ $count }})</span></span></h2>
+      </div>
+      <form method="get" action="/admin/users" class="admin-search" role="search" aria-label="Accounts">
+        <span class="text-input has-leading-visual">
+          <span class="text-input-visual" aria-hidden="true">{{ octicon "search" 16 }}</span>
+          <input class="text-input-control" id="user-search" type="search" name="q" value="{{ .Get "Search" }}" aria-label="Search by name or email" autocomplete="off" autocapitalize="off">
+        </span>
+        <button class="btn" type="submit" aria-label="Search users">Search</button>
+      </form>
+    </div>
+    {{ with $users }}
+    <div class="table-scroll" role="region" aria-label="Accounts table" tabindex="0">
+      <table class="data-table admin-users-table" aria-labelledby="users-title">
+        <thead>
+          <tr>
+            <th scope="col">Person</th>
+            <th scope="col">Role</th>
+            <th scope="col" class="hide-narrow">Status</th>
+            <th scope="col" class="hide-narrow">Last sign in</th>
+            <th scope="col" class="col-actions"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range . }}
+          {{ $who := orDefault .Name .Email }}
+          <tr id="user-{{ .ID }}">
+            <th scope="row">
+              <span class="cell-ident">
+                {{ template "avatar" dict "User" . "Size" "sm" }}
+                <span class="cell-main">
+                  <span class="cell-title">{{ $who }}{{ if eq .ID $me }} <span class="ui-label ui-label-secondary">You</span>{{ end }}</span>
+                  <span class="cell-sub">{{ breakable .Email }}</span>
+                  <span class="cell-sub admin-narrow-only">{{ if not .IsActive }}Deactivated. {{ end }}{{ if .LastLoginAt.IsZero }}Never signed in{{ else }}Signed in {{ timeAgo .LastLoginAt }}{{ end }}</span>
+                </span>
+              </span>
+            </th>
+            <td class="col-nowrap">{{ if .IsAdmin }}<span class="ui-label ui-label-accent">Admin</span>{{ else }}Member{{ end }}</td>
+            <td class="col-nowrap hide-narrow">{{ if .IsActive }}Active{{ else }}<span class="ui-label ui-label-secondary">Deactivated</span>{{ end }}</td>
+            <td class="col-nowrap hide-narrow">{{ if .LastLoginAt.IsZero }}<span class="cell-muted">Never signed in</span>{{ else }}{{ timeAgo .LastLoginAt }}{{ end }}</td>
+            <td class="col-actions">
+              <button class="icon-btn row-menu-btn" type="button" popovertarget="user-menu-{{ .ID }}" aria-label="Actions: {{ $who }}" data-tooltip="Actions: {{ $who }}">{{ octicon "kebab-horizontal" 16 }}</button>
+              <div class="row-menu" id="user-menu-{{ .ID }}" popover>
+                <form method="post" action="/admin/users">
+                  <input type="hidden" name="userId" value="{{ .ID }}">
+                  {{ if .IsAdmin }}
+                  <button class="menu-item" type="submit" name="action" value="demote" data-undo-label="Removed administrator rights from {{ $who }}" data-undo-action="promote">Remove admin</button>
+                  {{ else }}
+                  <button class="menu-item" type="submit" name="action" value="promote" data-undo-label="Made {{ $who }} an administrator" data-undo-action="demote">Make admin</button>
+                  {{ end }}
+                  {{ if ne .ID $me }}
+                  {{ if .IsActive }}
+                  <button class="menu-item" type="submit" name="action" value="deactivate" data-undo-label="Deactivated {{ $who }}" data-undo-action="activate">Deactivate</button>
+                  {{ else }}
+                  <button class="menu-item" type="submit" name="action" value="activate" data-undo-label="Reactivated {{ $who }}" data-undo-action="deactivate">Reactivate</button>
+                  {{ end }}
+                  <hr class="menu-sep">
+                  <button class="menu-item danger" type="submit" name="action" value="delete" data-confirm="Delete {{ $who }}?" data-confirm-detail="The account of {{ .Email }} is removed. You cannot restore it.">Delete account</button>
+                  {{ end }}
+                </form>
+              </div>
+            </td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+    {{ template "pagination" $pages }}
+    {{ else }}
+    <div class="blankslate blankslate-small blankslate-border">
+      <div class="blankslate-inner">
+        <div class="blankslate-visual" aria-hidden="true">{{ octicon "people" 24 }}</div>
+        <h3 class="blankslate-heading">No accounts match</h3>
+        <p class="blankslate-description">No name or email address contains “{{ .Get "Search" }}”.</p>
+        <p class="blankslate-action"><a href="/admin/users">Show every account</a></p>
+      </div>
+    </div>
+    {{ end }}
+  </section>
+
+  {{ $pending := 0 }}
+  {{ range .Get "Invites" }}{{ if not .UsedAt }}{{ $pending = add $pending 1 }}{{ end }}{{ end }}
+  <section class="admin-section" aria-labelledby="invites-title">
+    <div class="data-table-header">
+      <div class="data-table-titles">
+        <h2 class="data-table-title" id="invites-title">Pending invites <span class="counter-label"><span aria-hidden="true">{{ $pending }}</span><span class="sr-only">({{ $pending }})</span></span></h2>
+        <p class="data-table-subtitle">An invite link lets a person create their own account, even when sign up is off. Markspace sends no email.</p>
+      </div>
+    </div>
+    {{ if $pending }}
+    <div class="table-scroll" role="region" aria-label="Pending invites table" tabindex="0">
+      <table class="data-table admin-invites-table" aria-labelledby="invites-title">
+        <thead>
+          <tr>
+            <th scope="col">Email</th>
+            <th scope="col">Access</th>
+            <th scope="col" class="hide-narrow">Expires</th>
+            <th scope="col" class="col-actions"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range .Get "Invites" }}{{ if not .UsedAt }}
+          <tr id="invite-{{ .ID }}">
+            <th scope="row"><span class="cell-main"><span class="cell-title">{{ breakable .Email }}</span><span class="cell-sub admin-narrow-only">Expires {{ timeAgo .ExpiresAt }}</span></span></th>
+            <td class="col-nowrap">{{ if .IsAdmin }}<span class="ui-label ui-label-accent">Admin</span>{{ else if .Role }}{{ roleLabel .Role }}{{ else }}<span class="cell-muted">No space</span>{{ end }}</td>
+            <td class="col-nowrap hide-narrow">{{ timeAgo .ExpiresAt }}</td>
+            <td class="col-actions">
+              <button class="icon-btn row-menu-btn" type="button" popovertarget="invite-menu-{{ .ID }}" aria-label="Actions: invite for {{ .Email }}" data-tooltip="Actions: invite for {{ .Email }}">{{ octicon "kebab-horizontal" 16 }}</button>
+              <div class="row-menu" id="invite-menu-{{ .ID }}" popover>
+                <button class="menu-item" type="button" data-copy="{{ $.BaseURL }}/signup?invite={{ .Token }}">Copy invite link</button>
+                <hr class="menu-sep">
+                <form method="post" action="/admin/users">
+                  <input type="hidden" name="action" value="invite-revoke">
+                  <input type="hidden" name="inviteId" value="{{ .ID }}">
+                  <button class="menu-item danger" type="submit" data-confirm="Revoke the invite for {{ .Email }}?" data-confirm-detail="The link stops working. You can send a new invite later.">Revoke invite</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {{ end }}{{ end }}
+        </tbody>
+      </table>
+    </div>
+    {{ else }}
+    <div class="blankslate blankslate-small blankslate-border">
+      <div class="blankslate-inner">
+        <div class="blankslate-visual" aria-hidden="true">{{ octicon "person" 24 }}</div>
+        <h3 class="blankslate-heading">No invites are waiting</h3>
+        <p class="blankslate-description">Invite someone to give them a sign up link.</p>
+      </div>
+    </div>
+    {{ end }}
+  </section>
+
+  {{ with .Get "SystemTokens" }}
+  <section class="admin-section" aria-labelledby="system-tokens-title">
+    <div class="data-table-header">
+      <div class="data-table-titles">
+        <h2 class="data-table-title" id="system-tokens-title">Server tokens</h2>
+        <p class="data-table-subtitle">The markspace command reads this token from cli.token in the data directory. It has admin rights on the JSON API. Revoke it and restart the server to issue a new one.</p>
+      </div>
+    </div>
+    <div class="table-scroll" role="region" aria-label="Server tokens table" tabindex="0">
+      <table class="data-table admin-tokens-table" aria-labelledby="system-tokens-title">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col" class="hide-narrow">Created</th>
+            <th scope="col">Last used</th>
+            <th scope="col" class="col-actions"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range . }}
+          <tr id="token-{{ .ID }}">
+            <th scope="row"><span class="cell-main"><span class="cell-title">{{ .Name }}</span><span class="cell-sub"><code>{{ .Prefix }}</code></span></span></th>
+            <td class="col-nowrap hide-narrow">{{ timeAgo .CreatedAt }}</td>
+            <td class="col-nowrap">{{ with .LastUsed }}{{ timeAgo . }}{{ else }}<span class="cell-muted">Never used</span>{{ end }}</td>
+            <td class="col-actions">
+              <button class="icon-btn row-menu-btn" type="button" popovertarget="token-menu-{{ .ID }}" aria-label="Actions: {{ .Name }} token" data-tooltip="Actions: {{ .Name }} token">{{ octicon "kebab-horizontal" 16 }}</button>
+              <div class="row-menu" id="token-menu-{{ .ID }}" popover>
+                <form method="post" action="/admin/users">
+                  <input type="hidden" name="action" value="token-revoke">
+                  <input type="hidden" name="tokenId" value="{{ .ID }}">
+                  <button class="menu-item danger" type="submit" data-confirm="Revoke the {{ .Name }} token?" data-confirm-detail="The markspace command stops working until the server restarts and writes a new token.">Revoke token</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {{ end }}
+
+  <div class="dialog-source" id="create-dialog" data-dialog-title="Create account" data-dialog-subtitle="Give the person their password another way. They can change it in their settings." data-dialog-width="large"{{ if eq $dialog "create" }} data-dialog-autoopen{{ else }} hidden{{ end }}>
+    <h2 class="dialog-source-heading">Create account</h2>
+    {{ if and (eq $dialog "create") $message }}<p class="form-error" data-dialog-error>{{ $message }}</p>{{ end }}
+    <form method="post" action="/admin/users" id="create-form" novalidate data-validate>
+      <input type="hidden" name="action" value="create">
+      <div class="field{{ if $nameErr }} has-error{{ end }}">
+        <label class="field-label" for="new-name">Name<span class="field-required" aria-hidden="true">*</span></label>
+        <input id="new-name" type="text" name="name" value="{{ if eq $dialog "create" }}{{ $name }}{{ end }}" required autocomplete="off"{{ if and (eq $dialog "create") $nameErr }} aria-invalid="true" aria-describedby="new-name-error"{{ end }}>
+        {{ if eq $dialog "create" }}{{ template "admin_field_error" dict "ID" "new-name" "Msg" $nameErr }}{{ end }}
+      </div>
+      <div class="field{{ if and (eq $dialog "create") $emailErr }} has-error{{ end }}">
+        <label class="field-label" for="new-email">Email address<span class="field-required" aria-hidden="true">*</span></label>
+        <input id="new-email" type="email" name="email" value="{{ if eq $dialog "create" }}{{ $email }}{{ end }}" required autocapitalize="off" autocomplete="off" inputmode="email"{{ if and (eq $dialog "create") $emailErr }} aria-invalid="true" aria-describedby="new-email-error"{{ end }}>
+        {{ if eq $dialog "create" }}{{ template "admin_field_error" dict "ID" "new-email" "Msg" $emailErr }}{{ end }}
+      </div>
+      <div class="field{{ if $passErr }} has-error{{ end }}">
+        <label class="field-label" for="new-password">Initial password<span class="field-required" aria-hidden="true">*</span></label>
+        <input id="new-password" type="password" name="password" autocomplete="new-password" minlength="8" required aria-describedby="new-password-hint{{ if $passErr }} new-password-error{{ end }}"{{ if $passErr }} aria-invalid="true"{{ end }}>
+        <p class="field-hint" id="new-password-hint">At least 8 characters.</p>
+        {{ template "admin_field_error" dict "ID" "new-password" "Msg" $passErr }}
+      </div>
+      <div class="form-control form-control-horizontal">
+        <input id="new-admin" type="checkbox" name="isAdmin" value="1" aria-describedby="new-admin-hint"{{ if and (eq $dialog "create") $admin }} checked{{ end }}>
+        <div class="form-control-horizontal-text">
+          <label class="form-label" for="new-admin">Administrator</label>
+          <p class="form-caption" id="new-admin-hint">Administrators manage people, AI, plugins and settings.</p>
+        </div>
+      </div>
+      <div class="dialog-source-footer">
+        <a class="btn" href="/admin/users" data-dialog-cancel>Cancel</a>
+        <button class="btn btn-primary" type="submit">Create account</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="dialog-source" id="invite-dialog" data-dialog-title="Invite someone" data-dialog-subtitle="You get a link to pass on. Markspace sends no email." data-dialog-width="large"{{ if eq $dialog "invite" }} data-dialog-autoopen{{ else }} hidden{{ end }}>
+    <h2 class="dialog-source-heading">Invite someone</h2>
+    {{ if and (eq $dialog "invite") $message }}<p class="form-error" data-dialog-error>{{ $message }}</p>{{ end }}
+    <form method="post" action="/admin/users" id="invite-form" novalidate data-validate>
+      <input type="hidden" name="action" value="invite">
+      <div class="field{{ if and (eq $dialog "invite") $emailErr }} has-error{{ end }}">
+        <label class="field-label" for="invite-email">Email address<span class="field-required" aria-hidden="true">*</span></label>
+        <input id="invite-email" type="email" name="email" value="{{ if eq $dialog "invite" }}{{ $email }}{{ end }}" required autocapitalize="off" autocomplete="off" inputmode="email"{{ if and (eq $dialog "invite") $emailErr }} aria-invalid="true" aria-describedby="invite-email-error"{{ end }}>
+        {{ if eq $dialog "invite" }}{{ template "admin_field_error" dict "ID" "invite-email" "Msg" $emailErr }}{{ end }}
+      </div>
+      <div class="field{{ if $spaceErr }} has-error{{ end }}">
+        <label class="field-label" for="invite-space">Space</label>
+        <span class="text-input select-box text-input-block"><select class="text-input-control" id="invite-space" name="spaceId" aria-describedby="invite-space-hint{{ if $spaceErr }} invite-space-error{{ end }}"{{ if $spaceErr }} aria-invalid="true"{{ end }}>
+          <option value="">No space</option>
+          {{ range .Get "InviteSpaces" }}<option value="{{ .ID }}"{{ if eq .ID $space }} selected{{ end }}>{{ .Name }}</option>{{ end }}
+        </select><span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span></span>
+        <p class="field-hint" id="invite-space-hint">The person joins this space when they sign up.</p>
+        {{ template "admin_field_error" dict "ID" "invite-space" "Msg" $spaceErr }}
+      </div>
+      <div class="field{{ if $roleErr }} has-error{{ end }}">
+        <label class="field-label" for="invite-role">Role in the space</label>
+        <span class="text-input select-box text-input-block"><select class="text-input-control" id="invite-role" name="role"{{ if $roleErr }} aria-invalid="true" aria-describedby="invite-role-error"{{ end }}>
+          {{ range .Get "Roles" }}<option value="{{ . }}"{{ if eq (printf "%s" .) $role }} selected{{ end }}>{{ roleLabel . }}</option>{{ end }}
+        </select><span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span></span>
+        {{ template "admin_field_error" dict "ID" "invite-role" "Msg" $roleErr }}
+      </div>
+      <div class="field field-short{{ if $ttlErr }} has-error{{ end }}">
+        <label class="field-label" for="invite-ttl">Valid for days</label>
+        <input id="invite-ttl" type="number" name="ttlDays" min="1" max="365" step="1" inputmode="numeric" value="{{ $ttl }}" aria-describedby="invite-ttl-hint{{ if $ttlErr }} invite-ttl-error{{ end }}"{{ if $ttlErr }} aria-invalid="true"{{ end }}>
+        <p class="field-hint" id="invite-ttl-hint">The link stops working after this many days.</p>
+        {{ template "admin_field_error" dict "ID" "invite-ttl" "Msg" $ttlErr }}
+      </div>
+      <div class="form-control form-control-horizontal">
+        <input id="invite-admin" type="checkbox" name="isAdmin" value="1"{{ if and (eq $dialog "invite") $admin }} checked{{ end }}>
+        <div class="form-control-horizontal-text"><label class="form-label" for="invite-admin">Administrator</label></div>
+      </div>
+      <div class="dialog-source-footer">
+        <a class="btn" href="/admin/users" data-dialog-cancel>Cancel</a>
+        <button class="btn btn-primary" type="submit">Create invite</button>
+      </div>
+    </form>
+  </div>
+</div>
+{{ end }}
+{{ define "scripts" }}<script type="module" src="/static/js/admin.js"></script>{{ end }}

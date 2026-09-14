@@ -1,0 +1,134 @@
+{{ define "title" }}Editing {{ with .Note }}{{ .Title }}{{ end }}{{ end }}
+{{ define "content" }}
+<form class="editor" method="post" action="{{ noteURL .Space .Note }}"
+  data-editor
+  data-note-id="{{ .Note.ID }}"
+  data-space-id="{{ .Note.SpaceID }}"
+  data-note-url="{{ noteURL .Space .Note }}"
+  data-note-path="{{ .Note.Path }}"
+  data-updated-at="{{ stamp .Note.UpdatedAt }}">
+  <input type="hidden" name="action" value="save">
+  <input type="hidden" name="baseUpdatedAt" value="{{ stamp .Note.UpdatedAt }}" data-base-updated>
+
+  <section class="banner banner-warning" aria-label="Warning" data-variant="warning" data-conflict hidden role="alert">
+    <div class="banner-icon" aria-hidden="true">{{ octicon "alert" }}</div>
+    <div class="banner-container">
+      <div class="banner-content"><h2 class="banner-title">Someone else changed this note since you opened it</h2></div>
+      <div class="banner-actions">
+        <button class="btn btn-sm" type="button" data-conflict-reload>Reload their version</button>
+        <button class="btn btn-sm btn-danger" type="button" data-conflict-overwrite>Overwrite with mine</button>
+      </div>
+    </div>
+  </section>
+
+  <header class="editor-head">
+    <label class="sr-only" for="note-title">Title</label>
+    <input id="note-title" class="editor-title" type="text" name="title" value="{{ .Note.Title }}" required data-editor-title>
+    <div class="editor-status">
+      <span class="save-status" data-save-status aria-live="polite"></span>
+      <button class="btn btn-primary" type="submit" data-editor-done>Done</button>
+    </div>
+  </header>
+
+  <div class="editor-grid">
+    <div class="editor-main">
+      <div class="toolbar" role="toolbar" aria-label="Formatting" data-toolbar hidden>
+        <button type="button" class="btn btn-invisible btn-sm btn-icon tool" data-cmd="bold" aria-label="Bold (Ctrl+B)" title="Bold (Ctrl+B)"><span class="btn-visual" aria-hidden="true">{{ octicon "bold" }}</span></button>
+        <button type="button" class="btn btn-invisible btn-sm btn-icon tool" data-cmd="italic" aria-label="Italic (Ctrl+I)" title="Italic (Ctrl+I)"><span class="btn-visual" aria-hidden="true">{{ octicon "italic" }}</span></button>
+        <button type="button" class="btn btn-invisible btn-sm btn-icon tool" data-cmd="code" aria-label="Inline code" title="Inline code"><span class="btn-visual" aria-hidden="true">{{ octicon "code" }}</span></button>
+        <button type="button" class="btn btn-invisible btn-sm btn-icon tool" data-cmd="link" aria-label="Link (Ctrl+K)" title="Link (Ctrl+K)"><span class="btn-visual" aria-hidden="true">{{ octicon "link" }}</span></button>
+        <button type="button" class="btn btn-invisible btn-sm btn-icon tool" data-cmd="heading" aria-label="Heading" title="Heading"><span class="btn-visual" aria-hidden="true">{{ octicon "heading" }}</span></button>
+        <button type="button" class="btn btn-invisible btn-sm btn-icon tool" data-cmd="quote" aria-label="Quote" title="Quote"><span class="btn-visual" aria-hidden="true">{{ octicon "quote" }}</span></button>
+        <button type="button" class="btn btn-invisible btn-sm btn-icon tool" data-cmd="list" aria-label="Bulleted list" title="Bulleted list"><span class="btn-visual" aria-hidden="true">{{ octicon "list-unordered" }}</span></button>
+        <button type="button" class="btn btn-invisible btn-sm btn-icon tool" data-cmd="task" aria-label="Task" title="Task"><span class="btn-visual" aria-hidden="true">{{ octicon "tasklist" }}</span></button>
+        <button type="button" class="btn btn-invisible btn-sm btn-icon tool" data-cmd="table" aria-label="Table" title="Table"><span class="btn-visual" aria-hidden="true">{{ octicon "table" }}</span></button>
+        <button type="button" class="btn btn-invisible btn-sm btn-icon tool" data-cmd="rule" aria-label="Horizontal rule" title="Horizontal rule"><span class="btn-visual" aria-hidden="true">{{ octicon "horizontal-rule" }}</span></button>
+        <span class="toolbar-spacer"></span>
+        <button type="button" class="btn btn-invisible btn-sm tool" data-cmd="toggle-preview" aria-pressed="true"><span class="btn-visual btn-leading" aria-hidden="true">{{ octicon "eye" }}</span><span class="btn-label">Preview</span></button>
+      </div>
+      <div class="editor-panes" data-panes>
+        <div class="pane pane-source">
+          <label class="sr-only" for="note-content">Markdown</label>
+          <textarea id="note-content" name="content" class="editor-text" spellcheck="true" data-editor-text>{{ .Note.Content }}</textarea>
+          <ul class="suggest" data-wikilink-list hidden role="listbox"></ul>
+        </div>
+        <div class="pane pane-preview md-body" data-preview aria-label="Preview" aria-live="off" hidden></div>
+      </div>
+    </div>
+
+    <aside class="editor-rail">
+      <section class="panel">
+        <h2>Details</h2>
+        <label class="field">
+          <span>Tags</span>
+          <input type="text" name="tags" value="{{ join ", " .Note.Tags }}" placeholder="comma separated" list="tag-options" data-editor-tags>
+        </label>
+        {{ with .Get "Tags" }}
+        <datalist id="tag-options">{{ range . }}<option value="{{ .Tag }}">{{ end }}</datalist>
+        {{ end }}
+        <label class="field">
+          <span>Icon</span>
+          <input type="text" name="icon" value="{{ .Note.Icon }}" maxlength="8" data-editor-icon>
+        </label>
+        <label class="check js-hide"><input type="checkbox" name="overwrite" value="1"> Overwrite newer changes</label>
+      </section>
+
+      <section class="panel">
+        <h2>Files</h2>
+        <label class="dropzone" data-upload-zone>
+          {{ octicon "upload" }}
+          <span class="dropzone-label">Drop files here or choose files</span>
+          <span class="dropzone-hint">Files are saved in the note's folder. Images show inline and other files become links. You can also paste into the text.</span>
+          <input class="sr-only" type="file" multiple data-upload-input>
+        </label>
+        <ul class="upload-list" data-uploads aria-live="polite" aria-label="Uploads"></ul>
+      </section>
+
+      {{ with .Get "AITasks" }}
+      <section class="panel ai-panel" data-ai-panel hidden>
+        <h2>AI assistant</h2>
+        <label class="field">
+          <span>Task</span>
+          <span class="text-input select-box text-input-block">
+            <select data-ai-task>
+              {{ range . }}{{ if ne (printf "%s" .) "ask" }}<option value="{{ . }}">{{ . }}</option>{{ end }}{{ end }}
+            </select>
+            <span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" }}</span>
+          </span>
+        </label>
+        {{ with $.Get "AIProviders" }}
+        <label class="field">
+          <span>Provider</span>
+          <span class="text-input select-box text-input-block">
+            <select data-ai-provider>
+              <option value="">Default</option>
+              {{ range . }}{{ if .Enabled }}<option value="{{ .ID }}">{{ .Name }}</option>{{ end }}{{ end }}
+            </select>
+            <span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" }}</span>
+          </span>
+        </label>
+        {{ end }}
+        <label class="field">
+          <span>Instruction (optional)</span>
+          <input type="text" data-ai-instruction>
+        </label>
+        <button class="btn" type="button" data-ai-run>Run on selection</button>
+        <div class="ai-result" data-ai-result aria-live="polite"></div>
+        <div class="ai-actions" data-ai-actions hidden>
+          <button class="btn small" type="button" data-ai-insert>Insert</button>
+          <button class="btn small" type="button" data-ai-replace>Replace selection</button>
+          <button class="btn small" type="button" data-ai-copy>Copy</button>
+        </div>
+        <h3>Ask your notes</h3>
+        <label class="sr-only" for="ai-question">Question</label>
+        <textarea id="ai-question" rows="2" data-ai-question placeholder="Ask a question"></textarea>
+        <button class="btn" type="button" data-ai-ask>Ask</button>
+        <div class="ai-result" data-ai-answer aria-live="polite"></div>
+        <ul class="ai-sources" data-ai-sources></ul>
+      </section>
+      {{ end }}
+    </aside>
+  </div>
+</form>
+{{ end }}
+{{ define "scripts" }}<link rel="stylesheet" href="/static/css/editor.css"><script src="/static/editor.js" defer></script>{{ end }}

@@ -1,0 +1,9 @@
+{
+  "name": "markspace-vendor-pdfjs",
+  "private": true,
+  "description": "pdf.js bundle for the Markspace file viewer. Run build.sh to regenerate static/vendor/pdfjs.js and static/vendor/pdfworker.js.",
+  "type": "module",
+  "dependencies": {
+    "pdfjs-dist": "6.3.289"
+  }
+}

@@ -1,0 +1,418 @@
+{{/* The AI pages, /admin/ai and /settings/ai (docs/primer.md 5.2, 5.5, 5.6 and
+     6.1). Every definition takes the aiView as dot unless it says otherwise.
+     ai/admin.js enhances the markup. Without it the forms post to the
+     server. Elements with data-js are hidden until the script shows them,
+     and elements with data-nojs are hidden once it runs. */}}
+
+{{- define "ai_grabber" -}}
+{{/* The Octicon grabber 16 from @primer/octicons 19.36.0. The vendored icon
+     set does not include it yet. */}}
+<svg version="1.1" width="16" height="16" viewBox="0 0 16 16" class="octicon octicon-grabber" aria-hidden="true" fill="currentColor" focusable="false"><path d="M10 13a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0-4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm-4 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm5-9a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM6 5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>
+{{- end -}}
+
+{{- define "ai_modality" -}}
+{{/* dot is an aiOption with a modality and its label. */}}
+<span class="ai-mod" role="img" aria-label="{{ .Label }}">
+{{- if eq .Value "text" }}{{ octicon "typography" 16 }}{{ else if eq .Value "image" }}{{ octicon "image" 16 }}{{ else if eq .Value "file" }}{{ octicon "file" 16 }}{{ else if eq .Value "audio" }}{{ octicon "unmute" 16 }}{{ else }}{{ octicon "hash" 16 }}{{ end -}}
+</span>
+{{- end -}}
+
+{{- define "ai_token" -}}
+{{/* dot is an aiChip. A static Token medium (docs/primer.md 5.8). */}}
+<span class="token ai-token{{ if .Missing }} is-missing{{ end }}"><span class="token-text">{{ .Label }}</span></span>
+{{- end -}}
+
+{{- define "ai_task_tokens" -}}
+{{/* dot is a dict with V, the aiView, and T, the aiTaskView. */}}
+{{ $v := .V }}{{ with .T }}
+{{ if $v.Admin }}
+  {{ range .Targets }}{{ template "ai_token" . }}{{ else }}<span class="ai-tokens-empty">{{ if eq .Task "default" }}No models{{ else }}Uses Default{{ end }}</span>{{ end }}
+{{ else if .HasOwn }}
+  {{ range .Targets }}{{ template "ai_token" . }}{{ end }}
+{{ else }}
+  <span class="ui-label ui-label-secondary">Instance</span>{{ range .Instance }}{{ template "ai_token" . }}{{ else }}<span class="ai-tokens-empty">Uses Default</span>{{ end }}
+{{ end }}
+{{ end }}
+{{- end -}}
+
+{{- define "ai_tasks" -}}
+{{ $v := . }}
+<section class="admin-section ai-tasks" id="tasks" aria-labelledby="tasks-title">
+  <div class="section-heading">
+    <h2 class="section-heading-title" id="tasks-title">Tasks</h2>
+    <p class="section-heading-description">{{ if $v.Admin }}Each task runs on its first model that is enabled, available and capable. The next model takes over when one fails.{{ else if $v.AllowUserRoutes }}The instance chooses these models. You may choose different ones for any task.{{ else }}The instance chooses these models.{{ end }}</p>
+  </div>
+  <ul class="list-rows ai-task-list">
+    {{ range $v.Tasks }}
+    {{ $task := .Task }}{{ $label := .Label }}
+    <li class="ai-task" id="task-{{ .Task }}" data-task="{{ .Task }}" data-label="{{ .Label }}">
+      <details class="ai-task-details" data-task-details{{ if .Open }} open{{ end }}>
+        <summary class="ai-task-summary">
+          <span class="ai-task-main"><span class="ai-task-title">{{ .Label }}</span><span class="ai-task-hint">{{ .Hint }}</span></span>
+          <span class="ai-tokens" data-chips>{{ template "ai_task_tokens" dict "V" $v "T" . }}</span>
+          <span class="ai-task-chevron" aria-hidden="true"><span class="ai-chevron-closed">{{ octicon "chevron-down" 16 }}</span><span class="ai-chevron-open">{{ octicon "chevron-up" 16 }}</span></span>
+        </summary>
+        <div class="ai-task-body">
+          {{ if not $v.Admin }}
+          <p class="ai-instance" data-instance-chips><span class="ai-instance-label">Instance choice</span><span class="ai-tokens">{{ range .Instance }}{{ template "ai_token" . }}{{ else }}<span class="ai-tokens-empty">Uses Default</span>{{ end }}</span></p>
+          {{ end }}
+          {{ if or $v.Admin $v.AllowUserRoutes }}
+          <form method="post" action="{{ $v.Action }}" class="ai-route-form" data-route-form data-scope="{{ $v.Scope }}" data-task="{{ .Task }}" aria-labelledby="route-title-{{ .Task }}" novalidate data-unsaved>
+            <input type="hidden" name="action" value="route-save">
+            <input type="hidden" name="task" value="{{ .Task }}">
+            <div class="ai-route-head">
+              <h3 class="ai-route-title" id="route-title-{{ .Task }}">{{ if $v.Admin }}Models for {{ .Label }}{{ else }}Use a different model{{ end }}</h3>
+              <p class="form-caption">{{ if eq .Task "embeddings" }}Only the first model is used. Changing it rebuilds the index.{{ else }}The first model runs the task. Drag a model, or use its menu, to change the order.{{ end }}</p>
+            </div>
+            {{ with $v.FormBanner (print "task:" .Task) }}<p class="inline-message inline-message-critical" role="alert"><span class="inline-message-icon" aria-hidden="true">{{ octicon "alert" 16 }}</span><span>{{ . }}</span></p>{{ end }}
+            <ol class="ai-targets" data-targets aria-labelledby="route-title-{{ .Task }}">
+              {{ range $i, $t := .Targets }}
+              <li class="ai-target{{ if .Missing }} is-missing{{ end }}" data-value="{{ .Value }}" data-label="{{ .Label }}" data-provider="{{ .Provider }}" data-price="{{ .Price }}" data-missing="{{ .Missing }}">
+                <input type="hidden" name="target" value="{{ .Value }}">
+                <span class="ai-drag" data-drag data-js aria-hidden="true" hidden>{{ template "ai_grabber" }}</span>
+                <span class="counter-label ai-target-rank" aria-hidden="true">{{ add $i 1 }}</span>
+                <span class="ai-target-main">
+                  <span class="ai-target-name">{{ .Label }}</span>
+                  <span class="ai-target-sub">{{ .Provider }} · {{ .Price }}</span>
+                </span>
+                <span class="ai-target-actions">
+                  <span class="ai-target-fallback" data-nojs>
+                    <button class="btn btn-sm" type="submit" name="op" value="up:{{ $i }}" aria-label="Move {{ .Label }} up">Move up</button>
+                    <button class="btn btn-sm" type="submit" name="op" value="down:{{ $i }}" aria-label="Move {{ .Label }} down">Move down</button>
+                    <button class="btn btn-sm" type="submit" name="op" value="remove:{{ $i }}" aria-label="Remove {{ .Label }}">Remove</button>
+                  </span>
+                </span>
+              </li>
+              {{ end }}
+            </ol>
+            <p class="ai-targets-empty" data-targets-empty{{ if .Targets }} hidden{{ end }}>{{ if $v.Admin }}{{ if eq .Task "default" }}No models. Add one so AI features work.{{ else }}No models. The task uses Default.{{ end }}{{ else }}No models of your own. The instance choice applies.{{ end }}</p>
+            <div class="ai-add-fallback" data-nojs>
+              <label class="form-label" for="ai-add-{{ .Task }}">Add a model</label>
+              <div class="ai-add-row">
+                <span class="text-input select-box text-input-block"><select class="text-input-control" id="ai-add-{{ .Task }}" name="add">
+                  <option value="">Choose a model</option>
+                  {{ range .Choices }}<option value="{{ .Value }}">{{ .Label }}, {{ .Provider }}, {{ .Price }}</option>{{ end }}
+                </select><span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span></span>
+                <button class="btn" type="submit">Add</button>
+              </div>
+            </div>
+            <div data-js hidden>
+              <button class="btn btn-sm" type="button" data-add-model aria-haspopup="dialog"><span class="btn-visual" aria-hidden="true">{{ octicon "plus" 16 }}</span><span class="btn-label">Add model</span></button>
+            </div>
+            <div class="form-block-actions ai-route-actions">
+              <button class="btn btn-primary" type="submit" data-route-save aria-label="Save models for {{ .Label }}">Save</button>
+              <button class="btn" type="button" data-route-cancel data-js hidden aria-label="Cancel changes to {{ .Label }}">Cancel</button>
+              <div class="ai-route-message" data-route-message>{{ if .Saved }}{{ template "admin_saved" "Models saved" }}{{ end }}</div>
+            </div>
+          </form>
+          {{ if not $v.Admin }}
+          <form method="post" action="/settings/ai" class="ai-reset-form" data-reset-form data-task="{{ .Task }}"{{ if not .HasOwn }} hidden{{ end }}>
+            <input type="hidden" name="action" value="route-reset">
+            <input type="hidden" name="task" value="{{ .Task }}">
+            <button class="btn btn-invisible btn-sm" type="submit">Use the instance choice</button>
+          </form>
+          {{ end }}
+          {{ else }}
+          <p class="form-caption">Your instance does not let users choose their own models.</p>
+          {{ end }}
+        </div>
+      </details>
+    </li>
+    {{ end }}
+  </ul>
+</section>
+{{- end -}}
+
+{{- define "ai_models" -}}
+{{ $v := . }}
+<section class="admin-section ai-models" id="models" aria-labelledby="models-title">
+  <div class="data-table-header">
+    <div class="data-table-titles">
+      <h2 class="section-heading-title" id="models-title">Models <span class="counter-label" aria-hidden="true" data-model-count>{{ .ShownModels }}</span><span class="sr-only" data-model-count-text>({{ .ShownModels }})</span></h2>
+      <p class="data-table-subtitle" id="models-desc">Prices are US dollars per million tokens.</p>
+    </div>
+    <div class="data-table-actions">
+      <form method="post" action="/admin/ai">
+        <input type="hidden" name="action" value="prices-refresh">
+        <button class="btn btn-sm" type="submit"><span class="btn-visual" aria-hidden="true">{{ octicon "sync" 16 }}</span><span class="btn-label">Refresh prices</span></button>
+      </form>
+    </div>
+  </div>
+  <form method="get" action="/admin/ai#models" class="ai-filters" data-model-filter role="search" aria-label="Filter models">
+    <div class="form-control">
+      <label class="form-label" for="mf-capability">Capability</label>
+      <span class="text-input select-box text-input-block"><select class="text-input-control" id="mf-capability" name="capability">
+        {{ range .CapabilityOptions }}<option value="{{ .Value }}"{{ if eq .Value $v.Filter.Capability }} selected{{ end }}>{{ .Label }}</option>{{ end }}
+      </select><span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span></span>
+    </div>
+    <div class="form-control">
+      <label class="form-label" for="mf-provider">Provider</label>
+      <span class="text-input select-box text-input-block"><select class="text-input-control" id="mf-provider" name="provider">
+        <option value="">Any provider</option>
+        {{ range .ProviderOptions }}<option value="{{ .Value }}"{{ if eq .Value $v.Filter.Provider }} selected{{ end }}>{{ .Label }}</option>{{ end }}
+      </select><span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span></span>
+    </div>
+    <div class="form-control ai-filter-name">
+      <label class="form-label" for="mf-q">Name</label>
+      <span class="text-input text-input-block has-leading-visual"><span class="text-input-visual" aria-hidden="true">{{ octicon "search" 16 }}</span><input class="text-input-control" id="mf-q" type="search" name="q" value="{{ .Filter.Q }}" autocomplete="off" autocapitalize="off" spellcheck="false"></span>
+    </div>
+    <button class="btn" type="submit" data-nojs>Filter</button>
+  </form>
+  {{ if .Models }}
+  <div class="table-scroll" role="region" tabindex="0" aria-label="Models table" data-models-table{{ if not .ShownModels }} hidden{{ end }}>
+    <table class="data-table ai-model-table" aria-labelledby="models-title" aria-describedby="models-desc">
+      <thead>
+        <tr>
+          <th scope="col">Model</th>
+          <th scope="col" class="hide-narrow">Provider</th>
+          <th scope="col" class="col-num hide-narrow">Context</th>
+          <th scope="col" class="hide-narrow">In and out</th>
+          <th scope="col" class="col-num">Input</th>
+          <th scope="col" class="col-num">Output</th>
+          <th scope="col" class="hide-narrow">Source</th>
+          <th scope="col">Enabled</th>
+          <th scope="col" class="col-actions"><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range $i, $m := .Models }}
+        <tr id="model-{{ .Key }}" class="ai-model-row{{ if not .Available }} is-unavailable{{ end }}" data-model-row data-provider-id="{{ .ProviderID }}" data-model="{{ .ModelID }}" data-caps="{{ .Caps }}" data-search="{{ .Search }}"{{ if .Hidden }} hidden{{ end }} data-label="{{ .Label }}" data-override="{{ if .PriceOverride }}true{{ end }}" data-override-in="{{ .OverrideIn }}" data-override-out="{{ .OverrideOut }}">
+          <th scope="row">
+            <span class="cell-main">
+              <span class="cell-title">{{ .Label }}</span>
+              {{ if or (ne .Label .ModelID) (not .Available) }}<span class="cell-sub">{{ if ne .Label .ModelID }}{{ .ModelID }}{{ end }}{{ if not .Available }}{{ if ne .Label .ModelID }} · {{ end }}Not listed{{ end }}</span>{{ end }}
+            </span>
+          </th>
+          <td class="hide-narrow">{{ .ProviderName }}</td>
+          <td class="col-num hide-narrow">{{ .Context }}</td>
+          <td class="hide-narrow"><span class="ai-mods">{{ range .InputMods }}{{ template "ai_modality" . }}{{ end }}<span class="ai-mods-arrow" aria-hidden="true">{{ octicon "arrow-right" 16 }}</span>{{ range .OutputMods }}{{ template "ai_modality" . }}{{ end }}</span></td>
+          <td class="col-num" data-price-in>{{ .InputPrice }}</td>
+          <td class="col-num" data-price-out>{{ .OutputPrice }}</td>
+          <td class="col-nowrap hide-narrow" data-price-source>{{ .Source }}</td>
+          <td class="ai-enabled-cell">
+            <form method="post" action="/admin/ai" class="ai-toggle-form" data-toggle-form>
+              <input type="hidden" name="action" value="model-toggle">
+              <input type="hidden" name="providerId" value="{{ .ProviderID }}">
+              <input type="hidden" name="model" value="{{ .ModelID }}">
+              <label class="check" data-nojs><input type="checkbox" name="enabled" value="1"{{ if .Enabled }} checked{{ end }} data-model-toggle><span class="sr-only">{{ .Label }} enabled</span></label>
+              <noscript><button class="btn btn-sm" type="submit" aria-label="Save whether {{ .Label }} is enabled">Save</button></noscript>
+            </form>
+          </td>
+          <td class="col-actions"><a class="btn btn-sm" href="/admin/ai?price={{ queryEscape .Key }}#models" data-price-edit aria-label="Edit price of {{ .Label }}">Edit price</a></td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+  <div class="blankslate blankslate-small blankslate-border" data-models-empty{{ if .ShownModels }} hidden{{ end }}>
+    <div class="blankslate-inner">
+      <span class="blankslate-visual" aria-hidden="true">{{ octicon "filter" 16 }}</span>
+      <h3 class="blankslate-heading">No model matches the filter</h3>
+      <p class="blankslate-description">Choose another capability or provider, or clear the name.</p>
+    </div>
+  </div>
+  {{ range .Models }}{{ if eq .Key $v.Price }}{{ template "ai_price_source" dict "V" $v "M" . }}{{ end }}{{ end }}
+  {{ else }}
+  <div class="blankslate blankslate-small blankslate-border">
+    <div class="blankslate-inner">
+      <span class="blankslate-visual" aria-hidden="true">{{ octicon "ai-model" 16 }}</span>
+      <h3 class="blankslate-heading">No models yet</h3>
+      <p class="blankslate-description">Add a provider, or refresh one, to list its models.</p>
+    </div>
+  </div>
+  {{ end }}
+</section>
+{{- end -}}
+
+{{- define "ai_price_source" -}}
+{{/* dot is a dict with V, the aiView, and M, the aiModelView. The server
+     renders this Dialog source for ?price=. ai/admin.js builds its own
+     Dialog for every other row. */}}
+{{ $v := .V }}{{ with .M }}
+<div class="dialog-source" id="price-dialog" data-dialog-title="Price of {{ .Label }}" data-dialog-subtitle="US dollars per million tokens" data-dialog-width="medium" data-dialog-autoopen>
+  <form method="post" action="/admin/ai" class="ai-price-form" data-validate data-unsaved novalidate>
+    <h3 class="dialog-source-heading">Price of {{ .Label }}</h3>
+    <input type="hidden" name="action" value="model-price">
+    <input type="hidden" name="providerId" value="{{ .ProviderID }}">
+    <input type="hidden" name="model" value="{{ .ModelID }}">
+    {{ with $v.FormBanner "price" }}<p hidden data-dialog-error>{{ . }}</p>{{ end }}
+    {{ $inErr := $v.FormError "price" "inputPerMTok" }}{{ $outErr := $v.FormError "price" "outputPerMTok" }}
+    <div class="form-control field{{ if $inErr }} has-error{{ end }}">
+      <label class="form-label" for="price-in">Input price</label>
+      <input id="price-in" type="number" name="inputPerMTok" min="0" step="any" inputmode="decimal" value="{{ .OverrideIn }}" aria-describedby="price-in-caption{{ if $inErr }} price-in-error{{ end }}"{{ if $inErr }} aria-invalid="true"{{ end }} data-error-message="Enter a price of 0 or more">
+      <p class="form-caption" id="price-in-caption">Per million input tokens</p>
+      {{ template "admin_field_error" dict "ID" "price-in" "Msg" $inErr }}
+    </div>
+    <div class="form-control field{{ if $outErr }} has-error{{ end }}">
+      <label class="form-label" for="price-out">Output price</label>
+      <input id="price-out" type="number" name="outputPerMTok" min="0" step="any" inputmode="decimal" value="{{ .OverrideOut }}" aria-describedby="price-out-caption{{ if $outErr }} price-out-error{{ end }}"{{ if $outErr }} aria-invalid="true"{{ end }} data-error-message="Enter a price of 0 or more">
+      <p class="form-caption" id="price-out-caption">Per million output tokens</p>
+      {{ template "admin_field_error" dict "ID" "price-out" "Msg" $outErr }}
+    </div>
+    <div class="dialog-source-footer">
+      <a class="btn" href="/admin/ai#models" data-dialog-cancel>Cancel</a>
+      {{ if .PriceOverride }}<button class="btn" type="submit" name="clear" value="1" formnovalidate>Use fetched price</button>{{ end }}
+      <button class="btn btn-primary" type="submit">Save</button>
+    </div>
+  </form>
+</div>
+{{ end }}
+{{- end -}}
+
+{{- define "ai_provider_table" -}}
+{{/* Replaces ai_providers from partials/settings.html. */}}
+{{ $v := . }}
+<section class="admin-section ai-providers" id="providers" aria-labelledby="providers-title">
+  <div class="data-table-header">
+    <div class="data-table-titles">
+      <h2 class="section-heading-title" id="providers-title">{{ if $v.Admin }}Providers{{ else }}Personal providers{{ end }} <span class="counter-label" aria-hidden="true">{{ len $v.Providers }}</span><span class="sr-only">({{ len $v.Providers }})</span></h2>
+      <p class="data-table-subtitle" id="providers-desc">{{ if $v.Admin }}A provider is one account on one model server. Its models join the catalog when it is saved, when you refresh it, and every day.{{ else }}A personal provider uses your own key. Only you can see it and use its models.{{ end }}</p>
+    </div>
+    <div class="data-table-actions">
+      <a class="btn btn-sm" href="{{ $v.Action }}?add=1#providers" data-dialog-open="provider-new" aria-haspopup="dialog"><span class="btn-visual" aria-hidden="true">{{ octicon "plus" 16 }}</span><span class="btn-label">Add provider</span></a>
+    </div>
+  </div>
+  {{ if $v.Providers }}
+  <div class="table-scroll" role="region" tabindex="0" aria-label="Providers table">
+    <table class="data-table ai-provider-table" aria-labelledby="providers-title" aria-describedby="providers-desc">
+      <thead>
+        <tr>
+          <th scope="col">Provider</th>
+          <th scope="col" class="hide-narrow">Preset</th>
+          <th scope="col">Status</th>
+          <th scope="col" class="col-num">Models</th>
+          <th scope="col" class="hide-narrow">Last refresh</th>
+          <th scope="col" class="col-actions"><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range $v.Providers }}
+        <tr id="provider-{{ .ID }}" data-provider-row="{{ .ID }}">
+          <th scope="row">
+            <span class="cell-main">
+              <span class="cell-title">{{ .Name }}</span>
+              {{ with .BaseURL }}<span class="cell-sub">{{ breakable . }}</span>{{ end }}
+              {{ if .FromFile }}<span class="cell-sub">From the configuration file</span>{{ end }}
+              {{ with .RefreshError }}<span class="inline-message inline-message-critical" data-size="small"><span class="inline-message-icon" aria-hidden="true">{{ octicon "alert-fill" 16 }}</span><span>{{ . }}</span></span>{{ end }}
+            </span>
+          </th>
+          <td class="hide-narrow">{{ .PresetName }}{{ if .Local }} <span class="ui-label ui-label-secondary">Local</span>{{ end }}</td>
+          <td class="col-nowrap">{{ if .Failed }}<span class="ui-label ui-label-danger">{{ .Status }}</span>{{ else if .Enabled }}<span class="ui-label ui-label-success">{{ .Status }}</span>{{ else }}<span class="ui-label ui-label-secondary">{{ .Status }}</span>{{ end }}</td>
+          <td class="col-num">{{ .ModelCount }}</td>
+          <td class="col-nowrap hide-narrow">{{ .Refreshed }}</td>
+          <td class="col-actions">
+            <button class="btn btn-invisible btn-icon btn-sm row-menu-btn" type="button" popovertarget="provider-menu-{{ .ID }}" aria-label="Actions: {{ .Name }}"><span class="btn-visual" aria-hidden="true">{{ octicon "kebab-horizontal" 16 }}</span></button>
+            <div class="row-menu" id="provider-menu-{{ .ID }}" popover>
+              <form method="post" action="{{ $v.Action }}">
+                <input type="hidden" name="providerId" value="{{ .ID }}">
+                <button class="menu-item" type="submit" name="action" value="test">Test</button>
+                <button class="menu-item" type="submit" name="action" value="refresh">Refresh</button>
+              </form>
+              {{ if not .FromFile }}
+              <a class="menu-item" href="{{ $v.Action }}?edit={{ queryEscape .ID }}#providers" data-dialog-open="provider-{{ .ID }}-edit">Edit</a>
+              <hr class="menu-sep">
+              <form method="post" action="{{ $v.Action }}">
+                <input type="hidden" name="providerId" value="{{ .ID }}">
+                <button class="menu-item danger" type="submit" name="action" value="{{ if $v.Admin }}delete{{ else }}provider-delete{{ end }}" data-confirm="Delete {{ .Name }}?" data-confirm-detail="Its models leave the catalog, and tasks that use them move on to their next model.">Delete</button>
+              </form>
+              {{ end }}
+            </div>
+          </td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+  {{ else }}
+  <div class="blankslate blankslate-small blankslate-border">
+    <div class="blankslate-inner">
+      <span class="blankslate-visual" aria-hidden="true">{{ octicon "cloud" 16 }}</span>
+      <h3 class="blankslate-heading">{{ if $v.Admin }}No provider is configured{{ else }}You have no personal providers{{ end }}</h3>
+      <p class="blankslate-description">Add a provider to list its models.</p>
+    </div>
+  </div>
+  {{ end }}
+  {{ range $v.Providers }}{{ if not .FromFile }}
+  <div class="dialog-source" id="provider-{{ .ID }}-edit" data-dialog-title="Edit {{ .Name }}" data-dialog-width="large"{{ if .Editing }} data-dialog-autoopen{{ else }} hidden{{ end }}>
+    {{ template "ai_provider_fields" dict "V" $v "P" . }}
+  </div>
+  {{ end }}{{ end }}
+  <div class="dialog-source" id="provider-new" data-dialog-title="Add provider" data-dialog-subtitle="Choose where the models run. The preset fills in the protocol and the address." data-dialog-width="large"{{ if $v.AddOpen }} data-dialog-autoopen{{ else }} hidden{{ end }}>
+    {{ template "ai_provider_fields" dict "V" $v "P" nil }}
+  </div>
+</section>
+{{- end -}}
+
+{{- define "ai_provider_fields" -}}
+{{/* Replaces ai_provider_form from partials/settings.html. dot is a dict with V,
+     the aiView, and P, the provider view or nil. */}}
+{{ $v := .V }}{{ $p := .P }}
+{{ $id := "new" }}{{ $preset := "" }}{{ with $p }}{{ $id = .ID }}{{ $preset = .Preset }}{{ end }}
+<form method="post" action="{{ $v.Action }}" class="ai-provider-form" data-provider-form data-validate data-unsaved novalidate>
+  <h3 class="dialog-source-heading">{{ with $p }}Edit {{ .Name }}{{ else }}Add provider{{ end }}</h3>
+  <input type="hidden" name="action" value="{{ if $v.Admin }}save{{ else }}provider-save{{ end }}">
+  {{ with $p }}<input type="hidden" name="providerId" value="{{ .ID }}">{{ end }}
+  {{ with $v.FormBanner $id }}<p hidden data-dialog-error>{{ . }}</p>{{ end }}
+  <fieldset class="ai-presets">
+    <legend>Preset</legend>
+    {{ range $i, $pr := $v.Presets }}
+    <div class="form-control form-control-horizontal ai-preset">
+      <input type="radio" id="pf-preset-{{ $id }}-{{ .ID }}" name="preset" value="{{ .ID }}" data-fields="{{ .FieldList }}" data-base-url="{{ .BaseURL }}" aria-describedby="pf-preset-{{ $id }}-{{ .ID }}-caption"{{ if $p }}{{ if eq .ID $preset }} checked{{ end }}{{ else if eq $i 0 }} checked{{ end }}>
+      <span class="form-control-horizontal-text">
+        <label class="form-label" for="pf-preset-{{ $id }}-{{ .ID }}">{{ .Name }}</label>
+        <span class="form-caption" id="pf-preset-{{ $id }}-{{ .ID }}-caption">{{ .Sub }}</span>
+      </span>
+    </div>
+    {{ end }}
+  </fieldset>
+  {{ template "ai_provider_input" dict "V" $v "ID" $id "Field" "name" "Label" "Name" "Type" "text" "Value" (or (and $p $p.Name) "") "Caption" "Leave empty to use the preset name." }}
+  {{ template "ai_provider_input" dict "V" $v "ID" $id "Field" "apiKey" "Label" "API key" "Type" "password" "Value" "" "Caption" (or (and $p $p.HasAPIKey "A key is stored. Leave this empty to keep it.") "Leave empty when the provider needs no key.") }}
+  {{ template "ai_provider_input" dict "V" $v "ID" $id "Field" "baseUrl" "Label" "Base URL" "Type" "url" "Value" (or (and $p $p.BaseURL) "") "Caption" "The address the server reaches the provider at. Leave empty to use the preset address." }}
+  <div class="form-control field" data-field="kind">
+    <label class="form-label" for="pf-kind-{{ $id }}">Protocol</label>
+    <span class="text-input select-box text-input-block"><select class="text-input-control" id="pf-kind-{{ $id }}" name="kind" aria-describedby="pf-kind-{{ $id }}-caption">
+      {{ range $k := $v.Kinds }}<option value="{{ $k }}"{{ with $p }}{{ if eq .Kind $k }} selected{{ end }}{{ end }}>{{ $k }}</option>{{ end }}
+    </select><span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span></span>
+    <p class="form-caption" id="pf-kind-{{ $id }}-caption">Used by the Custom preset.</p>
+  </div>
+  <div class="form-control form-control-horizontal" data-field="local">
+    <input type="checkbox" id="pf-local-{{ $id }}" name="local" value="1"{{ if and $p $p.Local }} checked{{ end }}>
+    <label class="form-label" for="pf-local-{{ $id }}">Runs on my own hardware, so its models cost nothing</label>
+  </div>
+  <details class="disclosure">
+    <summary>More options</summary>
+    <div class="disclosure-body">
+      {{ template "ai_provider_input" dict "V" $v "ID" $id "Field" "model" "Label" "Chat model" "Type" "text" "Value" (or (and $p $p.Model) "") "Caption" "" }}
+      {{ template "ai_provider_input" dict "V" $v "ID" $id "Field" "embedModel" "Label" "Embedding model" "Type" "text" "Value" (or (and $p $p.EmbedModel) "") "Caption" "" }}
+      {{ template "ai_provider_input" dict "V" $v "ID" $id "Field" "imageModel" "Label" "Image model" "Type" "text" "Value" (or (and $p $p.ImageModel) "") "Caption" "" }}
+      {{ template "ai_provider_input" dict "V" $v "ID" $id "Field" "temperature" "Label" "Temperature" "Type" "number" "Value" (or (and $p (print $p.Temperature)) "") "Caption" "From 0 to 2." "Min" "0" "Max" "2" "Step" "0.1" }}
+      {{ template "ai_provider_input" dict "V" $v "ID" $id "Field" "maxTokens" "Label" "Max tokens" "Type" "number" "Value" (or (and $p (print $p.MaxTokens)) "") "Caption" "" "Min" "0" "Step" "1" }}
+      {{ template "ai_provider_input" dict "V" $v "ID" $id "Field" "timeoutSeconds" "Label" "Timeout in seconds" "Type" "number" "Value" (or (and $p (print $p.TimeoutSeconds)) "") "Caption" "" "Min" "0" "Step" "1" }}
+      <fieldset class="ai-checks">
+        <legend>Capabilities</legend>
+        <div class="form-control form-control-horizontal"><input type="checkbox" id="pf-vision-{{ $id }}" name="vision" value="1"{{ if and $p $p.Vision }} checked{{ end }}><label class="form-label" for="pf-vision-{{ $id }}">Every model accepts images when the listing does not say</label></div>
+        <div class="form-control form-control-horizontal"><input type="checkbox" id="pf-imggen-{{ $id }}" name="imageGeneration" value="1"{{ if and $p $p.ImageGeneration }} checked{{ end }}><label class="form-label" for="pf-imggen-{{ $id }}">Generates images</label></div>
+        <div class="form-control form-control-horizontal"><input type="checkbox" id="pf-imgedit-{{ $id }}" name="imageEditing" value="1"{{ if and $p $p.ImageEditing }} checked{{ end }}><label class="form-label" for="pf-imgedit-{{ $id }}">Edits images</label></div>
+        <input type="hidden" name="enabledField" value="1">
+        <div class="form-control form-control-horizontal"><input type="checkbox" id="pf-enabled-{{ $id }}" name="enabled" value="1"{{ if or (not $p) $p.Enabled }} checked{{ end }}><label class="form-label" for="pf-enabled-{{ $id }}">Enabled</label></div>
+      </fieldset>
+    </div>
+  </details>
+  <div class="dialog-source-footer">
+    <a class="btn" href="{{ $v.Action }}#providers" data-dialog-cancel>Cancel</a>
+    <button class="btn btn-primary" type="submit">Save</button>
+  </div>
+</form>
+{{- end -}}
+
+{{- define "ai_provider_input" -}}
+{{/* dot is a dict with V, ID, Field, Label, Type, Value, Caption and the
+     optional Min, Max and Step. */}}
+{{ $err := .V.FormError .ID .Field }}{{ $fid := print "pf-" .Field "-" .ID }}
+<div class="form-control field{{ if $err }} has-error{{ end }}" data-field="{{ .Field }}">
+  <label class="form-label" for="{{ $fid }}">{{ .Label }}</label>
+  <input id="{{ $fid }}" type="{{ .Type }}" name="{{ .Field }}" value="{{ .Value }}"{{ with .Min }} min="{{ . }}"{{ end }}{{ with .Max }} max="{{ . }}"{{ end }}{{ with .Step }} step="{{ . }}"{{ end }} autocomplete="off" autocapitalize="off" spellcheck="false"{{ if or .Caption $err }} aria-describedby="{{ if .Caption }}{{ $fid }}-caption{{ end }}{{ if $err }} {{ $fid }}-error{{ end }}"{{ end }}{{ if $err }} aria-invalid="true"{{ end }}>
+  {{ with .Caption }}<p class="form-caption" id="{{ $fid }}-caption">{{ . }}</p>{{ end }}
+  {{ template "admin_field_error" dict "ID" $fid "Msg" $err }}
+</div>
+{{- end -}}

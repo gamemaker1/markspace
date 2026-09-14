@@ -1,0 +1,32 @@
+{{ define "title" }}Create an account{{ end }}
+{{ define "content" }}
+<div class="auth-card interstitial">
+  <a class="auth-brand" href="/">{{ .InstanceName }}</a>
+  <div class="page-header">
+    <div class="page-header-title-area"><h1 class="page-header-title">Create an account</h1></div>
+    <p class="page-header-description">{{ if .Get "Invite" }}You were invited. Choose a name and a password to join.{{ else }}It takes a minute. You can change these details later.{{ end }}</p>
+  </div>
+  {{ if .Get "Closed" }}
+  <section class="banner banner-warning" aria-labelledby="signup-closed-title">
+    <div class="banner-icon" aria-hidden="true">{{ octicon "alert" 16 }}</div>
+    <div class="banner-container"><div class="banner-content">
+      <h2 class="banner-title" id="signup-closed-title">New accounts need an invite</h2>
+      <div class="banner-description"><p>Ask an administrator of {{ .InstanceName }} for an invite link.</p></div>
+    </div></div>
+  </section>
+  {{ else }}
+  <form method="post" action="/signup" class="stack" novalidate>
+    {{ template "ui_error_summary" dict "P" . "Form" "signup" }}
+    {{ template "ui_form_message" dict "P" . "Form" "signup" }}
+    <input type="hidden" name="next" value="{{ .Get "Next" }}">
+    <input type="hidden" name="invite" value="{{ .Get "Invite" }}">
+    {{ template "ui_text_field" dict "P" . "Form" "signup" "Field" "name" "Label" "Name" "Value" (.FormValue "signup" "name" "") "Required" true "HideRequired" true "Autofocus" (not (.FormOpen "signup")) "Autocomplete" "name" }}
+    {{ template "ui_text_field" dict "P" . "Form" "signup" "Field" "email" "Label" "Email address" "Type" "email" "Value" (.FormValue "signup" "email" "") "Required" true "HideRequired" true "Autocomplete" "username" "Inputmode" "email" "Autocapitalize" "off" "Spellcheck" "false" }}
+    {{ template "ui_text_field" dict "P" . "Form" "signup" "Field" "password" "Label" "Password" "Type" "password" "Required" true "HideRequired" true "Caption" "At least 8 characters." "Autocomplete" "new-password" }}
+    {{ template "ui_text_field" dict "P" . "Form" "signup" "Field" "passwordConfirm" "Label" "Repeat password" "Type" "password" "Required" true "HideRequired" true "Autocomplete" "new-password" }}
+    <button class="btn btn-primary btn-block" type="submit">Create account</button>
+  </form>
+  {{ end }}
+  <p class="auth-foot">Already have an account? <a href="/login">Sign in</a></p>
+</div>
+{{ end }}

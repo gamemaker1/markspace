@@ -1,0 +1,31 @@
+{{ define "title" }}{{ .InstanceName }}{{ end }}
+{{ define "content" }}{{ end }}
+{{- define "document" -}}
+<!DOCTYPE html>
+<html lang="en" data-color-mode="auto" data-light-theme="light" data-dark-theme="dark">
+<head>
+{{ template "head" . }}
+<link rel="stylesheet" href="/static/css/editor.css">
+<link rel="stylesheet" href="/static/css/panels.css">
+<title>{{ .InstanceName }}</title>
+</head>
+<body class="app shell-app" data-instance-name="{{ .InstanceName }}">
+<a class="skip-link" href="#main">Skip to content</a>
+<a class="skip-link" href="#sidebar-footer">Skip page tree</a>
+<div id="status-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true" data-status-region></div>
+<div id="app" class="app-root" data-shell-root>
+  <div class="boot-screen" role="status">
+    <span class="boot-spinner" aria-hidden="true"></span>
+    <span class="boot-label">Opening your notes</span>
+  </div>
+</div>
+<noscript>
+  <main class="plain-main">
+    <p>{{ .InstanceName }} needs JavaScript for this view. <a href="/login">Sign in</a> with JavaScript turned on.</p>
+  </main>
+</noscript>
+<script type="module" src="/static/js/boot.js"></script>
+<script type="module" src="/static/js/shell.js"></script>
+</body>
+</html>
+{{- end -}}

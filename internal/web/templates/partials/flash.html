@@ -1,0 +1,12 @@
+{{- define "flash" -}}
+{{/* Server messages as Primer Banners (docs/primer.md 5.7). An error is a critical
+     Banner and cannot be dismissed. A success Banner shows only when the
+     result is not visible on the page. */}}
+{{ with .Error }}<section class="banner banner-critical" aria-label="Critical" data-flash="error" data-ui-banner data-variant="critical" tabindex="-1"><div class="banner-icon" aria-hidden="true">{{ octicon "stop" 16 }}</div><div class="banner-container"><div class="banner-content"><h2 class="banner-title">{{ . }}</h2>{{ with $.Get "Detail" }}<div class="banner-description"><p>{{ . }}</p></div>{{ end }}</div></div></section>{{ end }}
+{{ with .Flash }}<section class="banner banner-success" aria-label="Success" data-flash="ok" data-ui-banner data-variant="success"><div class="banner-icon" aria-hidden="true">{{ octicon "check-circle" 16 }}</div><div class="banner-container"><div class="banner-content"><h2 class="banner-title">{{ . }}</h2></div></div></section>{{ end }}
+{{- end -}}
+
+{{- define "field_error" -}}
+{{/* dot is a dict with Page, Name and ID. The FormControl validation message (5.3). */}}
+{{ with .Page.FieldError .Name }}<p class="field-error" id="{{ $.ID }}-error"><span class="form-validation-icon" aria-hidden="true">{{ octicon "alert-fill" 16 }}</span><span class="form-validation-text">{{ . }}</span></p>{{ end }}
+{{- end -}}

@@ -1,0 +1,64 @@
+{{ define "title" }}{{ with .Space }}{{ .Name }}{{ end }}{{ end }}
+{{ define "content" }}
+<div class="browse-page">
+{{ with .Space }}{{ template "ui_page_header" dict "Title" .Name "Visual" .Icon "Description" .Description "Border" true }}{{ end }}
+
+<div class="space-home">
+  <section class="space-home-main" aria-labelledby="pages-title">
+    <div class="section-heading"><h2 class="section-heading-title" id="pages-title">Pages</h2></div>
+    {{ with .Get "Roots" }}
+    <ul class="rows" role="list" aria-labelledby="pages-title">
+      {{ range . }}
+      <li>
+        <div class="note-row">
+          <span class="note-row-icon" aria-hidden="true">{{ with .Icon }}{{ . }}{{ else }}{{ octicon "note" 16 }}{{ end }}</span>
+          <div class="note-row-body">
+            <a class="note-row-link note-row-title" href="{{ noteURL $.Space . }}">{{ .Title }}</a>
+            <span class="note-row-meta">Updated {{ timeAgo .UpdatedAt }}</span>
+            {{ with .Excerpt }}<span class="note-row-snippet">{{ truncate 160 . }}</span>{{ end }}
+          </div>
+        </div>
+      </li>
+      {{ end }}
+    </ul>
+    {{ else }}
+    {{ if hasAccess $.SpaceAccess "edit" }}
+    {{ template "ui_blankslate" dict "Icon" "note" "Title" "Start your first page" "Description" "Use New page at the top to write the first page of this space." "Border" true "H3" true }}
+    {{ else }}
+    {{ template "ui_blankslate" dict "Icon" "note" "Title" "No pages yet" "Description" "Pages that editors write show up here." "Border" true "H3" true }}
+    {{ end }}
+    {{ end }}
+  </section>
+
+  <div class="space-home-side">
+    <section aria-labelledby="recent-title">
+      <div class="section-heading"><h2 class="section-heading-title" id="recent-title">Recently changed</h2></div>
+      {{ with .Get "Recent" }}
+      <ul class="rows rows-condensed" role="list" aria-labelledby="recent-title">
+        {{ range . }}
+        <li>
+          <div class="note-row">
+            <div class="note-row-body">
+              <a class="note-row-link note-row-title" href="{{ noteURL $.Space . }}">{{ .Title }}</a>
+              <span class="note-row-meta">{{ timeAgo .UpdatedAt }}</span>
+            </div>
+          </div>
+        </li>
+        {{ end }}
+      </ul>
+      {{ else }}
+      <p class="section-heading-description">Nothing has changed yet.</p>
+      {{ end }}
+    </section>
+    {{ with .Get "Tags" }}
+    <section aria-labelledby="tags-title">
+      <div class="section-heading"><h2 class="section-heading-title" id="tags-title">Tags</h2></div>
+      <ul class="token-list" role="list">
+        {{ range . }}<li><a class="token" href="{{ tagURL $.Space .Tag }}"><span class="token-text">#{{ .Tag }}</span><span class="token-count"><span aria-hidden="true">{{ .Count }}</span><span class="sr-only">({{ .Count }})</span></span></a></li>{{ end }}
+      </ul>
+    </section>
+    {{ end }}
+  </div>
+</div>
+</div>
+{{ end }}

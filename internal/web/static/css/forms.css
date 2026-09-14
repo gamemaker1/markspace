@@ -1,0 +1,423 @@
+/* Forms on Primer (docs/primer.md 5.3 and 6.6): TextInput, Textarea, Select,
+   FormControl, Checkbox and Radio, ToggleSwitch, the drop area, and the
+   server form patterns. Older class names are restyled to match. */
+
+/* ---------- TextInput, Textarea and Select ---------- */
+
+input[type="text"], input[type="email"], input[type="password"], input[type="search"], input[type="url"],
+input[type="number"], input[type="tel"], input[type="date"], input[type="datetime-local"], input[type="time"],
+input[type="month"], input[type="week"], input:not([type]), select, textarea {
+  width: 100%; min-height: var(--control-medium-size); margin: 0; padding: 5px var(--control-medium-paddingInline-normal);
+  font-family: inherit; font-size: var(--text-body-size-medium); line-height: 20px; color: var(--fgColor-default);
+  background-color: var(--bgColor-default); border: var(--borderWidth-thin) solid var(--control-borderColor-rest);
+  border-radius: var(--borderRadius-medium); box-shadow: var(--shadow-inset); color-scheme: inherit; appearance: none;
+}
+
+input[type="date"], input[type="datetime-local"], input[type="time"], input[type="month"], input[type="week"] { display: block; font-variant-numeric: tabular-nums; text-align: start; }
+input::-webkit-date-and-time-value { text-align: start; }
+input::-webkit-datetime-edit, input::-webkit-datetime-edit-fields-wrapper { padding: 0; line-height: 20px; }
+input::-webkit-calendar-picker-indicator { margin-inline-start: var(--base-size-4); cursor: pointer; }
+input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
+input::placeholder, textarea::placeholder { color: var(--control-fgColor-placeholder); opacity: 1; }
+textarea { padding: var(--base-size-12); resize: vertical; }
+
+/* A native select draws Primer's triangle-down 4px from the end. */
+select {
+  padding-inline-end: var(--base-size-32); cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--fgColor-muted) 50%), linear-gradient(135deg, var(--fgColor-muted) 50%, transparent 50%);
+  background-position: calc(100% - 16px) calc(50% + 1px), calc(100% - 12px) calc(50% + 1px);
+  background-size: 4px 4px; background-repeat: no-repeat;
+}
+
+select[multiple] { padding-inline-end: var(--control-medium-paddingInline-normal); background-image: none; }
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, input[type="search"]:focus, input[type="url"]:focus,
+input[type="number"]:focus, input[type="tel"]:focus, input[type="date"]:focus, input[type="datetime-local"]:focus, input[type="time"]:focus,
+input[type="month"]:focus, input[type="week"]:focus, input:not([type]):focus, select:focus, textarea:focus {
+  border-color: var(--borderColor-accent-emphasis); outline: var(--focus-outline-width) solid var(--borderColor-accent-emphasis); outline-offset: -1px; box-shadow: none;
+}
+
+[aria-invalid="true"]:is(input, select, textarea), .field.has-error :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]) { border-color: var(--borderColor-danger-emphasis); }
+[aria-invalid="true"]:is(input, select, textarea):focus, .field.has-error :is(input, select, textarea):focus { border-color: var(--control-borderColor-danger); outline-color: var(--control-borderColor-danger); }
+[aria-invalid="false"]:is(input, select, textarea) { border-color: var(--bgColor-success-emphasis); }
+
+:is(input, select, textarea):disabled {
+  color: var(--fgColor-disabled); background-color: var(--control-bgColor-disabled);
+  border-color: var(--control-borderColor-disabled); box-shadow: none; cursor: not-allowed;
+}
+
+input[readonly]:not([type="checkbox"]):not([type="radio"]), textarea[readonly] { background-color: var(--bgColor-muted); box-shadow: none; }
+.is-monospace, input.mono { font-family: var(--fontStack-monospace); }
+
+input[type="color"] {
+  width: 48px; height: var(--control-medium-size); padding: 2px; cursor: pointer;
+  background-color: var(--bgColor-default); border: var(--borderWidth-thin) solid var(--control-borderColor-rest);
+  border-radius: var(--borderRadius-medium); color-scheme: inherit;
+}
+
+/* iOS zooms into inputs under 16px, so narrow iOS viewports use 16px, as Primer CSS does. */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: calc(48rem - 0.02px)) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="color"]), select, textarea, .text-input-control { font-size: 16px; }
+  }
+}
+
+/* The TextInput box, used when an input has visuals or a trailing action. */
+.text-input {
+  position: relative; display: inline-flex; align-items: stretch; min-height: var(--control-medium-size); min-width: 0;
+  font-size: var(--text-body-size-medium); line-height: 20px; color: var(--fgColor-default);
+  background-color: var(--bgColor-default); border: var(--borderWidth-thin) solid var(--control-borderColor-rest);
+  border-radius: var(--borderRadius-medium); box-shadow: var(--shadow-inset); cursor: text;
+}
+
+.text-input-block { display: flex; width: 100%; }
+
+.text-input > .text-input-control, .text-input > input, .text-input > select {
+  flex: 1 1 auto; width: 100%; min-width: 0; min-height: 0; height: auto; margin: 0; padding: 5px var(--control-medium-paddingInline-normal);
+  font: inherit; color: inherit; background: transparent; border: 0; border-radius: inherit; box-shadow: none; outline: none;
+}
+
+.text-input > .text-input-control:focus, .text-input > input:focus, .text-input > select:focus { outline: none; box-shadow: none; }
+.text-input:focus-within { border-color: var(--borderColor-accent-emphasis); outline: var(--focus-outline-width) solid var(--borderColor-accent-emphasis); outline-offset: -1px; }
+.text-input:has([aria-invalid="true"]) { border-color: var(--borderColor-danger-emphasis); }
+.text-input:has([aria-invalid="true"]):focus-within { border-color: var(--control-borderColor-danger); outline-color: var(--control-borderColor-danger); }
+.text-input-visual { display: flex; flex: none; align-items: center; color: var(--fgColor-muted); }
+.text-input.has-leading-visual { padding-inline-start: var(--base-size-8); gap: var(--base-size-8); }
+.text-input.has-leading-visual > .text-input-control, .text-input.has-leading-visual > input { padding-inline-start: 0; }
+.text-input.has-trailing-visual { padding-inline-end: var(--base-size-8); gap: var(--base-size-8); }
+.text-input.has-trailing-visual > .text-input-control, .text-input.has-trailing-visual > input { padding-inline-end: 0; }
+.text-input.has-trailing-action { padding-inline-end: var(--base-size-4); align-items: center; }
+.text-input.has-trailing-action > .text-input-control { align-self: stretch; padding-inline-end: var(--base-size-4); }
+.text-input-action.btn-icon { width: 24px; height: 24px; padding: 2px 4px; }
+.text-input-action.btn-icon .btn-visual { color: var(--fgColor-muted); }
+.text-input-action.btn-icon:hover .btn-visual, .text-input-action.btn-icon:focus-visible .btn-visual { color: var(--fgColor-default); }
+.text-input-sm { min-height: var(--control-small-size); font-size: var(--text-body-size-small); }
+.text-input-sm > .text-input-control, .text-input-sm > input { padding: 3px var(--base-size-8); }
+.text-input-sm .text-input-action.btn-icon { width: 20px; height: 20px; }
+.text-input-lg { min-height: var(--control-large-size); }
+.text-input-lg > .text-input-control, .text-input-lg > input { padding: 9px var(--base-size-12); }
+.text-input-lg.has-leading-visual { padding-inline-start: var(--base-size-12); }
+.text-input-lg .text-input-action.btn-icon { width: 28px; height: 28px; }
+
+@media (pointer: coarse) {
+  .text-input-action.btn-icon::before { min-width: var(--control-minTarget-coarse); min-height: var(--control-minTarget-coarse); }
+}
+
+/* The Select box: a native select with the triangle-down Octicon. */
+.select-box > select { padding-inline-end: var(--base-size-32); background-image: none; cursor: pointer; }
+.select-caret { position: absolute; top: 50%; right: var(--base-size-4); display: flex; color: var(--fgColor-muted); transform: translateY(-50%); pointer-events: none; }
+
+/* ---------- FormControl ---------- */
+
+.form-control, .field { display: flex; flex-direction: column; align-items: stretch; gap: var(--base-size-4); min-width: 0; }
+.form-control > .form-label, .field > .field-label, .field > span:first-child { align-self: flex-start; }
+
+.form-label, .field-label, .field > span:first-child, .field > label:first-child {
+  display: inline-flex; align-items: baseline; gap: var(--base-size-4); font-size: var(--text-body-size-medium);
+  font-weight: var(--base-text-weight-semibold); line-height: 20px; color: var(--fgColor-default);
+}
+
+.form-required, .field-required { font-weight: var(--base-text-weight-normal); color: var(--fgColor-default); }
+.form-caption, .field-hint { margin: 0; font-size: var(--text-body-size-small); line-height: 18px; color: var(--fgColor-muted); }
+
+.form-validation, .field-error {
+  display: flex; align-items: flex-start; margin: 0; font-size: var(--text-body-size-small);
+  font-weight: var(--base-text-weight-semibold); line-height: 18px; color: var(--fgColor-danger);
+}
+
+.form-validation[hidden], .field-error[hidden] { display: none; }
+.form-validation.is-success { color: var(--fgColor-success); }
+.form-validation-icon, .field-error > :is(.icon, .octicon) { display: flex; flex: none; margin: 3px var(--base-size-4) 0 0; }
+.form-validation-icon svg, .field-error > svg { width: 12px; height: 12px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .form-validation:not([hidden]) { animation: validation-in 170ms cubic-bezier(0.44, 0.74, 0.36, 1); }
+}
+
+@keyframes validation-in { from { opacity: 0; transform: translateY(-100%); } }
+
+.form-control-horizontal { flex-direction: row; align-items: flex-start; gap: var(--base-size-8); }
+.form-control-horizontal-text { display: flex; flex-direction: column; gap: var(--base-size-4); min-width: 0; }
+.form-control-horizontal .form-label { font-weight: var(--base-text-weight-normal); }
+
+.field-row { display: flex; flex-direction: column; gap: var(--stack-gap-normal); }
+.field-row > .field { flex: 1 1 auto; }
+
+@media (min-width: 34rem) {
+  .field-row:has(> .field-icon) { flex-direction: row; align-items: flex-start; }
+}
+
+.field-icon { width: 104px; flex: none; }
+.field-icon input { text-align: center; }
+.check { display: inline-flex; align-items: flex-start; gap: var(--base-size-8); font-size: var(--text-body-size-medium); line-height: 20px; font-weight: var(--base-text-weight-normal); cursor: pointer; }
+.check input { flex: none; }
+.stack { display: flex; flex-direction: column; align-items: stretch; gap: var(--stack-gap-normal); }
+.stack > .btn { align-self: flex-start; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-8); }
+.inline-form { display: inline-flex; align-items: center; gap: var(--base-size-8); margin: 0; }
+
+/* ---------- Checkbox and Radio ---------- */
+
+input[type="checkbox"], input[type="radio"] {
+  position: relative; display: inline-grid; flex: none; place-content: center; width: 16px; height: 16px; margin: 2px 0 0;
+  background-color: var(--bgColor-default); border: var(--borderWidth-thin) solid var(--control-borderColor-emphasis);
+  border-radius: var(--borderRadius-small); cursor: pointer; appearance: none; vertical-align: text-top;
+}
+
+input[type="radio"] { border-radius: var(--borderRadius-full); }
+
+input[type="checkbox"]::before {
+  content: ""; width: 12px; height: 9px; background-color: var(--fgColor-onEmphasis); visibility: hidden;
+  mask-image: url("data:image/svg+xml,%3Csvg width='12' height='9' viewBox='0 0 12 9' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M11.78.22a.75.75 0 0 1 0 1.06l-7 7a.75.75 0 0 1-1.06 0l-3.5-3.5a.75.75 0 1 1 1.06-1.06l2.97 2.97L10.72.22a.75.75 0 0 1 1.06 0Z'/%3E%3C/svg%3E");
+  mask-size: 75%; mask-repeat: no-repeat; mask-position: center; clip-path: inset(0 100% 0 0);
+}
+
+input[type="checkbox"]:checked, input[type="checkbox"]:indeterminate, input[type="checkbox"][aria-checked="mixed"] {
+  background-color: var(--control-checked-bgColor-rest); border-color: var(--control-checked-borderColor-rest);
+}
+
+input[type="checkbox"]:checked::before { visibility: visible; clip-path: inset(0); }
+input[type="checkbox"]:indeterminate::before, input[type="checkbox"][aria-checked="mixed"]::before { width: 10px; height: 2px; visibility: visible; clip-path: none; mask-image: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  input[type="checkbox"]:checked::before { transition: clip-path 80ms cubic-bezier(0.65, 0, 0.35, 1) 80ms; }
+}
+
+@media (hover: hover) {
+  input[type="checkbox"]:checked:hover { background-color: var(--control-checked-bgColor-hover); border-color: var(--control-checked-borderColor-hover); }
+}
+
+input[type="checkbox"]:checked:active { background-color: var(--control-checked-bgColor-active); border-color: var(--control-checked-borderColor-active); }
+input[type="radio"]:checked { background-color: var(--control-checked-fgColor-rest); border: 4px solid var(--control-checked-bgColor-rest); }
+:is(input[type="checkbox"], input[type="radio"]):focus-visible { outline: var(--focus-outline-width) solid var(--focus-outlineColor); outline-offset: 2px; box-shadow: none; }
+:is(input[type="checkbox"], input[type="radio"]):disabled { background-color: var(--control-bgColor-disabled); border-color: var(--control-borderColor-disabled); cursor: not-allowed; }
+input[type="checkbox"]:disabled:checked { background-color: var(--control-checked-bgColor-disabled); border-color: var(--control-checked-borderColor-disabled); }
+input[type="checkbox"]:disabled:checked::before { background-color: var(--control-checked-fgColor-disabled); }
+input[type="radio"]:disabled:checked { background-color: var(--control-checked-fgColor-disabled); border-color: var(--control-checked-bgColor-disabled); }
+
+fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+legend { padding: 0; margin-bottom: var(--base-size-8); font-size: var(--text-body-size-medium); font-weight: var(--base-text-weight-semibold); }
+
+/* Narrow viewports and coarse pointers (docs/primer.md 5.3 Checkbox and Radio,
+   row Hit area, and 9.2). A row is at least 44px tall and the control sits
+   on the centre of its one-line label. A row with a caption keeps the
+   control on the first line. The box gains a 44px hit area. */
+@media (pointer: coarse), (max-width: calc(48rem - 0.02px)) {
+  .check, .form-control-horizontal { min-height: var(--control-minTarget-coarse); align-items: center; }
+  :is(.check, .form-control-horizontal) > input:is([type="checkbox"], [type="radio"]) { margin-top: 0; }
+  :is(.check, .form-control-horizontal):has(.form-caption, .field-hint) { align-items: flex-start; }
+  :is(.check, .form-control-horizontal):has(.form-caption, .field-hint) > input:is([type="checkbox"], [type="radio"]) { margin-top: 2px; }
+
+  input:is([type="checkbox"], [type="radio"])::after {
+    content: ""; position: absolute; top: 50%; left: 50%; width: var(--control-minTarget-coarse); height: var(--control-minTarget-coarse); transform: translate(-50%, -50%);
+  }
+
+  /* Text inputs and selects reach the 44px target. Inputs inside a TextInput box leave the height to the box. */
+  :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="color"]):not([type="file"]):not([type="range"]), select):not(.text-input > *) { min-height: var(--control-minTarget-coarse); }
+  .text-input:has(> input, > select) { min-height: var(--control-minTarget-coarse); }
+}
+
+/* ---------- ToggleSwitch ---------- */
+
+.toggle-switch { display: inline-flex; align-items: center; gap: var(--base-size-8); font-size: var(--text-body-size-medium); line-height: 20px; vertical-align: middle; }
+.toggle-switch.is-status-end { flex-direction: row-reverse; }
+.toggle-switch-sm { font-size: var(--text-body-size-small); }
+.toggle-switch-status { display: flex; flex-direction: column; color: var(--fgColor-default); text-align: end; }
+.toggle-switch-status > span { overflow: hidden; }
+.toggle-switch[data-checked="true"] .toggle-switch-off, .toggle-switch[data-checked="false"] .toggle-switch-on { height: 0; visibility: hidden; }
+
+.toggle-switch-track {
+  position: relative; display: block; flex: none; width: 64px; height: var(--control-medium-size); margin: 0; padding: 0; overflow: hidden;
+  background-color: var(--controlTrack-bgColor-rest); border: var(--borderWidth-thin) solid var(--controlTrack-borderColor-rest);
+  border-radius: var(--borderRadius-medium); cursor: pointer; appearance: none; touch-action: manipulation;
+}
+
+.toggle-switch-sm .toggle-switch-track { width: 48px; height: 24px; }
+.toggle-switch-track:hover, .toggle-switch-track:focus-visible { background-color: var(--controlTrack-bgColor-hover); }
+.toggle-switch-track:active { background-color: var(--controlTrack-bgColor-active); }
+.toggle-switch-track:focus-visible { outline: var(--focus-outline); outline-offset: 3px; }
+.toggle-switch-track[aria-pressed="true"] { background-color: var(--control-checked-bgColor-rest); border-color: var(--control-checked-borderColor-rest); }
+.toggle-switch-track[aria-pressed="true"]:hover { background-color: var(--control-checked-bgColor-hover); border-color: var(--control-checked-borderColor-hover); }
+.toggle-switch-track[aria-pressed="true"]:active { background-color: var(--control-checked-bgColor-active); border-color: var(--control-checked-borderColor-active); }
+
+.toggle-switch-knob {
+  position: absolute; top: 0; bottom: 0; left: 0; z-index: 1; width: 50%;
+  background-color: var(--controlKnob-bgColor-rest); border: var(--borderWidth-thin) solid var(--controlKnob-borderColor-rest); border-radius: 4px;
+}
+
+.toggle-switch-track[aria-pressed="true"] .toggle-switch-knob { border-color: var(--controlKnob-borderColor-checked); transform: translateX(100%); }
+.toggle-switch-icons { position: absolute; inset: 0; display: flex; }
+.toggle-switch-line, .toggle-switch-circle { position: absolute; top: 50%; transform: translate(-50%, -50%); }
+.toggle-switch-line { left: 25%; width: 1px; height: 12px; background-color: var(--control-checked-fgColor-rest); }
+.toggle-switch-circle { left: 75%; width: 12px; height: 12px; border: 1px solid var(--controlTrack-fgColor-rest); border-radius: 50%; }
+.toggle-switch-sm .toggle-switch-line { height: 8px; }
+.toggle-switch-sm .toggle-switch-circle { width: 8px; height: 8px; }
+.toggle-switch-track[aria-disabled="true"] { background-color: var(--controlTrack-bgColor-disabled); border-color: transparent; cursor: not-allowed; }
+.toggle-switch-track[aria-disabled="true"] .toggle-switch-knob { background-color: var(--controlKnob-bgColor-disabled); border-color: var(--controlKnob-borderColor-disabled); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .toggle-switch-track, .toggle-switch-knob { transition: background-color 80ms cubic-bezier(0.5, 1, 0.89, 1), border-color 80ms cubic-bezier(0.5, 1, 0.89, 1), transform 80ms cubic-bezier(0.5, 1, 0.89, 1); }
+}
+
+@media (pointer: coarse) {
+  .toggle-switch-track { overflow: visible; }
+  .toggle-switch-track::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: var(--control-minTarget-coarse); transform: translateY(-50%); }
+  .toggle-switch-icons, .toggle-switch-knob { clip-path: inset(0 round 4px); }
+}
+
+/* A setting row: label and caption at the start, the switch at the far end. */
+.toggle-row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--base-size-16); }
+.toggle-row-text { display: flex; flex-direction: column; gap: var(--base-size-4); min-width: 0; }
+
+/* Older switches: a checkbox that applies at once. */
+.switch { display: inline-flex; align-items: center; gap: var(--base-size-8); cursor: pointer; }
+
+/* ---------- Drop area ---------- */
+
+.drop-area, .dropzone {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--base-size-8);
+  min-height: 96px; padding: var(--base-size-16); font-size: var(--text-body-size-medium); text-align: center; color: var(--fgColor-muted);
+  background-color: var(--bgColor-muted); border: var(--borderWidth-thin) dashed var(--borderColor-default); border-radius: var(--borderRadius-medium);
+}
+
+.drop-area.is-over, .dropzone.is-over { color: var(--fgColor-default); background-color: var(--bgColor-accent-muted); border-color: var(--borderColor-accent-emphasis); }
+.drop-area.has-error, .dropzone.has-error { border-color: var(--borderColor-danger-emphasis); }
+.drop-area-error { align-self: stretch; display: flex; justify-content: center; }
+.dropzone-hint { font-size: var(--text-body-size-small); color: var(--fgColor-muted); }
+.file-drop { cursor: pointer; }
+.file-drop:focus-within { outline: var(--focus-outline-width) solid var(--focus-outlineColor); outline-offset: 2px; }
+
+/* ---------- Server forms ---------- */
+
+.settings { max-width: 1012px; }
+
+/* A settings section: a subtitle PageHeader with a border, then the form. */
+.settings-section { display: flex; flex-direction: column; gap: var(--base-size-16); padding: 0; margin-bottom: var(--base-size-32); border: 0; }
+.settings-intro { padding-bottom: var(--base-size-8); border-bottom: var(--borderWidth-thin) solid var(--borderColor-default); }
+.settings-intro h2 { margin: 0; font: var(--text-subtitle-shorthand); }
+.settings-intro p { margin: var(--base-size-4) 0 0; font-size: var(--text-body-size-medium); color: var(--fgColor-muted); }
+.settings-form { display: flex; flex-direction: column; gap: var(--stack-gap-normal); min-width: 0; max-width: 440px; }
+.settings-form h3 { margin: var(--base-size-8) 0 0; font: var(--text-title-shorthand-small); }
+.danger-section .settings-intro h2 { color: var(--fgColor-danger); }
+.form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-8); padding-top: var(--base-size-4); }
+.subform { margin-top: var(--base-size-8); padding-top: var(--base-size-16); border-top: var(--borderWidth-thin) solid var(--borderColor-muted); }
+.toolbar-form { display: flex; gap: var(--base-size-8); max-width: 480px; margin: 0 0 var(--base-size-16); }
+.person { display: inline-flex; align-items: center; gap: var(--base-size-8); }
+.member-list .row { gap: var(--base-size-12); }
+.member-list select { width: auto; min-width: 8rem; }
+
+/* The form error summary is a critical Banner at the top of the form. */
+.form-error {
+  display: flex; align-items: flex-start; gap: var(--base-size-8); margin: 0; padding: var(--base-size-8) var(--base-size-16);
+  font-size: var(--text-body-size-medium); color: var(--fgColor-default); background-color: var(--bgColor-danger-muted);
+  border: var(--borderWidth-thin) solid var(--borderColor-danger-muted); border-radius: var(--borderRadius-medium);
+}
+
+.form-error > :is(.icon, .octicon) { flex: none; margin-top: 2px; color: var(--fgColor-danger); }
+.form-error[hidden] { display: none; }
+
+/* Interstitial pages: one column, 320px wide, centred. */
+.auth-card { max-width: calc(320px + 2 * var(--base-size-16)); margin: var(--base-size-48) auto; padding: var(--base-size-16); background: transparent; border: 0; box-shadow: none; }
+.auth-card h1 { margin: 0 0 var(--base-size-4); font: var(--text-title-shorthand-medium); }
+.auth-card > p.muted { margin-bottom: var(--base-size-24); font-size: var(--text-body-size-medium); }
+.auth-card .stack { gap: var(--stack-gap-normal); }
+.auth-card .stack > .btn-block { margin-top: var(--base-size-8); }
+.auth-brand { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: var(--base-size-16); font-weight: var(--base-text-weight-semibold); color: var(--fgColor-default); }
+.auth-brand:hover { text-decoration: none; }
+.auth-foot { margin: var(--base-size-16) 0 0; font-size: var(--text-body-size-medium); text-align: center; }
+.plain .banner { max-width: calc(320px + 2 * var(--base-size-16)); margin-inline: auto; }
+
+/* The one-time token notice is a success Banner. */
+.secret-box {
+  max-width: 1012px; margin: 0 0 var(--base-size-16); padding: var(--base-size-16);
+  background-color: var(--bgColor-success-muted); border: var(--borderWidth-thin) solid var(--borderColor-success-muted); border-radius: var(--borderRadius-medium);
+}
+
+.secret-box h2 { margin: 0 0 var(--base-size-8); font-size: var(--text-body-size-medium); font-weight: var(--base-text-weight-semibold); }
+.secret-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-8); }
+
+.secret-row code {
+  flex: 1 1 auto; min-height: var(--control-medium-size); padding: 5px var(--base-size-12); overflow-x: auto; white-space: nowrap;
+  font-family: var(--fontStack-monospace); font-size: var(--text-body-size-medium); line-height: 20px;
+  background-color: var(--bgColor-muted); border: var(--borderWidth-thin) solid var(--control-borderColor-rest); border-radius: var(--borderRadius-medium);
+}
+
+.panel .dropzone { margin-bottom: var(--base-size-8); }
+.panel .upload-list { margin-bottom: var(--base-size-8); }
+
+/* ---------- Form blocks ---------- */
+
+/* A form sits under a section heading. It is not a filled block. */
+.stack-page { display: flex; flex-direction: column; gap: var(--base-size-32); max-width: 1012px; min-width: 0; }
+.stack-page.is-wide { max-width: 1012px; }
+.stack-page > * { min-width: 0; margin: 0; }
+.form-block { display: flex; flex-direction: column; gap: var(--stack-gap-normal); min-width: 0; margin: 0; padding: 0; background: transparent; border: 0; }
+.form-block > form, .form-block form.stack { display: flex; flex-direction: column; gap: var(--stack-gap-normal); max-width: 440px; }
+.form-block-head { display: flex; flex-direction: column; gap: var(--base-size-4); min-width: 0; }
+.form-block-title { margin: 0; font: var(--text-title-shorthand-small); }
+.form-block-desc { margin: 0; font-size: var(--text-body-size-medium); line-height: 1.5; color: var(--fgColor-muted); }
+.form-block-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-8); padding-top: var(--base-size-4); }
+.form-block-actions .form-block-note { flex: 1 1 12em; min-width: 0; font-size: var(--text-body-size-small); color: var(--fgColor-muted); }
+.form-block > p { margin: 0; }
+
+/* The danger block is a Box with a danger border. */
+.form-block.is-danger { padding: var(--base-size-16); border: var(--borderWidth-thin) solid var(--borderColor-danger-emphasis); border-radius: var(--borderRadius-medium); }
+.form-block.is-danger .form-block-title { color: var(--fgColor-danger); }
+.form-group { display: flex; flex-direction: column; gap: var(--stack-gap-normal); min-width: 0; padding-top: var(--base-size-16); border-top: var(--borderWidth-thin) solid var(--borderColor-muted); }
+.form-group-title { margin: 0; font-size: var(--text-body-size-medium); font-weight: var(--base-text-weight-semibold); }
+.form-block .profile-head { padding-bottom: var(--base-size-4); }
+.form-block .field-color { flex: 0 0 auto; }
+.form-block .dropzone { margin: 0; }
+.stack-page .secret-box { margin: 0; }
+.search-filters { margin-bottom: var(--base-size-24); }
+.rail-details .form-block { padding: 0; }
+
+/* ---------- Details disclosures ---------- */
+
+/* The summary is a Button invisible small with chevron-down or chevron-up. */
+.disclosure, .more-options { min-width: 0; }
+
+.disclosure > summary, .more-options > summary {
+  display: inline-flex; align-items: center; gap: var(--control-small-gap); height: var(--control-small-size); width: max-content; max-width: 100%;
+  padding: 0 var(--control-small-paddingInline-condensed); font-size: var(--text-body-size-small); font-weight: var(--base-text-weight-medium);
+  color: var(--button-invisible-fgColor-rest); list-style: none; border-radius: var(--borderRadius-medium); cursor: pointer; user-select: none; -webkit-user-select: none;
+}
+
+.disclosure > summary::-webkit-details-marker, .more-options > summary::-webkit-details-marker { display: none; }
+
+.disclosure > summary::before, .more-options > summary::before {
+  content: ""; flex: none; width: 16px; height: 16px; background-color: var(--button-invisible-iconColor-rest);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M12.78 5.22a.749.749 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.06 0L3.22 6.28a.749.749 0 1 1 1.06-1.06L8 8.939l3.72-3.719a.749.749 0 0 1 1.06 0Z'/%3E%3C/svg%3E") center / 16px no-repeat;
+}
+
+.disclosure[open] > summary::before, .more-options[open] > summary::before {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.22 10.53a.749.749 0 0 1 0-1.06l4.25-4.25a.749.749 0 0 1 1.06 0l4.25 4.25a.749.749 0 1 1-1.06 1.06L8 6.811 4.28 10.53a.749.749 0 0 1-1.06 0Z'/%3E%3C/svg%3E");
+}
+
+.disclosure > summary:hover, .more-options > summary:hover { color: var(--button-invisible-fgColor-hover); background-color: var(--button-invisible-bgColor-hover); }
+.disclosure > summary:focus-visible, .more-options > summary:focus-visible { outline: var(--focus-outline-width) solid var(--focus-outlineColor); outline-offset: -2px; }
+.disclosure-body { display: flex; flex-direction: column; gap: var(--stack-gap-normal); padding-top: var(--base-size-16); }
+.more-options[open] > summary { margin-bottom: var(--base-size-16); }
+
+@media (pointer: coarse) {
+  .disclosure > summary, .more-options > summary { position: relative; }
+  .disclosure > summary::after, .more-options > summary::after { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: var(--control-minTarget-coarse); transform: translateY(-50%); }
+}
+
+/* An add form behind a Details summary: Button default medium with a
+   leading plus. The summary keeps its text while the form is open. */
+.add-toggle { position: relative; min-width: 0; }
+.add-toggle > summary { list-style: none; width: max-content; max-width: 100%; }
+.add-toggle > summary::-webkit-details-marker { display: none; }
+.add-toggle > summary :is(.icon, .octicon) { width: 16px; height: 16px; color: var(--fgColor-muted); }
+.add-toggle-open { display: inline-flex; align-items: center; gap: var(--base-size-8); }
+.add-toggle-close { display: none; }
+.add-toggle[open] > summary { margin-bottom: var(--base-size-16); }
+.add-toggle[open] > summary .add-toggle-open { display: inline-flex; }
+.form-block.has-cancel { position: relative; }
+.form-block-cancel { align-self: flex-start; }
+
+@media (max-width: calc(48rem - 0.02px)) {
+  .settings-form, .form-block > form { max-width: none; }
+  .auth-card { margin: var(--base-size-24) auto; }
+}

@@ -1,0 +1,111 @@
+{{/* Shared parts of the usage pages: the chart, DataTables, Labels, the
+     CounterLabel and the empty state (docs/primer.md 5.2, 5.8 and 5.9). */}}
+
+{{- define "usage_counter" -}}
+<span class="counter-label"><span aria-hidden="true">{{ . }}</span><span class="sr-only">({{ . }})</span></span>
+{{- end -}}
+
+{{- define "usage_status" -}}
+{{ if eq .Status "ok" }}<span class="ui-label ui-label-success">OK</span>{{ else if eq .Status "error" }}<span class="ui-label ui-label-danger">Error</span>{{ else if eq .Status "budget" }}<span class="ui-label ui-label-danger">Over budget</span>{{ else if eq .Status "canceled" }}<span class="ui-label ui-label-secondary">Canceled</span>{{ else }}<span class="ui-label ui-label-secondary">{{ .Status }}</span>{{ end }}
+{{- end -}}
+
+{{- define "usage_empty" -}}
+{{/* dot is a dict with Title and Text. A small Blankslate with a border. */}}
+<div class="blankslate blankslate-small blankslate-border"><div class="blankslate-inner"><div class="blankslate-visual" aria-hidden="true">{{ octicon "report" 24 }}</div><h3 class="blankslate-heading">{{ .Title }}</h3>{{ with .Text }}<p class="blankslate-description">{{ . }}</p>{{ end }}</div></div>
+{{- end -}}
+
+{{- define "usage_chart" -}}
+{{/* dot is a usageChart. The plot scrolls in its own region. The legend
+     names each layer and the table gives every value. */}}
+{{ with . }}
+<div class="usage-chart">
+  <div class="usage-chart-frame">
+    {{ .Axis }}
+    <div class="usage-chart-scroll" tabindex="0" role="region" aria-label="{{ .Label }}">{{ .SVG }}</div>
+  </div>
+  {{ with .Series }}
+  <ul class="usage-legend" aria-label="Legend">
+    {{ range . }}<li><span class="usage-swatch {{ .Class }}" aria-hidden="true"></span><span class="usage-legend-label">{{ .Label }}</span><span class="usage-legend-value">{{ usageTokens .Total }}</span></li>{{ end }}
+  </ul>
+  {{ end }}
+  <div class="sr-only">
+    <table>
+      <caption>{{ .Label }}</caption>
+      <thead><tr><th scope="col">Day</th>{{ range .Series }}<th scope="col">{{ .Label }}</th>{{ end }}<th scope="col">Total</th></tr></thead>
+      <tbody>
+        {{ range .Days }}{{ if .Total }}<tr><th scope="row">{{ .Date.Format "2 Jan 2006" }}</th>{{ range .Values }}<td>{{ usageNum . }}</td>{{ end }}<td>{{ usageNum .Total }}</td></tr>{{ end }}{{ end }}
+      </tbody>
+    </table>
+  </div>
+</div>
+{{ end }}
+{{- end -}}
+
+{{- define "usage_breakdown" -}}
+{{/* dot is a dict with ID, Title, Head, Rows, Currency and Empty. */}}
+<section class="admin-section" aria-labelledby="{{ .ID }}-title">
+  <div class="data-table-header"><h2 class="data-table-title" id="{{ .ID }}-title">{{ .Title }}{{ template "usage_counter" (len .Rows) }}</h2></div>
+  {{ $cur := .Currency }}
+  {{ with .Rows }}
+  <div class="table-scroll" tabindex="0" role="region" aria-label="{{ $.Title }} table">
+    <table class="data-table usage-table" aria-labelledby="{{ $.ID }}-title">
+      <thead>
+        <tr><th scope="col">{{ $.Head }}</th><th scope="col" class="col-num">Calls</th><th scope="col" class="col-num hide-narrow">Failed</th><th scope="col" class="col-num hide-narrow">Tokens in</th><th scope="col" class="col-num hide-narrow">Tokens out</th><th scope="col" class="col-num hide-narrow">Avg duration</th><th scope="col" class="col-num">Cost</th></tr>
+      </thead>
+      <tbody>
+        {{ range . }}
+        <tr>
+          <th scope="row"><span class="cell-main"><span class="cell-title">{{ breakable .Label }}</span>{{ with .Sub }}<span class="cell-sub">{{ breakable . }}</span>{{ end }}</span></th>
+          <td class="col-num">{{ usageNum .Calls }}</td>
+          <td class="col-num hide-narrow">{{ usageNum .Errors }}</td>
+          <td class="col-num hide-narrow">{{ usageTokens .InputTokens }}</td>
+          <td class="col-num hide-narrow">{{ usageTokens .OutputTokens }}</td>
+          <td class="col-num hide-narrow">{{ usageDuration .AvgDurationMs }}</td>
+          <td class="col-num col-cost">{{ usageMoney .Cost $cur }}</td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+  {{ else }}
+  {{ template "usage_empty" dict "Title" $.Empty "Text" "" }}
+  {{ end }}
+</section>
+{{- end -}}
+
+{{- define "usage_calls" -}}
+{{/* dot is a dict with ID, Title, Calls, Empty and Mine. Mine shows the note
+     of each call instead of the person. */}}
+<section class="admin-section" aria-labelledby="{{ .ID }}-title">
+  <div class="data-table-header"><h2 class="data-table-title" id="{{ .ID }}-title">{{ .Title }}{{ template "usage_counter" (len .Calls) }}</h2></div>
+  {{ with .Calls }}
+  <div class="table-scroll" tabindex="0" role="region" aria-label="{{ $.Title }} table">
+    <table class="data-table usage-table" aria-labelledby="{{ $.ID }}-title">
+      <thead>
+        <tr><th scope="col">Call</th><th scope="col" class="hide-narrow">{{ if $.Mine }}Note{{ else }}Person{{ end }}</th><th scope="col" class="hide-narrow">Model</th><th scope="col" class="col-num">Tokens</th><th scope="col" class="col-num hide-narrow">Duration</th><th scope="col">Status</th></tr>
+      </thead>
+      <tbody>
+        {{ range . }}
+        <tr>
+          <th scope="row">
+            <span class="cell-main">
+              <span class="cell-title">{{ breakable (orDefault .Feature "Unlabelled") }}</span>
+              <span class="cell-sub">{{ timeAgo .CreatedAt }}{{ with .PluginID }} · {{ breakable . }}{{ end }}</span>
+              {{ with .Error }}<span class="inline-message inline-message-critical usage-call-error" data-size="small"><span class="inline-message-icon" aria-hidden="true">{{ octicon "alert-fill" 16 }}</span><span>{{ breakable (truncate 160 .) }}</span></span>{{ end }}
+            </span>
+          </th>
+          <td class="hide-narrow">{{ if $.Mine }}{{ if .NoteTitle }}<a href="/n/{{ .NoteID }}">{{ .NoteTitle }}</a>{{ else if .NoteID }}<span class="cell-muted">Not available</span>{{ end }}{{ else }}{{ .Person }}{{ end }}</td>
+          <td class="col-nowrap hide-narrow">{{ .Model }}</td>
+          <td class="col-num">{{ usageTokens (usageSum .InputTokens .OutputTokens) }}{{ if .Estimated }} <span class="cell-muted">estimated</span>{{ end }}</td>
+          <td class="col-num hide-narrow">{{ usageDuration .DurationMs }}</td>
+          <td class="col-nowrap">{{ template "usage_status" . }}</td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+  {{ else }}
+  {{ template "usage_empty" dict "Title" $.Empty "Text" "" }}
+  {{ end }}
+</section>
+{{- end -}}

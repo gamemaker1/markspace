@@ -1,0 +1,314 @@
+/* Administration pages (docs/primer.md 5.2, 6 and 7): the SplitPageLayout pane
+   with its NavList, the page frame, DataTable helpers, Dialog sources and
+   hit areas, then the rules of each page. */
+
+/* ---------- SplitPageLayout pane and NavList ---------- */
+
+.split-nav { display: flex; flex-direction: column; gap: var(--base-size-8); min-width: 0; }
+/* The admin NavList stacks its items with a 2px gap. components.css holds the
+   NavList items. */
+.split-nav .nav-list { display: flex; flex-direction: column; gap: 2px; padding-inline: var(--base-size-8); }
+
+/* On coarse pointers the items take the 40px narrow size with a 4px gap, so
+   each 44px hit area stays clear of its neighbours (docs/primer.md 5.1 NavList). */
+@media (pointer: coarse) {
+  .split-nav .nav-list { gap: var(--base-size-4); }
+  .split-nav .nav-list-item { min-height: var(--control-large-size); padding-block: 10px; }
+}
+
+.split-nav-title { margin: var(--base-size-8) 0 0; padding: 6px var(--base-size-16); font-size: var(--text-body-size-small); font-weight: var(--base-text-weight-semibold); line-height: 18px; color: var(--fgColor-muted); }
+
+/* ---------- Page frame ---------- */
+
+.admin-page { display: flex; flex-direction: column; gap: var(--base-size-24); min-width: 0; max-width: 1012px; }
+.admin-page > .page-header { margin-bottom: 0; }
+.admin-page .page-header-title:focus { outline: none; }
+.admin-page > section, .admin-page > form { min-width: 0; }
+.admin-index { display: none; }
+/* Absolutely positioned hidden text inside a table, such as the "Actions"
+   header, would otherwise widen the page past its scroll region. */
+:is(.admin-page, .usage-page) .table-scroll { position: relative; }
+.admin-section { display: flex; flex-direction: column; gap: var(--base-size-8); min-width: 0; }
+.admin-section > .section-heading { margin: 0; }
+
+/* A DataTable header names the table. Actions sit at the end. */
+.data-table-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--base-size-8); min-width: 0; }
+.data-table-titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.data-table-title { display: flex; align-items: center; gap: var(--base-size-8); margin: 0; font-size: var(--text-body-size-medium); font-weight: var(--base-text-weight-semibold); line-height: 20px; }
+.data-table-subtitle { margin: 0; font-size: var(--text-body-size-small); color: var(--fgColor-muted); }
+.data-table-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-8); }
+.data-table th[scope="row"] { font-weight: var(--base-text-weight-semibold); }
+/* Row headers break long emails, URLs and ids only at the <wbr> points the
+   breakable template function adds, never inside a word (docs/primer.md 5.9). */
+.data-table th[scope="row"] :is(.cell-title, .cell-sub) { overflow-wrap: normal; }
+/* A row header with an avatar and a second line starts at the top, and the
+   32px avatar centres on the 20px name line (docs/primer.md 5.2 DataTable, row
+   Cells). The -6px block margins keep the row height set by the text. */
+.data-table th[scope="row"] .cell-ident:has(> .cell-main > .cell-sub) { align-items: flex-start; }
+.data-table th[scope="row"] .cell-ident:has(> .cell-main > .cell-sub) > .avatar { margin-block: -6px; }
+.data-table th[scope="row"] .cell-ident .cell-title { line-height: 20px; }
+.data-table .col-actions .row-menu-btn { vertical-align: middle; }
+
+/* A form saved without a page change shows an InlineMessage beside Save. */
+.form-block-actions .inline-message, .dialog-source-footer .inline-message { align-self: center; }
+
+/* ---------- Dialog sources ---------- */
+
+/* A Dialog source opens in a Primer Dialog through admin.js. Without the
+   script the server renders it open in the page. */
+.dialog-source:not([hidden]) { padding: var(--base-size-16); border: var(--borderWidth-thin) solid var(--borderColor-default); border-radius: var(--borderRadius-medium); }
+.dialog-source > form, .dialog-source-body > form { display: flex; flex-direction: column; gap: var(--stack-gap-normal); min-width: 0; margin: 0; }
+.dialog-source-heading { margin: 0; font: var(--text-title-shorthand-small); }
+.dialog-source-footer { display: flex; flex-direction: row-reverse; flex-wrap: wrap; justify-content: flex-end; gap: var(--base-size-8); }
+.dialog-source-body .dialog-source-heading { display: none; }
+
+/* ---------- Narrow viewports ---------- */
+
+@media (max-width: calc(48rem - 0.02px)) {
+  .admin-index { display: flex; }
+  .admin-page { gap: var(--base-size-16); }
+  .data-table .hide-narrow { display: none; }
+  .admin-page .page-header-actions .btn, .admin-page .form-block-actions .btn { height: var(--control-large-size); }
+}
+
+/* ---------- Overview, users and settings ---------- */
+
+/* Primer data display: Box tiles with the value above its label. */
+.admin-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--base-size-16); margin: 0; }
+.admin-stats .tile { flex-direction: column-reverse; gap: var(--base-size-4); min-width: 0; margin: 0; }
+.admin-stats dd { margin: 0; overflow-wrap: anywhere; }
+.admin-stats-note { margin: 0; font-size: var(--text-body-size-medium); color: var(--fgColor-muted); }
+
+.admin-search { display: flex; flex: 1 1 260px; gap: var(--base-size-8); max-width: 380px; margin: 0; }
+.admin-search .text-input { flex: 1 1 auto; }
+.admin-users-table .cell-title { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-4); }
+.admin-narrow-only { display: none; }
+.dialog-source-body [data-dialog-error] { display: none; }
+.field-short input { max-width: 104px; }
+.admin-checkbox-group { display: flex; flex-direction: column; gap: var(--base-size-8); }
+.admin-checkbox-group > legend { margin-bottom: var(--base-size-8); }
+.settings-form .form-block-actions { padding-top: var(--base-size-8); }
+
+@media (max-width: calc(48rem - 0.02px)) {
+  .admin-wide-only { display: none; }
+  .admin-narrow-only { display: inline-flex; }
+  .cell-sub.admin-narrow-only { display: block; }
+  .admin-search { flex-basis: 100%; max-width: none; }
+  .admin-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--base-size-8); }
+  .admin-page .page-header-actions .icon-btn { width: var(--control-large-size); height: var(--control-large-size); }
+  /* A checkbox with a caption stays on the first line of its label. */
+  :is(.admin-page, .dialog) .form-control-horizontal:has(.form-caption) { align-items: flex-start; }
+  :is(.admin-page, .dialog) .form-control-horizontal:has(.form-caption) > input { margin-top: 2px; }
+  /* Text inputs and selects reach the 44px target on narrow viewports. */
+  :is(.admin-page, .dialog) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select) { min-height: var(--control-minTarget-coarse); }
+  :is(.admin-page, .dialog) .text-input:has(> input) { min-height: var(--control-minTarget-coarse); }
+}
+
+/* ---------- AI: tasks, models and providers ---------- */
+
+.ai-page { display: flex; flex-direction: column; gap: var(--base-size-32); min-width: 0; }
+.ai-page [hidden], .ai-provider-form [hidden], .ai-price-form [hidden] { display: none !important; }
+
+/* Tasks: a Box of rows. The whole summary row toggles its editor. */
+.ai-task-list { margin: 0; }
+.ai-task { min-width: 0; border-top: var(--borderWidth-thin) solid var(--borderColor-muted); }
+.ai-task:first-child { border-top: 0; }
+.ai-task-details > summary { list-style: none; }
+.ai-task-details > summary::-webkit-details-marker { display: none; }
+
+.ai-task-summary {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto) 16px; align-items: center; gap: var(--base-size-8) var(--base-size-12);
+  min-height: 44px; padding: var(--base-size-12) var(--base-size-16); cursor: pointer; border-radius: inherit;
+}
+
+@media (hover: hover) {
+  .ai-task-summary:hover { background-color: var(--control-transparent-bgColor-hover); }
+}
+
+.ai-task-summary:focus-visible { outline: var(--focus-outline-width) solid var(--focus-outlineColor); outline-offset: -2px; }
+.ai-task-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ai-task-title { font-size: var(--text-body-size-medium); font-weight: var(--base-text-weight-semibold); line-height: 20px; color: var(--fgColor-default); }
+.ai-task-hint { font-size: var(--text-body-size-small); line-height: 18px; color: var(--fgColor-muted); }
+.ai-tokens { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--base-size-4); min-width: 0; max-width: 480px; }
+.ai-token { max-width: 220px; }
+.ai-token.is-missing { color: var(--fgColor-danger); border-color: var(--borderColor-danger-emphasis); background-color: transparent; }
+.ai-tokens-empty { font-size: var(--text-body-size-small); color: var(--fgColor-muted); }
+.ai-task-chevron { display: flex; color: var(--fgColor-muted); }
+.ai-chevron-open, .ai-task-details[open] .ai-chevron-closed { display: none; }
+.ai-task-details[open] .ai-chevron-open { display: flex; }
+.ai-task-body { display: flex; flex-direction: column; gap: var(--base-size-16); min-width: 0; padding: var(--base-size-4) var(--base-size-16) var(--base-size-16); }
+.ai-instance { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-8); margin: 0; font-size: var(--text-body-size-medium); }
+.ai-instance-label { color: var(--fgColor-muted); }
+.ai-instance .ai-tokens { justify-content: flex-start; }
+
+/* The route editor: an ordered Box of targets with a drag handle and an
+   ActionMenu per target, then Save and Cancel. */
+.ai-route-form { display: flex; flex-direction: column; gap: var(--base-size-12); min-width: 0; max-width: 640px; margin: 0; }
+.ai-route-head { display: flex; flex-direction: column; gap: var(--base-size-4); }
+.ai-route-title { margin: 0; font-size: var(--text-body-size-medium); font-weight: var(--base-text-weight-semibold); line-height: 20px; }
+.ai-targets { margin: 0; padding: 0; list-style: none; background-color: var(--bgColor-default); border: var(--borderWidth-thin) solid var(--borderColor-default); border-radius: var(--borderRadius-medium); }
+.ai-targets:not(:has(.ai-target)) { display: none; }
+.ai-target { position: relative; display: flex; align-items: center; gap: var(--base-size-8); min-width: 0; padding: var(--base-size-8); border-top: var(--borderWidth-thin) solid var(--borderColor-muted); }
+.ai-target:first-child { border-top: 0; border-radius: var(--borderRadius-medium) var(--borderRadius-medium) 0 0; }
+.ai-target:last-child { border-radius: 0 0 var(--borderRadius-medium) var(--borderRadius-medium); }
+.ai-target.is-dragging { z-index: 1; background-color: var(--bgColor-muted); box-shadow: var(--shadow-floating-small); }
+.ai-drag { display: flex; flex: none; align-items: center; justify-content: center; width: 24px; height: var(--control-medium-size); color: var(--fgColor-muted); cursor: grab; touch-action: none; border-radius: var(--borderRadius-medium); }
+.ai-target.is-dragging .ai-drag { cursor: grabbing; }
+.ai-target-rank { flex: none; }
+.ai-target-main { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; }
+.ai-target-name { font-size: var(--text-body-size-medium); font-weight: var(--base-text-weight-semibold); line-height: 20px; overflow-wrap: anywhere; }
+.ai-target-sub { font-size: var(--text-body-size-small); line-height: 18px; color: var(--fgColor-muted); overflow-wrap: anywhere; }
+.ai-target.is-missing .ai-target-sub { color: var(--fgColor-danger); }
+.ai-target-actions, .ai-target-fallback { display: flex; flex: none; flex-wrap: wrap; justify-content: flex-end; gap: var(--base-size-4); }
+.ai-targets-empty { margin: 0; font-size: var(--text-body-size-medium); color: var(--fgColor-muted); }
+.ai-add-fallback { display: flex; flex-direction: column; gap: var(--base-size-4); }
+.ai-add-row { display: flex; flex-wrap: wrap; gap: var(--base-size-8); }
+.ai-add-row .select-box { flex: 1 1 240px; width: auto; min-width: 0; }
+.ai-route-actions { padding-top: 0; }
+.ai-route-message:empty { display: none; }
+.ai-route-message > * { margin: 0; }
+.ai-reset-form { margin: 0; }
+
+/* Models: filters above a DataTable. */
+.ai-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--base-size-12); margin: 0; }
+.ai-filters .form-control { flex: 0 1 200px; min-width: 0; }
+.ai-filters .ai-filter-name { flex: 1 1 240px; }
+.ai-model-row.is-unavailable td, .ai-model-row.is-unavailable .cell-title { color: var(--fgColor-muted); }
+.ai-mods { display: inline-flex; align-items: center; gap: var(--base-size-4); color: var(--fgColor-muted); white-space: nowrap; }
+.ai-mod, .ai-mods-arrow { display: inline-flex; color: var(--fgColor-muted); }
+.ai-mods-arrow svg { width: 12px; height: 12px; }
+.ai-enabled-cell { white-space: nowrap; }
+/* Hidden header text is absolutely positioned. The region contains it, so it cannot widen the page. */
+.ai-page .table-scroll { position: relative; }
+.ai-model-table th[scope="row"], .ai-provider-table th[scope="row"] { min-width: 10rem; }
+.ai-model-table .cell-sub { overflow-wrap: anywhere; }
+.ai-toggle-form { display: inline-flex; align-items: center; gap: var(--base-size-8); margin: 0; }
+.ai-provider-table .inline-message { margin-top: var(--base-size-4); }
+.ai-index form { margin: 0; }
+
+/* Provider and price forms inside their Dialogs. */
+.ai-provider-form .ai-presets, .ai-provider-form .ai-checks { display: flex; flex-direction: column; gap: var(--base-size-8); }
+.ai-provider-form legend { margin-bottom: var(--base-size-4); }
+.ai-price-form { display: flex; flex-direction: column; gap: var(--stack-gap-normal); margin: 0; }
+
+@media (max-width: calc(48rem - 0.02px)) {
+  .ai-task-summary { grid-template-columns: minmax(0, 1fr) 16px; }
+  .ai-task-summary > .ai-tokens { grid-column: 1 / -1; grid-row: 2; justify-content: flex-start; max-width: none; }
+  .ai-task-chevron { grid-column: 2; grid-row: 1; }
+  .ai-token { max-width: 100%; }
+  .ai-filters .form-control, .ai-filters .ai-filter-name { flex: 1 1 100%; }
+  .ai-drag { width: 44px; height: 44px; }
+  .ai-add-row .btn, .ai-route-actions .btn, .ai-target-fallback .btn { height: var(--control-large-size); }
+  .ai-page .btn::before, .dialog .btn::before {
+    content: ""; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%;
+    min-width: var(--control-minTarget-coarse); min-height: var(--control-minTarget-coarse); transform: translate(-50%, -50%);
+  }
+  .ai-page .toggle-switch-track { overflow: visible; }
+  .ai-page .toggle-switch-track::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: var(--control-minTarget-coarse); transform: translateY(-50%); }
+  .ai-page .toggle-switch-icons, .ai-page .toggle-switch-knob { clip-path: inset(0 round 4px); }
+}
+
+/* ---------- Plugins ---------- */
+
+.plugins-page { display: flex; flex-direction: column; gap: var(--base-size-24); min-width: 0; }
+.plugins-page > .page-header { margin-bottom: 0; }
+.plugins-page .page-header-title:focus { outline: none; }
+.plugins-page > .banner { margin: 0; }
+.plugin-table th[scope="row"] { min-width: 12rem; white-space: normal; }
+.plugin-name { display: block; font-size: var(--text-body-size-medium); }
+.plugin-sub { display: block; font-weight: var(--base-text-weight-normal); color: var(--fgColor-muted); overflow-wrap: anywhere; }
+.plugin-row-message { margin-top: var(--base-size-4); font-weight: var(--base-text-weight-normal); overflow-wrap: anywhere; }
+.plugin-row-message code { font-size: inherit; }
+.plugin-pending { display: flex; flex-direction: column; align-items: flex-start; gap: var(--base-size-4); }
+.plugin-pending .btn { margin-top: var(--base-size-4); }
+
+/* Dialog content. A source that opened on load stays in the page while its
+   content sits in the Dialog, so the empty source hides. */
+.plugins-page > .dialog-source:empty { display: none; }
+.dialog-source-body .plugin-dialog-error { display: none; }
+.plugin-dialog-error { margin: 0; }
+.plugin-grants, .plugin-secrets, .plugin-settings, .plugin-data-choice { display: flex; flex-direction: column; gap: var(--stack-gap-normal); }
+/* A legend is not a flex item, so its margin sets the space above the first field. */
+.plugin-grants > legend, .plugin-secrets > legend, .plugin-settings > legend, .plugin-data-choice > legend { margin-bottom: var(--base-size-8); }
+.plugin-fieldset-caption { margin-top: calc(-1 * var(--base-size-4)); }
+.plugin-data-choice { gap: var(--base-size-8); }
+.plugin-data-choice .form-control-horizontal { align-items: center; }
+.plugin-data-choice .form-control-horizontal > input { margin-top: 0; }
+.plugin-data-choice .form-control-horizontal > .form-label { align-self: center; }
+.plugin-confirm-body, .plugin-manifest-head p, .plugin-review-none { margin: 0; font-size: var(--text-body-size-medium); }
+.plugin-manifest-head { display: flex; flex-direction: column; gap: var(--base-size-4); }
+.plugin-manifest-desc, .plugin-manifest-meta { color: var(--fgColor-muted); overflow-wrap: anywhere; }
+.plugin-manifest-meta { font-size: var(--text-body-size-small) !important; }
+.plugin-review { display: flex; flex-direction: column; gap: var(--base-size-8); }
+.plugin-review-heading { margin: 0; font: var(--text-title-shorthand-small); }
+.plugin-permissions { margin: 0; padding: 0; list-style: none; border: var(--borderWidth-thin) solid var(--borderColor-default); border-radius: var(--borderRadius-medium); }
+.plugin-permissions li { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: var(--base-size-12); padding: var(--base-size-8) var(--base-size-16); font-size: var(--text-body-size-medium); border-top: var(--borderWidth-thin) solid var(--borderColor-muted); }
+.plugin-permissions li:first-child { border-top: 0; }
+.plugin-permissions code { font-size: var(--text-body-size-small); overflow-wrap: anywhere; }
+.plugin-review-list .info-row dd code { font-size: var(--text-body-size-small); }
+.plugin-credential .text-input { width: 100%; }
+
+@media (max-width: calc(48rem - 0.02px)) {
+  .plugin-table th[scope="row"] { min-width: 9rem; }
+  .plugin-table .row-menu-btn::before, .plugin-credential .text-input-action::before {
+    content: ""; position: absolute; top: 50%; left: 50%; width: var(--control-minTarget-coarse); height: var(--control-minTarget-coarse); transform: translate(-50%, -50%);
+  }
+  .plugin-pending .btn { height: var(--control-large-size); }
+  .plugin-permissions li { grid-template-columns: minmax(0, 1fr); gap: var(--base-size-4); }
+}
+
+/* Jobs, older rules */
+.jobs-page > .tabs { margin-bottom: 0; }
+.job-title { white-space: normal; }
+.job-progress-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.job-progress { flex: 1 1 12rem; min-width: 0; max-width: 24rem; height: 8px; accent-color: var(--bgColor-accent-emphasis); }
+
+@media (max-width: 600px) {
+  .data-table.is-stacked tr.plugin-row { padding-bottom: 0; border-bottom: 0; }
+  .data-table.is-stacked tr.plugin-actions-row { display: block; padding: var(--space-2) 0 12px; }
+  .data-table.is-stacked tr.plugin-actions-row > td { display: block; padding: 0; }
+  .plugin-setting.check, .plugin-uninstall-choice .check { display: flex; align-items: center; min-height: 44px; }
+  .job-log-toggle { min-width: 44px; justify-content: center; }
+}
+
+/* ---------- Jobs ---------- */
+
+.jobs-page { display: flex; flex-direction: column; gap: var(--base-size-16); min-width: 0; max-width: 1012px; }
+.jobs-page > .page-header { margin-bottom: 0; }
+.jobs-page .page-header-title:focus { outline: none; }
+.jobs-banners:empty { display: none; }
+.jobs-banners .banner { margin: 0; }
+.jobs-views.tabs { margin-bottom: 0; }
+.jobs-table th[scope="row"] { min-width: 14rem; white-space: normal; }
+.jobs-table .job-message { white-space: normal; }
+.job-progress-inline { display: none; font-variant-numeric: tabular-nums; }
+.job-progress-inline:empty { display: none !important; }
+.job-progress { display: flex; align-items: center; gap: var(--base-size-8); min-width: 10rem; }
+.job-progress .progress-bar { flex: 1 1 6rem; min-width: 4rem; }
+.job-progress .spinner { color: var(--fgColor-muted); }
+.job-progress-text { font-size: var(--text-body-size-small); color: var(--fgColor-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.job-log-body { min-height: 64px; }
+.job-log-body > .spinner { display: flex; margin: var(--base-size-16) auto; color: var(--fgColor-muted); }
+.job-log-error { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-8); }
+.job-log-list { margin: 0; padding: 0; list-style: none; font-family: var(--fontStack-monospace); font-size: var(--text-body-size-small); line-height: 20px; }
+.job-log-line { display: grid; grid-template-columns: auto 4rem minmax(0, 1fr); gap: var(--base-size-8); padding-block: var(--base-size-4); border-top: var(--borderWidth-thin) solid var(--borderColor-muted); }
+.job-log-line:first-child { border-top: 0; }
+.job-log-time, .job-log-level { color: var(--fgColor-muted); }
+.job-log-level[data-level="error"] { color: var(--fgColor-danger); }
+.job-log-level[data-level="warn"] { color: var(--fgColor-attention); }
+.job-log-message { white-space: pre-wrap; overflow-wrap: anywhere; }
+.job-log-empty { margin: 0; font-size: var(--text-body-size-medium); color: var(--fgColor-muted); }
+.job-log-section .job-log-list { padding: var(--base-size-8) var(--base-size-16); border: var(--borderWidth-thin) solid var(--borderColor-default); border-radius: var(--borderRadius-medium); }
+
+@media (max-width: calc(48rem - 0.02px)) {
+  .jobs-views .tab::before { content: ""; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; min-width: var(--control-minTarget-coarse); min-height: var(--control-minTarget-coarse); transform: translate(-50%, -50%); }
+  .jobs-table :is(.row-menu-btn, .btn)::before {
+    content: ""; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%;
+    min-width: var(--control-minTarget-coarse); min-height: var(--control-minTarget-coarse); transform: translate(-50%, -50%);
+  }
+  .jobs-table th[scope="row"] { min-width: 9rem; }
+  .job-progress-inline { display: block; }
+  .job-progress { min-width: 7rem; }
+  .job-log-line { grid-template-columns: auto minmax(0, 1fr); }
+  .job-log-message { grid-column: 1 / -1; }
+}

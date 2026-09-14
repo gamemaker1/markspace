@@ -1,0 +1,242 @@
+{{- define "layout" -}}
+<!DOCTYPE html>
+<html lang="en" data-color-mode="auto" data-light-theme="light" data-dark-theme="dark">
+<head>
+{{ template "head" . }}
+<title>{{ block "title" . }}{{ orDefault .Title .InstanceName }}{{ end }} &middot; {{ .InstanceName }}</title>
+</head>
+<body class="{{ if .Chrome }}app{{ else }}plain{{ end }}"
+  {{- with .User }} data-user-id="{{ .ID }}"{{ end }}
+  {{- with .Space }} data-space-id="{{ .ID }}" data-space-slug="{{ .Slug }}"{{ end }}
+  {{- with .Note }} data-note-id="{{ .ID }}" data-note-updated="{{ stamp .UpdatedAt }}"{{ end }}>
+<a class="skip-link" href="#main">Skip to content</a>
+{{ if and .Chrome .Space }}<a class="skip-link" href="#sidebar-footer">Skip page tree</a>{{ end }}
+<div id="status-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true" data-status-region></div>
+{{ if .Chrome }}
+<div class="app-frame server-frame">
+  {{ template "topbar" . }}
+  <div class="app-layout">
+    <div class="sidebar" id="sidebar" data-sidebar>
+      {{/* On narrow viewports the sidebar is a left side sheet. app.js makes it
+           a modal dialog named by this header while it is open. */}}
+      <div class="dialog-header sidebar-sheet-header">
+        <div class="dialog-title-block"><h2 class="dialog-title" id="sidebar-sheet-title">Navigation</h2></div>
+        <button class="btn btn-invisible btn-icon dialog-close" type="button" data-sidebar-close aria-label="Close"><span class="btn-visual" aria-hidden="true">{{ octicon "x" 16 }}</span></button>
+      </div>
+      <div class="sidebar-inner" role="region" aria-label="Sidebar">
+        {{ block "sidebar" . }}{{ template "app_sidebar" . }}{{ end }}
+      </div>
+    </div>
+    <div class="scrim" data-scrim></div>
+    <div class="app-content">
+      <main class="main" id="main" tabindex="-1">
+        <div class="page{{ if .Note }} page-note{{ end }}">
+          {{ template "flash" . }}
+          {{ template "content" . }}
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+{{ template "quickopen" . }}
+{{ else }}
+<main class="plain-main" id="main" tabindex="-1">
+  {{ template "flash" . }}
+  {{ template "content" . }}
+</main>
+{{ end }}
+<script src="/static/app.js" defer></script>
+<script type="module" src="/static/js/boot.js"></script>
+{{ block "scripts" . }}{{ end }}
+</body>
+</html>
+{{- end -}}
+
+{{- define "head" -}}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="{{ .InstanceName }}">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/static/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="/static/vendor/primer/primitives-11.10.0.css">
+<link rel="stylesheet" href="/static/vendor/primer/light-11.10.0.css">
+<link rel="stylesheet" href="/static/vendor/primer/dark-11.10.0.css">
+<link rel="stylesheet" href="/static/theme.css">
+<link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="/static/css/components.css">
+<link rel="stylesheet" href="/static/css/forms.css">
+<link rel="stylesheet" href="/static/css/pages.css">
+<link rel="stylesheet" href="/static/css/markdown.css">
+<link rel="stylesheet" href="/static/css/shell.css">
+<link rel="stylesheet" href="/static/css/usage.css">
+<link rel="stylesheet" href="/static/css/admin.css">
+<link rel="stylesheet" href="/static/css/files.css">
+<link rel="stylesheet" href="/static/css/panels.css">
+<link rel="stylesheet" href="/static/css/settings.css">
+<link rel="stylesheet" href="/static/highlight.css">
+<script>
+(function () {
+  var theme = null, sidebar = null, rail = null;
+  try {
+    theme = window.localStorage.getItem("markspace.theme");
+    sidebar = window.localStorage.getItem("markspace.sidebar");
+    rail = window.localStorage.getItem("markspace.rail");
+  } catch (err) {
+    theme = null;
+  }
+  // The server renders data-color-mode="auto". A stored choice replaces it
+  // before first paint.
+  var root = document.documentElement;
+  if (theme === "dark" || theme === "light") {
+    root.setAttribute("data-color-mode", theme);
+  }
+  if (sidebar === "collapsed") {
+    root.setAttribute("data-sidebar", "collapsed");
+  }
+  if (rail === "collapsed") {
+    root.setAttribute("data-rail", "collapsed");
+  }
+})();
+</script>
+{{- end -}}
+
+{{- define "icon_sidebar" -}}
+<svg class="icon" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><rect x="2.75" y="3.75" width="14.5" height="12.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7.75 4v12" stroke="currentColor" stroke-width="1.5"/></svg>
+{{- end -}}
+
+{{- define "icon_search" -}}
+<svg class="icon" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="8.75" cy="8.75" r="5.25" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12.75 12.75 17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+{{- end -}}
+
+{{- define "icon_more" -}}
+<svg class="icon" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="4.5" cy="10" r="1.3" fill="currentColor"/><circle cx="10" cy="10" r="1.3" fill="currentColor"/><circle cx="15.5" cy="10" r="1.3" fill="currentColor"/></svg>
+{{- end -}}
+
+{{- define "icon_plus" -}}
+<svg class="icon" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false"><path d="M10 4.5v11M4.5 10h11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+{{- end -}}
+
+{{- define "icon_file" -}}
+<svg class="icon" viewBox="0 0 20 20" width="17" height="17" aria-hidden="true" focusable="false"><path d="M5 2.75h6.5L15.25 6.5v10.75H5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11.25 3v3.75H15" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+{{- end -}}
+
+{{- define "icon_device" -}}
+<svg class="icon" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><rect x="2.75" y="3.75" width="14.5" height="9.5" rx="1.75" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 16.25h6M10 13.25v3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+{{- end -}}
+
+{{- define "theme_switch" -}}
+{{/* The theme SegmentedControl of the account menu (docs/primer.md 2.3). Its
+     segments are menuitemradio items, so the menu keys reach them. app.js
+     marks the stored choice and applies a new one. */}}
+<div class="theme-switch">
+  <span class="theme-switch-label" id="theme-switch-label">Theme</span>
+  <ul class="segmented-control" role="group" aria-labelledby="theme-switch-label">
+    <li class="segmented-control-item" role="none"><button class="segmented-control-button" type="button" role="menuitemradio" aria-checked="false" tabindex="-1" aria-label="Light theme" data-tooltip="Light theme" data-theme-value="light"><span class="segmented-control-content"><span class="segmented-control-icon" aria-hidden="true">{{ octicon "sun" 16 }}</span></span></button></li>
+    <li class="segmented-control-item" role="none"><button class="segmented-control-button" type="button" role="menuitemradio" aria-checked="false" tabindex="-1" aria-label="Dark theme" data-tooltip="Dark theme" data-theme-value="dark"><span class="segmented-control-content"><span class="segmented-control-icon" aria-hidden="true">{{ octicon "moon" 16 }}</span></span></button></li>
+    <li class="segmented-control-item" role="none"><button class="segmented-control-button" type="button" role="menuitemradio" aria-checked="false" tabindex="-1" aria-label="Use system theme" data-tooltip="Use system theme" data-theme-value="system"><span class="segmented-control-content"><span class="segmented-control-icon" aria-hidden="true">{{ octicon "device-desktop" 16 }}</span></span></button></li>
+  </ul>
+</div>
+{{- end -}}
+
+{{- define "topbar" -}}
+<header class="app-header{{ if .Space }} has-space{{ end }}">
+  <div class="app-header-start">
+    <button class="btn btn-invisible btn-icon ms-regular-only" type="button" data-sidebar-toggle aria-expanded="true" aria-controls="sidebar" aria-label="Toggle sidebar" title="Toggle sidebar" aria-keyshortcuts="Control+\ Meta+\"><span class="btn-visual" aria-hidden="true">{{ octicon "sidebar-collapse" 16 }}</span></button>
+    <button class="btn btn-invisible btn-icon btn-lg ms-narrow-only" type="button" data-sidebar-toggle aria-expanded="false" aria-controls="sidebar" aria-label="Open navigation"><span class="btn-visual" aria-hidden="true">{{ octicon "three-bars" 16 }}</span></button>
+    <div class="app-header-context">
+      <a class="app-header-instance" href="/"><span class="app-header-context-text">{{ .InstanceName }}</span></a>
+      {{ with .Space }}<span class="app-header-separator" aria-hidden="true"></span><a class="app-header-space" href="{{ spaceURL . }}"><span class="app-header-context-text">{{ .Name }}</span></a>{{ end }}
+    </div>
+  </div>
+  <div class="app-header-end">
+    {{ if ne .Nav "search" }}
+    <a class="btn app-header-search ms-regular-only" href="/search{{ with .Space }}?space={{ .Slug }}{{ end }}" data-header-search><span class="btn-visual btn-leading" aria-hidden="true">{{ octicon "search" 16 }}</span><span class="btn-label">Search</span></a>
+    <a class="btn btn-invisible btn-icon btn-lg ms-narrow-only" href="/search{{ with .Space }}?space={{ .Slug }}{{ end }}" aria-label="Search" data-header-search><span class="btn-visual" aria-hidden="true">{{ octicon "search" 16 }}</span></a>
+    {{ end }}
+    {{ if and .Space (hasAccess .SpaceAccess "edit") }}
+    <form class="app-header-form" method="post" action="{{ spaceURL .Space }}">
+      <input type="hidden" name="action" value="note-create">
+      <button class="btn btn-primary ms-regular-only" type="submit"><span class="btn-visual btn-leading" aria-hidden="true">{{ octicon "plus" 16 }}</span><span class="btn-label">New page</span></button>
+      <button class="btn btn-primary btn-icon btn-lg ms-narrow-only" type="submit" aria-label="New page"><span class="btn-visual" aria-hidden="true">{{ octicon "plus" 16 }}</span></button>
+    </form>
+    {{ end }}
+    <button class="btn btn-invisible app-header-avatar" type="button" popovertarget="account-menu" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+      {{ template "avatar" dict "User" .User "Size" "sm" }}
+    </button>
+    <div class="action-menu" id="account-menu" popover data-action-menu>
+      <ul class="action-list" role="menu" aria-label="Account">
+        {{ with .User }}
+        <li class="action-list-group" role="none">
+          <span class="action-list-heading" id="account-menu-heading">{{ orDefault .Name .Email }}</span>
+          <ul class="action-list-group-list" role="group" aria-labelledby="account-menu-heading">
+            <li class="action-list-row" role="none"><a class="action-list-item" role="menuitem" href="/settings/profile"><span class="action-list-text"><span class="action-list-label">Settings</span></span></a></li>
+            {{ if $.IsAdmin }}<li class="action-list-row" role="none"><a class="action-list-item" role="menuitem" href="/admin"><span class="action-list-text"><span class="action-list-label">Administration</span></span></a></li>{{ end }}
+          </ul>
+        </li>
+        {{ end }}
+        <li class="action-list-divider" role="separator" aria-hidden="true"></li>
+        <li class="action-list-custom" role="none">{{ template "theme_switch" }}</li>
+        <li class="action-list-divider" role="separator" aria-hidden="true"></li>
+        <li class="action-list-row" role="none">
+          <form method="post" action="/logout"><button class="action-list-item is-danger" role="menuitem" type="submit"><span class="action-list-text"><span class="action-list-label">Sign out</span></span></button></form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+{{- end -}}
+
+{{- define "app_sidebar" -}}
+<nav class="nav-list" aria-labelledby="nav-main-heading">
+  <h2 class="sr-only" id="nav-main-heading">Main</h2>
+  <ul class="nav-list-items">
+    <li><a class="nav-list-item" href="/starred"{{ if eq .Nav "starred" }} aria-current="page"{{ end }}><span class="nav-list-visual" aria-hidden="true">{{ octicon "star" 16 }}</span><span class="nav-list-label">Starred</span></a></li>
+    <li><a class="nav-list-item" href="/recent"{{ if eq .Nav "recent" }} aria-current="page"{{ end }}><span class="nav-list-visual" aria-hidden="true">{{ octicon "clock" 16 }}</span><span class="nav-list-label">Recent</span></a></li>
+    <li><a class="nav-list-item" href="/shared"{{ if eq .Nav "shared" }} aria-current="page"{{ end }}><span class="nav-list-visual" aria-hidden="true">{{ octicon "people" 16 }}</span><span class="nav-list-label">Shared with me</span></a></li>
+  </ul>
+</nav>
+{{ with .Space }}
+<section class="sidebar-tree" aria-labelledby="pages-heading" data-tree-space="{{ .ID }}">
+  <div class="sidebar-section-head"><h2 class="sidebar-section-title" id="pages-heading">Pages</h2></div>
+  <div id="note-tree" class="tree-host" data-note-tree>
+    {{ template "tree" dict "Nodes" $.Tree "Space" . "Current" $.Note "Expanded" $.Expanded "Depth" 0 }}
+  </div>
+</section>
+<nav class="nav-list sidebar-footer" id="sidebar-footer" tabindex="-1" aria-labelledby="nav-space-heading">
+  <h2 class="sr-only" id="nav-space-heading">{{ .Name }}</h2>
+  <ul class="nav-list-items">
+    <li><a class="nav-list-item" href="{{ spaceURL . }}/trash"{{ if eq $.Nav "trash" }} aria-current="page"{{ end }}><span class="nav-list-visual" aria-hidden="true">{{ octicon "trash" 16 }}</span><span class="nav-list-label">Trash</span></a></li>
+    <li><a class="nav-list-item" href="{{ spaceURL . }}/settings"><span class="nav-list-visual" aria-hidden="true">{{ octicon "gear" 16 }}</span><span class="nav-list-label">Space settings</span></a></li>
+  </ul>
+</nav>
+{{ end }}
+<nav class="nav-list" aria-labelledby="nav-spaces-heading">
+  <h2 class="nav-list-heading" id="nav-spaces-heading">Spaces</h2>
+  <ul class="nav-list-items">
+    {{ range .Spaces }}
+    <li><a class="nav-list-item" href="{{ spaceURL . }}"{{ if and $.Space (eq .ID $.Space.ID) }} aria-current="page"{{ end }}><span class="nav-list-visual" aria-hidden="true">{{ octicon "file-directory-fill" 16 }}</span><span class="nav-list-label">{{ .Name }}</span></a></li>
+    {{ end }}
+    <li><a class="nav-list-item" href="/spaces"{{ if eq .Nav "spaces" }} aria-current="page"{{ end }}><span class="nav-list-visual" aria-hidden="true">{{ octicon "gear" 16 }}</span><span class="nav-list-label">Manage spaces</span></a></li>
+  </ul>
+</nav>
+{{- end -}}
+
+{{- define "quickopen" -}}
+<div class="quickopen" id="quickopen" hidden data-quickopen>
+  <div class="quickopen-box" role="dialog" aria-modal="true" aria-labelledby="quickopen-title">
+    <h1 class="sr-only" id="quickopen-title">Jump to</h1>
+    <div class="dialog-body">
+      <input type="search" class="form-control input-block quickopen-input" aria-label="Jump to a page" data-quickopen-input autocomplete="off">
+    </div>
+    <ul class="quickopen-results" data-quickopen-results role="listbox" aria-label="Results"></ul>
+    <p class="quickopen-hint">Arrow keys to choose, Enter to open, Escape to close.</p>
+  </div>
+</div>
+{{- end -}}

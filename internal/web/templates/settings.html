@@ -1,0 +1,14 @@
+{{ define "title" }}Settings{{ end }}
+{{ define "content" }}
+<div class="settings-page">
+{{ template "ui_page_header" dict "Title" "Settings" "Border" true }}
+<ul class="rows settings-index" role="list" aria-labelledby="page-title">
+  {{ template "ui_index_row" dict "Href" "/settings/profile" "Icon" "person" "Label" "Profile" "Description" "Your name, email address, colour and password." }}
+  {{ template "ui_index_row" dict "Href" "/settings/tokens" "Icon" "key" "Label" "API tokens" "Description" "Tokens that let scripts use your account." }}
+  {{ template "ui_index_row" dict "Href" "/settings/ai" "Icon" "sparkle" "Label" "AI preferences" "Description" "The models the AI features use for you." }}
+  {{ template "ui_index_row" dict "Href" "/settings/usage" "Icon" "report" "Label" "AI usage" "Description" "What your AI requests used and cost." }}
+  {{ template "ui_index_row" dict "Href" "/settings/offline" "Icon" "cloud-offline" "Label" "Offline files" "Description" "How much space files take in this browser." }}
+  {{ template "ui_index_row" dict "Href" "/settings/sessions" "Icon" "device-desktop" "Label" "Sessions" "Description" "Browsers and devices signed in to your account." }}
+</ul>
+</div>
+{{ end }}

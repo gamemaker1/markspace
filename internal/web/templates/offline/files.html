@@ -1,0 +1,50 @@
+{{ define "title" }}Offline files{{ end }}
+{{ define "sidebar" }}{{ template "settings_pane" . }}{{ end }}
+{{ define "content" }}
+<div class="settings-page">
+{{ template "ui_page_header" dict "Title" "Offline files" "Description" "Files you open or keep available offline are stored in this browser. Past the limit, the least recently opened files that are not kept offline are removed first." "Parent" "Settings" "ParentURL" "/settings" "Border" true }}
+
+<noscript>
+  <p class="inline-message inline-message-unavailable" data-size="medium"><span class="inline-message-icon" aria-hidden="true">{{ octicon "alert" 16 }}</span><span class="inline-message-text">Offline files need JavaScript in this browser.</span></p>
+</noscript>
+
+<div data-offline-files data-js-only hidden>
+  <div data-offline-unavailable hidden></div>
+
+  <section class="settings-section" aria-labelledby="offline-limit-title" data-offline-part>
+    <div class="settings-intro">
+      <h2 id="offline-limit-title">Storage</h2>
+      <p id="offline-usage" data-offline-usage>Reading usage</p>
+    </div>
+    <form class="settings-form" data-offline-budget-form novalidate>
+      <fieldset class="radio-group" aria-describedby="offline-usage">
+        <legend class="form-label">Storage limit</legend>
+        <div class="radio-group-options" data-offline-budget>
+          <label class="check"><input type="radio" name="budget" value="104857600"> 100 MB</label>
+          <label class="check"><input type="radio" name="budget" value="262144000"> 250 MB</label>
+          <label class="check"><input type="radio" name="budget" value="524288000"> 500 MB</label>
+          <label class="check"><input type="radio" name="budget" value="1073741824"> 1 GB</label>
+          <label class="check"><input type="radio" name="budget" value="2147483648"> 2 GB</label>
+          <label class="check"><input type="radio" name="budget" value="5368709120"> 5 GB</label>
+        </div>
+      </fieldset>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Save limit</button>
+        <span class="form-actions-message" data-offline-saved></span>
+      </div>
+    </form>
+  </section>
+
+  <section class="settings-section" aria-labelledby="offline-clear-title" data-offline-part>
+    <div class="settings-intro">
+      <h2 id="offline-clear-title">Stored files</h2>
+      <p>Clearing removes every stored file from this browser. A file downloads again the next time you open it.</p>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-danger" type="button" data-offline-clear>Clear offline files</button>
+    </div>
+  </section>
+</div>
+</div>
+{{ end }}
+{{ define "scripts" }}<script type="module" src="/static/js/preferences.js"></script>{{ end }}

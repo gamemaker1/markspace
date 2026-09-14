@@ -1,0 +1,80 @@
+{{ define "title" }}{{ with .Get "Search" }}{{ . }} &middot; {{ end }}Search{{ end }}
+{{ define "content" }}
+{{ $q := .Get "Search" }}{{ $mode := .Get "Mode" }}{{ $spaceFilter := .Get "SpaceFilter" }}{{ $tagFilter := .Get "TagFilter" }}
+<div class="browse-page search-page">
+{{ template "ui_page_header" dict "Title" "Search" "Border" true }}
+<form class="search-page-form" method="get" action="/search" role="search" aria-label="Search notes">
+  <input type="hidden" name="mode" value="{{ $mode }}">
+  <div class="form-control field">
+    <label class="form-label" for="search-q">Search for</label>
+    <span class="text-input text-input-lg text-input-block has-leading-visual">
+      <span class="text-input-visual" aria-hidden="true">{{ octicon "search" 16 }}</span>
+      <input class="text-input-control" id="search-q" type="search" name="q" value="{{ $q }}"{{ if not $q }} autofocus{{ end }}>
+    </span>
+  </div>
+  <div class="search-filters-row">
+    <div class="form-control field">
+      <label class="form-label" for="search-space">Space</label>
+      <span class="text-input select-box text-input-block">
+        <select class="text-input-control" id="search-space" name="space">
+          <option value="">All spaces</option>
+          {{ range .Spaces }}<option value="{{ .Slug }}"{{ if eq .Slug $spaceFilter }} selected{{ end }}>{{ .Name }}</option>{{ end }}
+        </select>
+        <span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span>
+      </span>
+    </div>
+    <div class="form-control field">
+      <label class="form-label" for="search-tag">Tag</label>
+      {{ with .Get "Tags" }}
+      <span class="text-input select-box text-input-block">
+        <select class="text-input-control" id="search-tag" name="tag">
+          <option value="">Any tag</option>
+          {{ range . }}<option value="{{ .Tag }}"{{ if eq .Tag $tagFilter }} selected{{ end }}>#{{ .Tag }}</option>{{ end }}
+        </select>
+        <span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span>
+      </span>
+      {{ else }}
+      <input id="search-tag" type="text" name="tag" value="{{ $tagFilter }}" autocapitalize="off" spellcheck="false">
+      {{ end }}
+    </div>
+    <div class="search-submit"><button class="btn btn-primary" type="submit">Search</button></div>
+  </div>
+</form>
+
+<nav class="search-modes" aria-labelledby="search-modes-title">
+  <h2 class="sr-only" id="search-modes-title">Search mode</h2>
+  <ul class="tabs" role="list">
+    {{ range .Get "Modes" }}
+    <li><a class="tab" href="/search?q={{ $q }}&amp;mode={{ . }}&amp;space={{ $spaceFilter }}&amp;tag={{ $tagFilter }}"{{ if eq . $mode }} aria-current="page"{{ end }}>{{ if eq . "text" }}Text{{ else if eq . "semantic" }}Semantic{{ else }}Hybrid{{ end }}</a></li>
+    {{ end }}
+  </ul>
+</nav>
+
+{{ if $q }}
+<section class="search-results" aria-labelledby="results-title">
+  <h2 class="sr-only" id="results-title">Results</h2>
+  {{ with .Get "Hits" }}
+  <ol class="rows" role="list" aria-labelledby="results-title">
+    {{ range . }}{{ $snippet := .Snippet }}
+    {{ with .Note }}
+    <li>
+      <div class="note-row">
+        <span class="note-row-icon" aria-hidden="true">{{ with .Icon }}{{ . }}{{ else }}{{ octicon "note" 16 }}{{ end }}</span>
+        <div class="note-row-body">
+          <a class="note-row-link note-row-title" href="{{ noteURL . . }}">{{ .Title }}</a>
+          <span class="note-row-meta">{{ .SpaceSlug }}/{{ .Path }} &middot; Updated {{ timeAgo .UpdatedAt }}</span>
+          {{ with $snippet }}<span class="note-row-snippet search-snippet">{{ safeHTML . }}</span>{{ end }}
+        </div>
+      </div>
+    </li>
+    {{ end }}
+    {{ end }}
+  </ol>
+  {{ template "pagination" ($.Get "Pagination") }}
+  {{ else }}
+  {{ template "ui_blankslate" dict "Icon" "search" "Title" (printf "No notes match “%v”" $q) "Description" "Try other words, another search mode or fewer filters." }}
+  {{ end }}
+</section>
+{{ end }}
+</div>
+{{ end }}

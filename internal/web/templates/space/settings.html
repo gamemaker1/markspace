@@ -1,0 +1,177 @@
+{{ define "title" }}{{ with .Space }}{{ .Name }}{{ end }} settings{{ end }}
+{{ define "content" }}
+{{ $action := printf "%s/settings" (spaceURL .Space) }}
+{{ $manage := hasAccess .SpaceAccess "manage" }}
+<div class="settings-page">
+{{ with .Space }}{{ template "ui_page_header" dict "Title" (printf "%s settings" .Name) "Border" true }}{{ end }}
+
+{{ with .Space }}
+{{ if $manage }}
+<section class="settings-section" id="details" aria-labelledby="details-title">
+  <div class="settings-intro">
+    <h2 id="details-title">Details</h2>
+    <p>The name and icon show in the sidebar for every member.</p>
+  </div>
+  <form method="post" action="{{ $action }}" class="settings-form" novalidate data-unsaved>
+    {{ template "ui_error_summary" dict "P" $ "Form" "details" }}
+    {{ template "ui_form_message" dict "P" $ "Form" "details" }}
+    <input type="hidden" name="action" value="update">
+    <div class="field-row">
+      {{ template "ui_text_field" dict "P" $ "Form" "details" "Field" "name" "Label" "Name" "Value" ($.FormValue "details" "name" .Name) "Required" true "Autocomplete" "off" }}
+      {{ template "ui_text_field" dict "P" $ "Form" "details" "Field" "icon" "Label" "Icon" "Value" ($.FormValue "details" "icon" .Icon) "Class" "field-icon" "Maxlength" "8" "Autocomplete" "off" }}
+    </div>
+    {{ $descErr := $.FormError "details" "description" }}
+    <div class="form-control field{{ if $.FormInline "details" "description" }} has-error{{ end }}">
+      <label class="form-label" for="details-description">Description</label>
+      <textarea id="details-description" name="description" rows="3"{{ if $descErr }} aria-invalid="true" aria-describedby="details-description-error"{{ end }}>{{ $.FormValue "details" "description" .Description }}</textarea>
+      {{ template "ui_field_feedback" dict "ID" "details-description" "Error" $descErr }}
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Save details</button>
+      {{ template "ui_saved_message" dict "P" $ "Form" "details" "Text" "Details saved" }}
+    </div>
+  </form>
+</section>
+{{ else }}
+<section class="settings-section" aria-labelledby="details-title">
+  <div class="settings-intro">
+    <h2 id="details-title">{{ .Name }}</h2>
+    {{ with .Description }}<p>{{ . }}</p>{{ end }}
+  </div>
+  <p class="settings-note">Your role is {{ roleLabel .MyRole }}. Owners and admins change these settings.</p>
+</section>
+{{ end }}
+{{ end }}
+
+{{ if $manage }}
+{{ $roles := .Get "Roles" }}
+{{ $members := .Get "Members" }}
+<section class="settings-section" id="members" aria-labelledby="members-title">
+  <div class="settings-intro">
+    <h2 id="members-title">Members{{ with $members }} <span class="counter-label" aria-hidden="true">{{ len . }}</span><span class="sr-only">({{ len . }})</span>{{ end }}</h2>
+    <p>Editors write notes, commenters comment, viewers read. Owners and admins also manage the space.</p>
+  </div>
+
+  {{ with .Q "removed" }}
+  <section class="banner banner-info" aria-labelledby="member-removed-title">
+    <div class="banner-icon" aria-hidden="true">{{ octicon "info" 16 }}</div>
+    <div class="banner-container">
+      <div class="banner-content"><h3 class="banner-title" id="member-removed-title">Member removed</h3></div>
+      <div class="banner-actions">
+        <form method="post" action="{{ $action }}">
+          <input type="hidden" name="action" value="member-add">
+          <input type="hidden" name="userId" value="{{ . }}">
+          <input type="hidden" name="role" value="{{ $.Q "role" }}">
+          <button class="btn btn-sm" type="submit">Undo</button>
+        </form>
+      </div>
+    </div>
+  </section>
+  {{ end }}
+
+  {{ with $members }}
+  <div class="table-scroll" role="region" tabindex="0" aria-label="Members table">
+    <table class="data-table settings-table" aria-labelledby="members-title">
+      <thead>
+        <tr><th scope="col">Person</th><th scope="col">Role</th><th scope="col" class="col-actions"><span class="sr-only">Actions</span></th></tr>
+      </thead>
+      <tbody>
+        {{ range . }}
+        {{ $current := printf "%s" .Role }}
+        {{ $name := .UserID }}{{ with .User }}{{ $name = orDefault .Name .Email }}{{ end }}
+        <tr data-row="{{ .UserID }}">
+          <th scope="row">
+            <span class="cell-ident">
+              {{ template "avatar" dict "User" .User "Size" "32" }}
+              <span class="cell-main"><span class="cell-title">{{ $name }}</span>{{ with .User }}<span class="cell-sub">{{ breakable .Email }}</span>{{ end }}</span>
+            </span>
+          </th>
+          <td class="col-nowrap">{{ roleLabel .Role }}</td>
+          <td class="col-actions">
+            <button class="btn btn-icon btn-invisible btn-sm row-menu-btn" type="button" popovertarget="member-menu-{{ .UserID }}" aria-label="Actions: {{ $name }}" data-tooltip="Actions: {{ $name }}">{{ octicon "kebab-horizontal" 16 }}</button>
+            <div class="row-menu" id="member-menu-{{ .UserID }}" popover>
+              <form method="post" action="{{ $action }}">
+                <input type="hidden" name="action" value="member-role">
+                <input type="hidden" name="userId" value="{{ .UserID }}">
+                <div class="menu-label">Role</div>
+                {{ range $roles }}
+                <button class="menu-item" type="submit" name="role" value="{{ . }}" role="menuitemradio" aria-checked="{{ if eq (printf "%s" .) $current }}true{{ else }}false{{ end }}"><span class="menu-item-check" aria-hidden="true">{{ if eq (printf "%s" .) $current }}{{ octicon "check" 16 }}{{ end }}</span><span>{{ roleLabel . }}</span></button>
+                {{ end }}
+              </form>
+              <hr class="menu-sep">
+              <form method="post" action="{{ $action }}">
+                <input type="hidden" name="action" value="member-remove">
+                <input type="hidden" name="userId" value="{{ .UserID }}">
+                <input type="hidden" name="role" value="{{ .Role }}">
+                {{ template "ui_noscript_marker" }}
+                <button class="menu-item danger" type="submit" data-remove-member="{{ .UserID }}" data-space="{{ $.Space.ID }}" data-role="{{ .Role }}" data-name="{{ $name }}">Remove from space</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+  {{ else }}
+  {{ template "ui_blankslate" dict "Icon" "people" "Title" "No members listed" "Description" "Add a person with the form below." "Size" "small" "Border" true "H3" true }}
+  {{ end }}
+
+  <form method="post" action="{{ $action }}" class="settings-form member-add-form" novalidate aria-labelledby="member-add-title">
+    {{ template "ui_error_summary" dict "P" . "Form" "member" }}
+    {{ template "ui_form_message" dict "P" . "Form" "member" }}
+    <h3 class="section-heading-title" id="member-add-title">Add a member</h3>
+    <input type="hidden" name="action" value="member-add">
+    {{ template "ui_text_field" dict "P" . "Form" "member" "Field" "email" "Label" "Email address" "Type" "email" "Value" (.FormValue "member" "email" "") "Required" true "Caption" "The person needs an account on this instance." "Autocomplete" "off" "Inputmode" "email" "Autocapitalize" "off" "Spellcheck" "false" }}
+    {{ $role := .FormValue "member" "role" "editor" }}
+    <fieldset class="radio-group">
+      <legend class="form-label">Role</legend>
+      <div class="radio-group-options">
+        {{ range $roles }}
+        <label class="check"><input type="radio" name="role" value="{{ . }}"{{ if eq (printf "%s" .) $role }} checked{{ end }}> {{ roleLabel . }}</label>
+        {{ end }}
+      </div>
+    </fieldset>
+    <div class="form-actions"><button class="btn btn-primary" type="submit">Add member</button></div>
+  </form>
+</section>
+
+<section class="settings-section" id="import" aria-labelledby="import-title">
+  <div class="settings-intro">
+    <h2 id="import-title">Export and import</h2>
+    <p>Export gives you every note as markdown files in a zip. Import adds notes from a zip or a single markdown file.</p>
+  </div>
+  {{ with .Space }}<div><a class="btn" href="/api/spaces/{{ .ID }}/export" download><span class="btn-visual" aria-hidden="true">{{ octicon "download" 16 }}</span><span class="btn-label">Download a zip</span></a></div>{{ end }}
+  <form method="post" action="{{ $action }}" enctype="multipart/form-data" class="settings-form" novalidate>
+    {{ template "ui_form_message" dict "P" . "Form" "import" }}
+    <input type="hidden" name="action" value="import">
+    {{ $fileErr := .FormError "import" "file" }}
+    <div class="form-control field{{ if $fileErr }} has-error{{ end }}">
+      <span class="form-label" id="import-file-label">File to import</span>
+      <div class="drop-area import-drop{{ if $fileErr }} has-error{{ end }}" data-file-drop>
+        <span class="dropzone-label" data-file-label>Drop a zip or markdown file here</span>
+        <input class="import-file-input" id="import-file" type="file" name="file" accept=".zip,.md,.markdown,text/markdown,application/zip" aria-labelledby="import-file-label" aria-describedby="import-file-caption{{ if $fileErr }} import-file-error{{ end }}"{{ if $fileErr }} aria-invalid="true" autofocus{{ end }}>
+      </div>
+      {{ template "ui_field_feedback" dict "ID" "import-file" "Caption" ".zip, .md or .markdown" "Error" $fileErr }}
+    </div>
+    <div class="form-actions"><button class="btn btn-primary" type="submit">Import</button></div>
+  </form>
+</section>
+
+<section class="danger-box" aria-labelledby="danger-title">
+  <div class="danger-box-header"><h2 id="danger-title">Danger zone</h2></div>
+  <div class="danger-row">
+    <div class="danger-row-text">
+      <h3 class="danger-row-title">Delete this space</h3>
+      <p class="danger-row-description">The space leaves the index for everyone. Its folder moves to the deleted archive on disk, so an administrator can still recover the files.</p>
+    </div>
+    <form method="post" action="{{ $action }}">
+      <input type="hidden" name="action" value="delete">
+      {{ template "ui_noscript_marker" }}
+      <button class="btn btn-danger" type="submit" data-confirm="Delete {{ with .Space }}{{ .Name }}{{ end }}?" data-confirm-detail="Every member loses access at once. The files move to the deleted archive on disk.">Delete space</button>
+    </form>
+  </div>
+</section>
+{{ end }}
+</div>
+{{ end }}

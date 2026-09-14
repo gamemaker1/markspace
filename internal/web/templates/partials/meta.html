@@ -1,0 +1,17 @@
+{{- define "note_meta" -}}
+{{/* The PageHeader description of a note (docs/primer.md 5.2): word count,
+     RelativeTime of the last change with its author, the access Label and
+     the tags as Tokens. */}}
+{{ with .Note }}
+<ul class="note-meta" aria-label="Page details">
+  <li>{{ pluralize .Words "word" "words" }}</li>
+  <li>Updated {{ relativeTime .UpdatedAt }}{{ with $.Get "Author" }} by {{ orDefault .Name .Email }}{{ end }}</li>
+  {{ with $.Grant }}<li><span class="ui-label ui-label-secondary">{{ accessLabel . }}</span></li>{{ end }}
+</ul>
+{{ if .Tags }}
+<ul class="tag-row" aria-label="Tags">
+  {{ range .Tags }}<li><a class="token token-medium" href="{{ tagURL $.Space . }}"><span class="token-text">#{{ . }}</span></a></li>{{ end }}
+</ul>
+{{ end }}
+{{ end }}
+{{- end -}}

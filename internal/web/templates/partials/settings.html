@@ -1,0 +1,129 @@
+{{- define "settings_nav" -}}
+{{/* The settings NavList (docs/primer.md 5.1). Settings pages show it in the
+     sidebar pane through settings_pane. */}}
+<nav class="nav-list settings-nav" aria-labelledby="settings-nav-heading">
+  <h2 class="nav-list-heading" id="settings-nav-heading">Settings</h2>
+  <ul class="nav-list-items" role="list">
+    {{ template "ui_nav_item" dict "Current" .Nav "Nav" "profile" "Href" "/settings/profile" "Icon" "person" "Label" "Profile" }}
+    {{ template "ui_nav_item" dict "Current" .Nav "Nav" "tokens" "Href" "/settings/tokens" "Icon" "key" "Label" "API tokens" }}
+    {{ template "ui_nav_item" dict "Current" .Nav "Nav" "userai" "Href" "/settings/ai" "Icon" "sparkle" "Label" "AI preferences" }}
+    {{ template "ui_nav_item" dict "Current" .Nav "Nav" "usage" "Href" "/settings/usage" "Icon" "report" "Label" "AI usage" }}
+    {{ template "ui_nav_item" dict "Current" .Nav "Nav" "offline" "Href" "/settings/offline" "Icon" "cloud-offline" "Label" "Offline files" }}
+    {{ template "ui_nav_item" dict "Current" .Nav "Nav" "sessions" "Href" "/settings/sessions" "Icon" "device-desktop" "Label" "Sessions" }}
+  </ul>
+</nav>
+{{- end -}}
+
+{{- define "ui_nav_item" -}}
+{{/* dot is a dict with Current, the page's Nav, and the item's Nav, Href, Icon and Label. */}}
+<li><a class="nav-list-item" href="{{ .Href }}"{{ if eq .Current .Nav }} aria-current="page"{{ end }}><span class="nav-list-visual" aria-hidden="true">{{ octicon .Icon 16 }}</span><span class="nav-list-label">{{ .Label }}</span></a></li>
+{{- end -}}
+
+{{- define "settings_pane" -}}
+{{/* The pane of a settings page replaces the notes sidebar (docs/primer.md 5.2).
+     The app header links back to the notes, so the pane holds only the NavList. */}}
+<div class="settings-pane">
+  {{ template "settings_nav" . }}
+</div>
+{{- end -}}
+
+{{- define "ui_index_row" -}}
+{{/* One row of the settings index. dot is a dict with Href, Icon, Label and Description. */}}
+<li><div class="note-row settings-index-row"><span class="note-row-icon" aria-hidden="true">{{ octicon .Icon 16 }}</span><div class="note-row-body"><a class="note-row-link note-row-title" href="{{ .Href }}">{{ .Label }}</a><span class="note-row-description">{{ .Description }}</span></div><span class="note-row-chevron" aria-hidden="true">{{ octicon "chevron-right" 16 }}</span></div></li>
+{{- end -}}
+
+{{- define "ui_page_header" -}}
+{{/* A PageHeader (docs/primer.md 5.2). dot is a dict with Title, and optionally
+     Description, Parent and ParentURL for the parent link on narrow
+     viewports, Visual for a leading emoji, Border and Large. The title has
+     the id page-title, so tables and lists can take their name from it. */}}
+<div class="page-header{{ if .Large }} page-header-large{{ end }}"{{ if .Border }} data-border="true"{{ end }}>
+  {{ with .ParentURL }}<div class="page-header-context"><a class="page-header-parent" href="{{ . }}">{{ octicon "arrow-left" 16 }}<span>{{ $.Parent }}</span></a></div>{{ end }}
+  {{ with .Visual }}<span class="page-header-leading-visual" aria-hidden="true">{{ . }}</span>{{ end }}
+  <div class="page-header-title-area"><h1 class="page-header-title" id="page-title">{{ .Title }}</h1></div>
+  {{ with .Description }}<p class="page-header-description">{{ . }}</p>{{ end }}
+</div>
+{{- end -}}
+
+{{- define "ui_blankslate" -}}
+{{/* A Blankslate (docs/primer.md 5.9). dot is a dict with Icon, Title and
+     Description, and optionally Size (small, medium or spacious), Border,
+     Narrow, and H1 or H3 for the heading level. */}}
+<div class="blankslate blankslate-{{ or .Size "medium" }}{{ if .Border }} blankslate-border{{ end }}{{ if .Narrow }} blankslate-narrow{{ end }}">
+  <div class="blankslate-inner">
+    {{ with .Icon }}<span class="blankslate-visual" aria-hidden="true">{{ octicon . 24 }}</span>{{ end }}
+    {{ if .H1 }}<h1 class="blankslate-heading">{{ .Title }}</h1>{{ else if .H3 }}<h3 class="blankslate-heading">{{ .Title }}</h3>{{ else }}<h2 class="blankslate-heading">{{ .Title }}</h2>{{ end }}
+    {{ with .Description }}<p class="blankslate-description">{{ . }}</p>{{ end }}
+  </div>
+</div>
+{{- end -}}
+
+{{- define "ui_text_field" -}}
+{{/* A vertical FormControl with a TextInput (docs/primer.md 5.3). dot is a dict
+     with P, the page, Form, Field, Label and Value, and optionally Type,
+     Required, HideRequired, Caption, Class, Autofocus, Autocomplete,
+     Inputmode, Autocapitalize, Spellcheck and Maxlength. The input id is
+     the form and field name, and messages come from the page's form state. */}}
+{{- $id := .P.FieldID .Form .Field -}}
+{{- $err := .P.FormError .Form .Field -}}
+<div class="form-control field{{ if .P.FormInline .Form .Field }} has-error{{ end }}{{ with .Class }} {{ . }}{{ end }}">
+  <label class="form-label" for="{{ $id }}">{{ .Label }}{{ if and .Required (not .HideRequired) }}<span class="form-required" aria-hidden="true">*</span>{{ end }}</label>
+  <input id="{{ $id }}" name="{{ .Field }}" type="{{ or .Type "text" }}" value="{{ .Value }}"
+    {{- if .Required }} required{{ end }}
+    {{- with .Autocomplete }} autocomplete="{{ . }}"{{ end }}
+    {{- with .Inputmode }} inputmode="{{ . }}"{{ end }}
+    {{- with .Autocapitalize }} autocapitalize="{{ . }}"{{ end }}
+    {{- with .Spellcheck }} spellcheck="{{ . }}"{{ end }}
+    {{- with .Maxlength }} maxlength="{{ . }}"{{ end }}
+    {{- if or .Caption $err }} aria-describedby="{{ if .Caption }}{{ $id }}-caption{{ end }}{{ if and .Caption $err }} {{ end }}{{ if $err }}{{ $id }}-error{{ end }}"{{ end }}
+    {{- if $err }} aria-invalid="true"{{ end }}
+    {{- if or .Autofocus (.P.FormFocus .Form .Field) }} autofocus{{ end }}>
+  {{ template "ui_field_feedback" dict "ID" $id "Caption" .Caption "Error" $err }}
+</div>
+{{- end -}}
+
+{{- define "ui_field_feedback" -}}
+{{/* The caption and the validation message of a FormControl. dot is a dict with ID, Caption and Error. */}}
+{{ with .Caption }}<p class="form-caption" id="{{ $.ID }}-caption">{{ . }}</p>{{ end }}
+{{ with .Error }}<p class="form-validation" id="{{ $.ID }}-error"><span class="form-validation-icon" aria-hidden="true">{{ octicon "alert-fill" 16 }}</span><span class="form-validation-text">{{ . }}</span></p>{{ end }}
+{{- end -}}
+
+{{- define "ui_error_summary" -}}
+{{/* The error summary of a form with 3 or more problems (docs/primer.md 6.6): a
+     critical Banner at the top of the form that takes focus when the page
+     loads. Each link moves focus to its field. dot is a dict with P and Form. */}}
+{{- with .P.FormSummary .Form -}}
+<section class="banner banner-critical form-error-summary" aria-labelledby="{{ $.Form }}-summary-title" tabindex="-1" autofocus data-form-banner>
+  <div class="banner-icon" aria-hidden="true">{{ octicon "stop" 16 }}</div>
+  <div class="banner-container"><div class="banner-content">
+    <h2 class="banner-title" id="{{ $.Form }}-summary-title">{{ len . }} fields need changes</h2>
+    <div class="banner-description"><ul class="banner-error-list">{{ range . }}<li><a href="#{{ .ID }}">{{ .Message }}</a></li>{{ end }}</ul></div>
+  </div></div>
+</section>
+{{- end -}}
+{{- end -}}
+
+{{- define "ui_form_message" -}}
+{{/* A form problem that belongs to no field, as a critical Banner at the
+     top of the form that takes focus. dot is a dict with P and Form. */}}
+{{- with .P.FormMessage .Form -}}
+<section class="banner banner-critical" aria-labelledby="{{ $.Form }}-message-title" tabindex="-1" autofocus data-form-banner>
+  <div class="banner-icon" aria-hidden="true">{{ octicon "stop" 16 }}</div>
+  <div class="banner-container"><div class="banner-content"><h2 class="banner-title" id="{{ $.Form }}-message-title">{{ . }}</h2></div></div>
+</section>
+{{- end -}}
+{{- end -}}
+
+{{- define "ui_saved_message" -}}
+{{/* InlineMessage success beside a Save button after a save whose result is
+     not otherwise visible (docs/primer.md 6.1). dot is a dict with P, Form and Text. */}}
+{{- if .P.FormSaved .Form -}}
+<p class="inline-message inline-message-success form-saved" data-size="medium" data-flash="ok"><span class="inline-message-icon" aria-hidden="true">{{ octicon "check-circle" 16 }}</span><span class="inline-message-text">{{ .Text }}</span></p>
+{{- end -}}
+{{- end -}}
+
+{{- define "ui_noscript_marker" -}}
+{{/* Only a browser with scripting off submits this field, so the handler
+     shows a confirmation page instead of the ConfirmationDialog. */}}
+<noscript><input type="hidden" name="noscript" value="1"></noscript>
+{{- end -}}

@@ -1,0 +1,48 @@
+{{ define "title" }}{{ with .Get "File" }}{{ .Name }}{{ end }}{{ with .Get "Folder" }}{{ .Name }}{{ end }}{{ end }}
+{{ define "content" }}
+<article class="public-page public-item">
+  {{ with .Get "File" }}
+  {{ $viewer := $.Get "Viewer" }}{{ $raw := $.Get "RawURL" }}
+  <div class="page-header page-header-large">
+    <span class="page-header-leading-visual" aria-hidden="true">{{ octicon "file" 24 }}</span>
+    <div class="page-header-title-area"><h1 class="page-header-title">{{ .Name }}</h1></div>
+    <div class="page-header-actions">
+      <a class="btn btn-primary" href="{{ $.Get "DownloadURL" }}"><span class="btn-visual" aria-hidden="true">{{ octicon "download" 16 }}</span><span class="btn-label">Download</span></a>
+    </div>
+    <p class="page-header-description"><span>{{ bytes .Size }}</span><span aria-hidden="true">&middot;</span><span>{{ .MIME }}</span><span aria-hidden="true">&middot;</span><span>Updated {{ timeAgo .UpdatedAt }}</span></p>
+  </div>
+  <div class="public-viewer">
+    {{ if eq $viewer "image" }}<img src="{{ $raw }}" alt="{{ .Name }}">
+    {{ else if eq $viewer "pdf" }}<p><a class="btn" href="{{ $raw }}" target="_blank" rel="noopener">Open PDF</a></p>
+    {{ else if eq $viewer "video" }}<video src="{{ $raw }}" controls preload="metadata"></video>
+    {{ else if eq $viewer "audio" }}<audio src="{{ $raw }}" controls preload="metadata"></audio>
+    {{ else }}{{ template "ui_blankslate" dict "Icon" "file" "Title" "No preview for this file" "Description" "Download the file to open it." "Size" "small" "Border" true }}
+    {{ end }}
+  </div>
+  {{ end }}
+  {{ with .Get "Folder" }}
+  <div class="page-header page-header-large">
+    <span class="page-header-leading-visual" aria-hidden="true">{{ octicon "file-directory-fill" 24 }}</span>
+    <div class="page-header-title-area"><h1 class="page-header-title" id="page-title">{{ .Name }}</h1></div>
+  </div>
+  {{ with $.Get "Listing" }}
+  <ul class="rows" role="list" aria-labelledby="page-title">
+    {{ range . }}
+    <li>
+      <div class="note-row">
+        <span class="note-row-icon" aria-hidden="true">{{ if eq (printf "%v" .Kind) "folder" }}{{ octicon "file-directory-fill" 16 }}{{ else if eq (printf "%v" .Kind) "note" }}{{ octicon "note" 16 }}{{ else }}{{ octicon "file" 16 }}{{ end }}</span>
+        <div class="note-row-body">
+          <a class="note-row-link note-row-title" href="{{ .URL }}">{{ .Name }}</a>
+          {{ if .MIME }}<span class="note-row-meta">{{ bytes .Size }}</span>{{ end }}
+        </div>
+      </div>
+    </li>
+    {{ end }}
+  </ul>
+  {{ else }}
+  {{ template "ui_blankslate" dict "Icon" "file-directory-fill" "Title" "This folder is empty" "Border" true }}
+  {{ end }}
+  {{ end }}
+  <footer class="public-foot">Shared from {{ .InstanceName }}</footer>
+</article>
+{{ end }}

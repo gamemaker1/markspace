@@ -1,0 +1,190 @@
+{{ define "title" }}{{ .Title }}{{ end }}
+{{ define "content" }}
+{{ with .Get "Module" }}
+{{ if .Body }}
+{{ if .Heading }}<header class="page-header"><div class="page-header-title-area"><h1 class="page-header-title">{{ .Heading }}</h1></div></header>{{ end }}
+{{ if .AdminNav }}{{ template "admin_nav" $ }}{{ end }}
+{{ .Body }}
+{{ else }}
+{{/* A module page without a Body is a plugin page. Heading is the plugin
+name and Title is the page title. The query names the panel (panel) and its
+context (itemId, spaceId). The script in the scripts block fetches the UI
+tree and renders it with plugins.js. */}}
+<header class="page-header plugin-page-header">
+  <div class="page-header-title-area"><h1 class="page-header-title" data-plugin-page-title>{{ .Title }}</h1></div>
+  <p class="page-header-description" data-plugin-page-name{{ if not .Heading }} hidden{{ end }}><span class="ui-label ui-label-secondary">Plugin</span><span>{{ .Heading }}</span></p>
+</header>
+<div class="plugin-page" data-plugin-page data-panel="{{ $.Query.Get "panel" }}" data-item-id="{{ $.Query.Get "itemId" }}" data-space-id="{{ $.Query.Get "spaceId" }}"></div>
+{{ end }}
+{{ end }}
+{{ end }}
+{{ define "scripts" }}{{ with .Get "Module" }}{{ range .Scripts }}<script type="module" src="{{ . }}"></script>
+{{ end }}{{ if not .Body }}<script type="module">
+import { api } from "/static/js/api.js";
+import { renderPluginUI } from "/static/js/plugins.js";
+import { banner, blankslate, spinner } from "/static/js/ui.js";
+
+const host = document.querySelector("[data-plugin-page]");
+const titleEl = document.querySelector("[data-plugin-page-title]");
+const panelId = host.dataset.panel || "";
+const context = {};
+if (host.dataset.itemId) context.itemId = host.dataset.itemId;
+if (host.dataset.spaceId) context.spaceId = host.dataset.spaceId;
+let moduleId = "";
+let view = null;
+
+// One event stream serves every subscriber. It closes when the last one leaves.
+const listeners = new Map();
+let events = null;
+function subscribe(type, fn) {
+  if (typeof EventSource === "undefined") return function () {};
+  if (!events) events = new EventSource("/api/events");
+  let set = listeners.get(type);
+  if (!set) {
+    set = new Set();
+    listeners.set(type, set);
+    events.addEventListener(type, function (message) {
+      let event = null;
+      try {
+        event = JSON.parse(message.data);
+      } catch (err) {
+        return;
+      }
+      for (const f of Array.from(listeners.get(type) || [])) f(event);
+    });
+  }
+  set.add(fn);
+  return function () {
+    set.delete(fn);
+    let total = 0;
+    for (const s of listeners.values()) total += s.size;
+    if (total === 0 && events) {
+      events.close();
+      events = null;
+      listeners.clear();
+    }
+  };
+}
+
+let spaceLookup = null;
+function spaceOf() {
+  if (context.spaceId) return Promise.resolve(context.spaceId);
+  if (!context.itemId) return Promise.resolve("");
+  if (!spaceLookup) {
+    spaceLookup = api("GET", "/api/items/" + encodeURIComponent(context.itemId))
+      .then(function (item) {
+        const rec = item.note || item.folder || item.file || {};
+        return rec.spaceId || "";
+      })
+      .catch(function () {
+        return "";
+      });
+  }
+  return spaceLookup;
+}
+
+// Suggestions for note, space and folder fields.
+async function lookup(kind, query) {
+  const q = String(query || "").trim();
+  if (kind === "space") {
+    const res = await api("GET", "/api/spaces");
+    return (res.items || [])
+      .filter(function (s) { return !q || String(s.name).toLowerCase().includes(q.toLowerCase()); })
+      .map(function (s) { return { id: s.id, label: s.name }; });
+  }
+  const spaceId = await spaceOf();
+  if (kind === "note") {
+    if (!q) return [];
+    const params = new URLSearchParams({ q: q, limit: "20" });
+    if (spaceId) params.set("space", spaceId);
+    const res = await api("GET", "/api/search?" + params.toString());
+    return (res.items || [])
+      .filter(function (hit) { return hit.note; })
+      .map(function (hit) { return { id: hit.note.id, label: hit.note.title || hit.note.path, description: hit.note.path }; });
+  }
+  if (kind === "folder" && spaceId) {
+    const res = await api("GET", "/api/spaces/" + encodeURIComponent(spaceId) + "/tree");
+    const out = [];
+    const walk = function (rows) {
+      for (const row of rows || []) {
+        if (row.kind === "folder" && row.folder) out.push({ id: row.folder.id, label: row.folder.path || row.folder.name });
+        walk(row.children);
+      }
+    };
+    walk(res.items);
+    return out;
+  }
+  return [];
+}
+
+function internalPath(path) {
+  return typeof path === "string" && path.charAt(0) === "/" && path.charAt(1) !== "/" && path.charAt(1) !== "\\";
+}
+
+async function onAction(actionId, payload, values) {
+  const body = { context: context, payload: payload, values: values };
+  const response = await api("POST", "/api/modules/" + encodeURIComponent(moduleId) + "/actions/" + encodeURIComponent(actionId), body);
+  if (response && internalPath(response.navigate)) {
+    window.location.assign(response.navigate);
+  } else if (response && response.openPanel && response.openPanel.id) {
+    if (response.openPanel.itemId) {
+      window.location.assign("/i/" + encodeURIComponent(response.openPanel.itemId));
+    } else {
+      const params = new URLSearchParams(window.location.search);
+      params.set("panel", response.openPanel.id);
+      window.location.assign(window.location.pathname + "?" + params.toString());
+    }
+  } else if (response && response.job && response.job.id) {
+    banner({
+      variant: "info",
+      title: "Job started",
+      description: "It runs in the background. The Jobs page shows its progress.",
+      actions: [{ label: "View job", href: "/jobs?open=" + encodeURIComponent(response.job.id) }],
+      dismissible: true,
+      into: host,
+    });
+  }
+  return response;
+}
+
+async function load() {
+  if (view) {
+    view.destroy();
+    view = null;
+  }
+  if (!panelId) {
+    host.replaceChildren(blankslate({ icon: "alert", title: "No page to show", description: "The address does not name a plugin page.", border: true }));
+    return;
+  }
+  host.setAttribute("aria-busy", "true");
+  host.replaceChildren(spinner({ size: "medium", label: "Loading the page", delay: 1000 }));
+  try {
+    const params = new URLSearchParams();
+    if (context.itemId) params.set("itemId", context.itemId);
+    if (context.spaceId) params.set("spaceId", context.spaceId);
+    const contributions = await api("GET", "/api/ui/contributions?" + params.toString());
+    const panel = (contributions.panels || []).find(function (p) { return p.id === panelId; });
+    if (!panel || panel.builtin) {
+      const err = new Error("This page is not available here. The plugin may be paused, or it has no access to this space.");
+      err.status = 404;
+      throw err;
+    }
+    moduleId = panel.module;
+    if (!titleEl.textContent.trim()) {
+      titleEl.textContent = panel.title;
+      document.title = panel.title + " " + document.title.trim();
+    }
+    const res = await api("POST", "/api/panels/" + encodeURIComponent(panelId), { context: context });
+    host.replaceChildren();
+    // renderPluginUI uploads chosen files to the context space before onAction runs.
+    view = renderPluginUI(host, res.ui, { onAction: onAction, context: { spaceId: context.spaceId, spaceOf: spaceOf, subscribe: subscribe, lookup: lookup, headingLevel: 2 } });
+  } catch (err) {
+    const description = err && err.status === 404 ? err.message : "The plugin did not answer. Try again in a moment.";
+    host.replaceChildren(blankslate({ icon: "alert", title: "This page could not be loaded", description: description, primaryAction: { label: "Try again", onClick: load }, border: true }));
+  } finally {
+    host.removeAttribute("aria-busy");
+  }
+}
+
+load();
+</script>{{ end }}{{ end }}{{ end }}

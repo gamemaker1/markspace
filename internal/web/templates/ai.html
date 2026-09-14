@@ -1,0 +1,19 @@
+{{ define "title" }}AI{{ end }}
+{{ define "sidebar" }}{{ template "settings_pane" . }}{{ end }}
+{{ define "content" }}
+<div class="admin-page">
+  <div class="page-header" data-border="true">
+    <div class="page-header-context"><a class="page-header-parent" href="/settings">{{ octicon "arrow-left" 16 }}<span>Settings</span></a></div>
+    <div class="page-header-title-area"><h1 class="page-header-title" tabindex="-1">AI</h1></div>
+    <p class="page-header-description">The models your AI tools use, and providers with your own keys.</p>
+  </div>
+  {{ with .Get "AI" }}
+  <div class="ai-page" data-ai-page data-scope="{{ .Scope }}"{{ if .ErrorForm }} data-error-claimed{{ end }}>
+    {{ template "ai_tasks" . }}
+    {{ if .AllowUserKeys }}{{ template "ai_provider_table" . }}{{ end }}
+  </div>
+  {{ end }}
+</div>
+{{ end }}
+{{ define "scripts" }}<script type="module" src="/static/js/admin.js"></script>
+<script type="module" src="/static/js/ai/admin.js"></script>{{ end }}

@@ -1,0 +1,434 @@
+/* Folders, files, the file tree, file views and file viewers, on Primer
+   tokens (docs/primer.md 5.2, 5.9 and 5.10). Narrow means below 768px. */
+
+/* ---------- Attachment grid and rows of the space Files tab ---------- */
+
+.file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--base-size-16); margin: 0; padding: 0; list-style: none; }
+.file-card { position: relative; display: flex; flex-direction: column; min-width: 0; overflow: hidden; background: var(--bgColor-default); border: var(--borderWidth-thin) solid var(--borderColor-default); border-radius: var(--borderRadius-medium); }
+.file-card .file-open { display: block; }
+.file-thumb { display: flex; align-items: center; justify-content: center; overflow: hidden; color: var(--fgColor-muted); background: var(--bgColor-muted); }
+.file-card .file-thumb { aspect-ratio: 4 / 3; }
+.file-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.file-info { display: flex; flex-direction: column; gap: var(--base-size-4); min-width: 0; padding: var(--base-size-12); font-size: var(--text-body-size-small); }
+.file-name { overflow: hidden; font-size: var(--text-body-size-medium); font-weight: var(--base-text-weight-semibold); color: var(--fgColor-default); text-overflow: ellipsis; white-space: nowrap; }
+.file-meta { color: var(--fgColor-muted); font-size: var(--text-body-size-small); }
+.file-note { display: inline-flex; align-items: center; gap: var(--base-size-4); min-width: 0; overflow: hidden; font-size: var(--text-body-size-small); color: var(--fgColor-muted); white-space: nowrap; }
+.file-note span { overflow: hidden; text-overflow: ellipsis; }
+.file-actions { display: flex; gap: var(--base-size-4); }
+.file-card .file-actions { position: absolute; top: var(--base-size-8); right: var(--base-size-8); background: var(--bgColor-default); border-radius: var(--borderRadius-medium); }
+.file-rows { margin: 0; padding: 0; list-style: none; border: var(--borderWidth-thin) solid var(--borderColor-default); border-radius: var(--borderRadius-medium); }
+.file-row { display: flex; align-items: center; gap: var(--base-size-12); padding: var(--base-size-8) var(--base-size-16); }
+.file-row + .file-row { border-top: var(--borderWidth-thin) solid var(--borderColor-muted); }
+.file-row .file-thumb { flex: none; width: 40px; height: 40px; border-radius: var(--borderRadius-medium); }
+.file-row .file-info { flex: 1 1 auto; padding: 0; }
+
+/* ---------- Tree ----------
+   The page tree is a Primer TreeView. shell.css styles the tree, its
+   selection bar, drop targets and rename field with Primer tokens. Move
+   and copy use a Dialog with a TreeView, so no pick mode rules remain. */
+
+/* ---------- Page headers of folders, files and the Files page ---------- */
+
+.is-narrow-only { display: none !important; }
+.folder-page-header .page-header-title-text, .file-view-header .page-header-title-text { min-width: 0; }
+.page-header-leading-visual .glyph { font-size: 16px; line-height: 1; }
+
+/* The leading visual centres on the first title line, so a wrapped title
+   keeps its icon beside the first line (docs/primer.md 5.2 PageHeader). The
+   actions row is one title line tall in pages.css. */
+:is(.folder-page-header, .file-view-header).page-header { align-items: start; }
+:is(.folder-page-header, .file-view-header) .page-header-leading-visual { align-items: center; height: var(--page-header-title-line); }
+
+/* Header controls on touch sit 12px apart, so each 44px hit area from
+   components.css stays clear of the next control (docs/primer.md 9.2). */
+@media (pointer: coarse), (max-width: calc(48rem - 0.02px)) {
+  :is(.folder-page-header, .file-view-header) .page-header-actions { gap: var(--base-size-12); }
+}
+
+/* On narrow viewports the actions take their own row under the title, as in
+   Primer's narrow PageHeader, so a long name keeps the full width and wraps
+   between words (docs/primer.md 5.2). */
+@media (max-width: calc(48rem - 0.02px)) {
+  :is(.folder-page-header, .file-view-header).page-header {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    grid-template-areas: "context context context" "leading visual title" "actions actions actions" "description description description" "navigation navigation navigation";
+  }
+  :is(.folder-page-header, .file-view-header) .page-header-actions { justify-content: flex-start; height: auto; padding-inline-start: 0; padding-top: var(--base-size-8); }
+}
+
+@media (max-width: calc(48rem - 0.02px)) {
+  .is-wide-only { display: none !important; }
+  .is-narrow-only { display: inline-flex !important; }
+}
+
+
+/* ---------- Listings: toolbar, DataTable, cards and pagination ---------- */
+
+.files-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-8); margin: 0 0 var(--base-size-16); }
+.files-spacer { flex: 1 1 auto; }
+.files-toolbar-end { display: flex; align-items: center; gap: var(--base-size-8); }
+.files-count { font-size: var(--text-body-size-small); color: var(--fgColor-muted); font-variant-numeric: tabular-nums; }
+.files-filter { flex: 1 1 220px; max-width: 320px; }
+.files-section-title { margin: 0 0 var(--base-size-8); font-size: var(--text-title-size-small, 16px); font-weight: var(--base-text-weight-semibold); line-height: 1.5; }
+.files-uploads { margin: 0 0 var(--base-size-24); }
+.folder-listing, .files-body { min-width: 0; }
+
+/* The region contains absolutely positioned labels, so they scroll with the table and never widen the page. */
+.file-table-scroll { position: relative; border-radius: var(--borderRadius-medium); }
+.file-table { table-layout: auto; }
+.file-table .file-table-name-cell { width: 100%; min-width: 12rem; font-weight: var(--base-text-weight-normal); }
+.file-table .cell-ident { align-items: flex-start; gap: var(--base-size-8); }
+/* The 24px visual centres on the 20px name line. */
+.file-table-visual { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 24px; height: 24px; margin-top: -2px; overflow: hidden; color: var(--fgColor-muted); border-radius: var(--borderRadius-small); }
+.file-table-visual img { width: 24px; height: 24px; object-fit: cover; }
+.file-table-visual .glyph { font-size: 14px; line-height: 1; }
+.file-table-name { font-weight: var(--base-text-weight-semibold); line-height: 20px; color: var(--fgColor-default); text-decoration: none; overflow-wrap: anywhere; }
+.file-table-name:hover { color: var(--fgColor-accent); text-decoration: underline; }
+.file-table-meta { display: none; }
+.file-table .col-kind, .file-table .col-updated { white-space: nowrap; color: var(--fgColor-muted); }
+.file-table .col-size { color: var(--fgColor-muted); }
+.file-table tbody .col-actions { padding-block: var(--base-size-4); }
+/* Sort buttons are invisible header buttons: hover underlines the label and
+   focus draws the Primer focus ring (docs/primer.md 5.2 DataTable, row Sorting). */
+.file-table .data-table-sort { border-radius: var(--borderRadius-small); }
+.file-table .data-table-sort:focus-visible { outline: var(--focus-outline-width, 2px) solid var(--focus-outlineColor); outline-offset: 2px; }
+
+@media (hover: hover) {
+  .file-table .data-table-sort:hover span { color: var(--fgColor-default); text-decoration: underline; }
+}
+.file-table .edit-in-place-wrap, .file-table .edit-in-place-form { width: 100%; }
+
+.item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--base-size-16); margin: 0; padding: 0; list-style: none; }
+.item-card { position: relative; display: flex; flex-direction: column; min-width: 0; background: var(--bgColor-default); border: var(--borderWidth-thin) solid var(--borderColor-default); border-radius: var(--borderRadius-medium); }
+.item-card:hover { border-color: var(--borderColor-emphasis); }
+.item-card-link { display: flex; flex-direction: column; min-width: 0; color: var(--fgColor-default); text-decoration: none; border-radius: var(--borderRadius-medium); }
+.item-card-link:focus-visible { outline: var(--focus-outline-width, 2px) solid var(--focus-outlineColor); outline-offset: -2px; }
+.item-card-thumb {
+  display: flex; align-items: center; justify-content: center; aspect-ratio: 4 / 3; overflow: hidden; color: var(--fgColor-muted);
+  background: var(--bgColor-muted); border-bottom: var(--borderWidth-thin) solid var(--borderColor-muted);
+  border-radius: var(--borderRadius-medium) var(--borderRadius-medium) 0 0;
+}
+.item-card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.item-card-thumb .glyph { font-size: 24px; line-height: 1; }
+.item-card-name { padding: var(--base-size-12) var(--base-size-12) 0; overflow: hidden; font-size: var(--text-body-size-medium); font-weight: var(--base-text-weight-semibold); text-overflow: ellipsis; white-space: nowrap; }
+.item-card-link:hover .item-card-name { text-decoration: underline; }
+.item-card-meta { padding: var(--base-size-4) var(--base-size-12) var(--base-size-12); font-size: var(--text-body-size-small); color: var(--fgColor-muted); }
+.item-card-menu { position: absolute; top: var(--base-size-8); right: var(--base-size-8); }
+
+.item-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--base-size-8) var(--base-size-16); }
+/* The nav carries Primer's pagination class for its items. The listing
+   layout above replaces the centred layout of server pages. */
+.item-pagination.pagination { margin: 0; justify-content: space-between; }
+.item-pagination.pagination:not(.table-pagination) { margin-top: var(--base-size-16); }
+.item-pagination .table-pagination-range { margin: 0; }
+.item-pagination-pages { display: flex; flex-wrap: wrap; align-items: center; }
+.item-pagination .pagination-item { cursor: pointer; }
+.item-pagination .pagination-item[aria-current="true"] { color: var(--fgColor-onEmphasis); background-color: var(--bgColor-accent-emphasis); }
+.item-pagination .pagination-item[aria-current="true"]:focus-visible { box-shadow: inset 0 0 0 3px var(--fgColor-onEmphasis); }
+.item-pagination .pagination-direction { color: var(--fgColor-accent); }
+.item-pagination .pagination-direction[aria-disabled="true"] { color: var(--fgColor-muted); }
+.item-listing.is-paged .file-table tbody tr:last-child > :first-child { border-end-start-radius: 0; }
+.item-listing.is-paged .file-table tbody tr:last-child > :last-child { border-end-end-radius: 0; }
+.item-listing.is-paged .file-table-scroll { border-end-start-radius: 0; border-end-end-radius: 0; }
+
+.is-drop-target.folder-page, .is-drop-target.files-page, .is-drop-target.space-listing { outline: 2px dashed var(--borderColor-accent-emphasis); outline-offset: 4px; border-radius: var(--borderRadius-medium); }
+.trash-items { margin-top: var(--base-size-24); }
+
+/* Folder with a folder note: the slim header above the note. */
+.folder-header.is-slim { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-8); max-width: 1180px; margin: 0 auto; padding: var(--base-size-12) 40px 0; }
+.folder-header-icon { display: inline-flex; flex: none; color: var(--fgColor-muted); }
+.folder-header-name { min-width: 0; overflow: hidden; font-weight: var(--base-text-weight-semibold); color: var(--fgColor-default); text-overflow: ellipsis; white-space: nowrap; }
+.folder-contents { max-width: 1180px; margin: 0 auto; padding: var(--base-size-8) 40px 0; }
+
+/* Narrow layout: fewer columns, two card columns and a compact pager. */
+@media (max-width: calc(48rem - 0.02px)) {
+  .files-filter { flex: 1 1 100%; max-width: none; }
+  .file-table .col-kind, .file-table .col-size { display: none; }
+  .file-table .file-table-name-cell { min-width: 9rem; }
+  .file-table-meta { display: block; }
+  .item-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--base-size-8); }
+  .item-card-menu.btn-icon { top: var(--base-size-4); right: var(--base-size-4); }
+  .item-pagination .pagination-direction span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+  .folder-header.is-slim, .folder-contents { padding-left: var(--base-size-16); padding-right: var(--base-size-16); }
+}
+
+/* Touch targets of 44px on narrow viewports and on coarse pointers, such as a
+   phone in landscape wider than the narrow breakpoint (docs/primer.md 9.2). */
+@media (max-width: calc(48rem - 0.02px)), (pointer: coarse) {
+  .files-filter { min-height: calc(var(--control-minTarget-coarse, 44px) + 2px); }
+  .files-filter > input { font-size: 16px; }
+  .files-toolbar .btn { height: var(--control-minTarget-coarse, 44px); }
+  .files-layout.segmented-control { height: calc(var(--control-minTarget-coarse, 44px) + 2px); }
+  .file-table thead th { padding-block: 0; }
+  .file-table .data-table-sort { min-height: var(--control-minTarget-coarse, 44px); min-width: var(--control-minTarget-coarse, 44px); }
+  .files-layout .segmented-control-button { min-width: var(--control-minTarget-coarse, 44px); }
+  /* 12px of block padding makes a one-line name 44px tall and keeps the
+     first line of a wrapped name 22px down, where the visual centres. */
+  .file-table-name { display: block; padding-block: var(--base-size-12); }
+  .file-table-visual { margin-top: 10px; }
+  .file-table .file-table-path { margin-top: calc(-1 * var(--base-size-8)); }
+  .file-table .col-actions .btn-icon { width: var(--control-minTarget-coarse, 44px); height: var(--control-minTarget-coarse, 44px); }
+  .item-card-menu.btn-icon { width: var(--control-minTarget-coarse, 44px); height: var(--control-minTarget-coarse, 44px); }
+  .item-pagination .pagination-item { min-width: var(--control-minTarget-coarse, 44px); height: var(--control-minTarget-coarse, 44px); }
+  .folder-header-name { display: inline-flex; align-items: center; min-height: var(--control-minTarget-coarse, 44px); }
+  .folder-header.is-slim .btn, .folder-header.is-slim .btn-icon { height: var(--control-minTarget-coarse, 44px); min-width: var(--control-minTarget-coarse, 44px); }
+  :is(.folder-page, .files-page, .file-host) .blankslate .btn { height: var(--control-minTarget-coarse, 44px); }
+  :is(.folder-page, .files-page, .file-host) .blankslate .btn-link { display: inline-flex; align-items: center; min-height: var(--control-minTarget-coarse, 44px); }
+}
+
+/* ---------- File view ---------- */
+
+/* The document scrolls, so the file view takes the viewport below the 64px app
+   header. Viewers scroll inside that box. */
+.view.file-host { display: flex; flex-direction: column; height: calc(100vh - 64px); min-height: 24rem; }
+
+@supports (height: 100dvh) {
+  .view.file-host { height: calc(100dvh - 64px - var(--safe-top, 0px)); }
+}
+.file-view-header.page-header { flex: none; margin: 0; padding: var(--base-size-16) var(--base-size-16) var(--base-size-8); }
+.file-view-header .page-header-description { padding-top: var(--base-size-4); }
+.file-stage { position: relative; display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; min-width: 0; }
+.file-state { display: flex; flex: 1 1 auto; flex-direction: column; align-items: center; justify-content: center; min-height: 0; padding: var(--base-size-16); overflow: auto; }
+.file-state > .blankslate { width: 100%; max-width: 485px; }
+.file-loading { position: absolute; inset: 0; pointer-events: none; }
+.file-inactive-note { max-width: 18rem; margin: 0; font-size: var(--text-body-size-medium); }
+.item-trash-banner { margin: 0 var(--base-size-16) var(--base-size-8); }
+.file-embed-missing { display: inline-flex; align-items: center; gap: var(--base-size-8); padding: var(--base-size-8) var(--base-size-12); color: var(--fgColor-muted); background: var(--bgColor-muted); border-radius: var(--borderRadius-medium); }
+.md-body a.file-card { display: inline-flex; align-items: center; gap: var(--base-size-8); padding: var(--base-size-4) var(--base-size-8); border: var(--borderWidth-thin) solid var(--borderColor-default); border-radius: var(--borderRadius-medium); }
+
+@media (max-width: calc(48rem - 0.02px)) {
+  .file-view-header.page-header { padding: var(--base-size-8) var(--base-size-16); }
+}
+
+/* ---------- Item panels ---------- */
+
+.item-comment-form { display: flex; flex-direction: column; gap: 6px; margin: 0 0 12px; }
+.item-comment-input { width: 100%; resize: vertical; }
+.item-comment-actions, .item-share-actions { display: flex; justify-content: flex-end; gap: 6px; }
+.item-comment-body { color: var(--fgColor-default); white-space: pre-wrap; }
+.item-comment.is-resolved .list-row-title { color: var(--fgColor-muted); }
+.item-reply-row { display: block; }
+.item-share-form { display: flex; flex-direction: column; gap: 8px; margin: 12px 0 20px; }
+.item-share-fields { display: flex; gap: 6px; }
+.item-share-fields input { flex: 1 1 auto; min-width: 0; }
+.item-offline-notice { display: flex; align-items: center; gap: 6px; margin: 0 0 12px; color: var(--fgColor-muted); }
+.item-hash { font-size: 0.8rem; }
+
+@media (max-width: 700px) {
+  .item-access-select, .item-share-email { min-height: 44px; }
+}
+
+/* ---------- File viewers (static/js/viewers/*.js). Classes start with fv-. ---------- */
+
+.fv-image, .fv-pdf, .fv-text, .fv-csv, .fv-media, .fv-state {
+  position: relative; display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; min-height: 0;
+}
+
+.fv-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--fgColor-muted); pointer-events: none; }
+.fv-state { align-items: center; justify-content: center; padding: var(--base-size-16); overflow: auto; }
+.fv-state > .blankslate { width: 100%; max-width: 485px; }
+.fv-facts { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--base-size-4) var(--base-size-12); margin: var(--base-size-16) 0 0; font-size: var(--text-body-size-medium); text-align: start; }
+.fv-fact { display: contents; }
+.fv-fact dt { color: var(--fgColor-muted); }
+.fv-fact dd { margin: 0; color: var(--fgColor-default); overflow-wrap: anywhere; }
+
+/* Toolbar (docs/primer.md 5.10): a flex row with 8px gap, 8px block padding and a muted bottom border. */
+.fv-toolbar {
+  display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: var(--base-size-8);
+  padding: var(--base-size-8) var(--base-size-16); background: var(--bgColor-default);
+  border-bottom: var(--borderWidth-thin) solid var(--borderColor-muted);
+}
+.fv-group { display: flex; align-items: center; gap: var(--base-size-8); }
+.fv-spacer { flex: 1 1 auto; min-width: 0; }
+.fv-toolbar-text { font-size: var(--text-body-size-small); color: var(--fgColor-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fv-zoom-level { min-width: 3.5em; font-size: var(--text-body-size-small); text-align: center; color: var(--fgColor-muted); font-variant-numeric: tabular-nums; }
+.fv-toolbar .btn-icon[aria-expanded="true"] { background-color: var(--button-invisible-bgColor-active); }
+.fv-toolbar .btn-icon[aria-expanded="true"] .btn-visual { color: var(--fgColor-accent); }
+.fv-toolbar .btn[aria-disabled="true"] .btn-visual { color: var(--fgColor-disabled); }
+
+/* ButtonGroup: adjoining default buttons that share borders. */
+.fv-button-group { display: inline-flex; }
+.fv-button-group > .btn { position: relative; }
+.fv-button-group > .btn:not(:first-child) { margin-inline-start: calc(-1 * var(--borderWidth-thin)); border-start-start-radius: 0; border-end-start-radius: 0; }
+.fv-button-group > .btn:not(:last-child) { border-start-end-radius: 0; border-end-end-radius: 0; }
+.fv-button-group > .btn:focus-visible { z-index: 1; }
+
+/* Find bar. */
+.fv-find {
+  display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: var(--base-size-8);
+  padding: var(--base-size-8) var(--base-size-16); background: var(--bgColor-default); border-bottom: var(--borderWidth-thin) solid var(--borderColor-muted);
+}
+.fv-find-box { flex: 0 1 18rem; min-width: 8rem; }
+.fv-find-input::-webkit-search-cancel-button { display: none; -webkit-appearance: none; }
+.fv-find-count { min-width: 5em; font-size: var(--text-body-size-small); color: var(--fgColor-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Image. */
+.fv-image-stage {
+  position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; touch-action: none;
+  cursor: grab; background: var(--bgColor-inset); user-select: none; -webkit-user-select: none;
+}
+.fv-image.is-dragging .fv-image-stage { cursor: grabbing; }
+.fv-image-stage:focus-visible { outline: var(--focus-outline-width, 2px) solid var(--focus-outlineColor); outline-offset: -2px; }
+.fv-image-img {
+  position: absolute; left: 0; top: 0; max-width: none; height: auto; transform-origin: 0 0; pointer-events: none;
+  background: repeating-conic-gradient(color-mix(in srgb, var(--fgColor-muted) 14%, transparent) 0 25%, transparent 0 50%) 0 0 / 16px 16px;
+}
+.fv-image.is-loading .fv-image-img { visibility: hidden; }
+
+/* PDF. */
+.fv-pdf { background: var(--bgColor-inset); }
+.fv-page-field { display: inline-flex; align-items: center; gap: var(--base-size-8); font-size: var(--text-body-size-small); color: var(--fgColor-muted); white-space: nowrap; }
+.fv-page-label { font-size: var(--text-body-size-small); font-weight: var(--base-text-weight-semibold); color: var(--fgColor-default); }
+.fv-page-box { width: calc(4ch + 18px); }
+.fv-page-input { text-align: center; font-variant-numeric: tabular-nums; }
+.fv-page-total { font-variant-numeric: tabular-nums; }
+.fv-pdf-body { display: flex; flex: 1 1 auto; min-width: 0; min-height: 0; }
+.fv-pdf-thumbs {
+  flex: none; width: 240px; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--bgColor-default); border-inline-end: var(--borderWidth-thin) solid var(--borderColor-default);
+}
+.fv-pdf-thumb-list { display: flex; flex-direction: column; align-items: center; gap: var(--base-size-8); margin: 0; padding: var(--base-size-16); list-style: none; }
+.fv-pdf-thumb {
+  display: flex; flex-direction: column; align-items: center; gap: var(--base-size-4); padding: var(--base-size-8);
+  font: inherit; color: var(--fgColor-muted); background: transparent;
+  border: var(--borderWidth-thin) solid var(--control-borderColor-rest); border-radius: var(--borderRadius-medium); cursor: pointer;
+}
+.fv-pdf-thumb:focus-visible { outline: var(--focus-outline-width, 2px) solid var(--focus-outlineColor); outline-offset: -2px; }
+.fv-pdf-thumb-box {
+  display: block; width: 144px; aspect-ratio: 612 / 792; overflow: hidden; background: #fff;
+  border-radius: var(--borderRadius-small); box-shadow: 0 0 0 var(--borderWidth-thin) var(--borderColor-default);
+}
+.fv-pdf-thumb-canvas { display: block; width: 100%; height: 100%; }
+.fv-pdf-thumb-num { font-size: var(--text-body-size-small); font-variant-numeric: tabular-nums; }
+.fv-pdf-thumb[aria-current="page"] { background-color: var(--control-transparent-bgColor-selected); border-color: var(--borderColor-accent-emphasis); }
+.fv-pdf-thumb[aria-current="page"] .fv-pdf-thumb-box { box-shadow: 0 0 0 2px var(--borderColor-accent-emphasis); }
+.fv-pdf-thumb[aria-current="page"] .fv-pdf-thumb-num { font-weight: var(--base-text-weight-semibold); color: var(--fgColor-default); }
+.fv-pdf-thumbs-dialog .fv-pdf-thumb-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(144px, 1fr)); justify-items: center; padding: 0; }
+.fv-pdf-thumbs-dialog .fv-pdf-thumb-box { width: 120px; }
+.fv-pdf-scroll { position: relative; flex: 1 1 auto; min-width: 0; overflow: auto; overscroll-behavior: contain; }
+.fv-pdf-scroll:focus-visible { outline: var(--focus-outline-width, 2px) solid var(--focus-outlineColor); outline-offset: -2px; }
+.fv-pdf-pages {
+  --fv-pdf-pad: 16px;
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: var(--fv-pdf-pad);
+  width: max-content; min-width: 100%; padding: var(--fv-pdf-pad);
+}
+.fv-pdf-page { position: relative; flex: none; background: #fff; box-shadow: var(--shadow-resting-small, 0 1px 1px 0 #1f23280f, 0 1px 3px 0 #1f23280f); }
+.fv-pdf-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+
+@media (min-width: 63.25rem) {
+  .fv-pdf-thumbs { width: 256px; }
+}
+
+/* The text layer rules follow pdf_viewer.css of pdfjs-dist, without nesting. */
+.fv-pdf .textLayer {
+  position: absolute; text-align: initial; inset: 0; overflow: clip; opacity: 1; line-height: 1;
+  letter-spacing: normal; word-spacing: normal; text-size-adjust: none; -webkit-text-size-adjust: none;
+  forced-color-adjust: none; transform-origin: 0 0; caret-color: CanvasText; z-index: 0;
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
+}
+.fv-pdf .textLayer span, .fv-pdf .textLayer br {
+  color: transparent; position: absolute; white-space: pre; cursor: text; transform-origin: 0% 0%;
+  user-select: text; -webkit-user-select: text;
+}
+.fv-pdf .textLayer > :not(.markedContent), .fv-pdf .textLayer .markedContent span:not(.markedContent) {
+  z-index: 1; --font-height: 0; font-size: calc(var(--text-scale-factor) * var(--font-height));
+  --scale-x: 1; --rotate: 0deg;
+  transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+}
+.fv-pdf .textLayer .markedContent { display: contents; }
+.fv-pdf .textLayer span[role="img"] { user-select: none; -webkit-user-select: none; cursor: default; }
+.fv-pdf .textLayer ::selection { background: rgba(0, 0, 255, 0.25); background: color-mix(in srgb, AccentColor, transparent 50%); color: transparent; }
+.fv-pdf .textLayer br::selection { background: transparent; }
+.fv-pdf .textLayer .endOfContent { display: block; position: absolute; inset: 100% 0 0; z-index: 0; cursor: default; user-select: none; -webkit-user-select: none; }
+.fv-pdf .textLayer.selecting .endOfContent { top: 0; }
+.fv-pdf .textLayer mark.fv-hit {
+  position: static; margin: -1px; padding: 1px; color: transparent; border-radius: 3px;
+  background: color-mix(in srgb, var(--highlight-neutral-bgColor) 70%, transparent);
+}
+.fv-pdf .textLayer mark.fv-hit-current { background: color-mix(in srgb, var(--bgColor-accent-emphasis) 40%, transparent); }
+
+/* Text: the Primer markdown code block, in a read-only CodeMirror. */
+.fv-text { background: var(--bgColor-default); }
+.fv-text-host {
+  display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; margin: var(--base-size-16);
+  overflow: hidden; background: var(--bgColor-muted); border-radius: var(--borderRadius-medium);
+}
+.fv-text-host .cm-editor { flex: 1 1 auto; height: 100%; min-height: 0; color: var(--fgColor-default); background: transparent; font: var(--text-codeBlock-shorthand); }
+.fv-text-host .cm-editor.cm-focused { outline: none; }
+.fv-text-host .cm-scroller { overflow: auto; font-family: var(--fontStack-monospace); line-height: var(--text-codeBlock-lineHeight, 1.45); }
+.fv-text-host .cm-content { padding: var(--base-size-16) 0; caret-color: transparent; }
+.fv-text-host .cm-content:focus-visible { outline: var(--focus-outline-width, 2px) solid var(--focus-outlineColor); outline-offset: -2px; }
+.fv-text-host .cm-line { padding: 0 var(--base-size-16); }
+.fv-text-host .cm-selectionBackground, .fv-text-host .cm-editor ::selection { background: var(--selection-bgColor, color-mix(in srgb, var(--bgColor-accent-emphasis) 25%, transparent)); }
+.fv-text-host .fv-hit { background: var(--highlight-neutral-bgColor); border-radius: 2px; }
+.fv-text-host .fv-hit-current { background: var(--bgColor-accent-muted); box-shadow: 0 0 0 1px var(--borderColor-accent-emphasis); }
+.fv-tok-keyword { color: var(--color-prettylights-syntax-keyword); }
+.fv-tok-string { color: var(--color-prettylights-syntax-string); }
+.fv-tok-constant { color: var(--color-prettylights-syntax-constant); }
+.fv-tok-comment { color: var(--color-prettylights-syntax-comment); }
+.fv-tok-entity { color: var(--color-prettylights-syntax-entity); }
+.fv-tok-tag { color: var(--color-prettylights-syntax-entity-tag); }
+.fv-tok-heading { font-weight: var(--base-text-weight-semibold); color: var(--color-prettylights-syntax-markup-heading); }
+.fv-tok-em { font-style: italic; color: var(--color-prettylights-syntax-markup-italic); }
+.fv-tok-strong { font-weight: var(--base-text-weight-semibold); color: var(--color-prettylights-syntax-markup-bold); }
+.fv-tok-link { color: var(--fgColor-link); text-decoration: underline; }
+.fv-tok-invalid { color: var(--color-prettylights-syntax-invalid-illegal-text); }
+
+/* CSV: a DataTable with a sticky header inside a scroll region. */
+.fv-csv { background: var(--bgColor-default); }
+.fv-csv > .banner { margin: var(--base-size-8) var(--base-size-16) 0; }
+.fv-table-scroll { position: relative; flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 0 var(--base-size-16) var(--base-size-16); }
+.fv-table-scroll:focus-visible { outline: var(--focus-outline-width, 2px) solid var(--focus-outlineColor); outline-offset: -2px; }
+.fv-csv-table { width: max-content; min-width: 100%; margin-top: var(--base-size-16); }
+.fv-csv-table :is(th, td) { max-width: 24rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: top; }
+.fv-csv-table thead th { position: sticky; top: 0; z-index: 1; }
+.fv-csv-table tbody th[scope="row"] { position: static; }
+.fv-csv.is-wrapped .fv-csv-table :is(th, td) { white-space: pre-wrap; overflow-wrap: anywhere; }
+/* Pagination sits under the table, outside the scroll region, with the table footer border. */
+.fv-csv > .item-pagination { flex: none; margin: 0 var(--base-size-16) var(--base-size-16); }
+/* A paged table holds at most 20 rows. The viewer scrolls as one column, so
+   the table region never shrinks below its rows on a short screen, and the
+   region itself only scrolls sideways. */
+.fv-csv.is-paged { overflow-y: auto; overscroll-behavior: contain; }
+.fv-csv.is-paged .fv-table-scroll { flex: none; overflow-y: hidden; padding-bottom: 0; }
+.fv-csv.is-paged .fv-csv-table tbody tr:last-child > :first-child { border-end-start-radius: 0; }
+.fv-csv.is-paged .fv-csv-table tbody tr:last-child > :last-child { border-end-end-radius: 0; }
+
+/* Video and audio. */
+.fv-media-body { display: flex; flex: 1 1 auto; align-items: center; justify-content: center; min-height: 0; }
+.fv-media-video { background: #000; }
+.fv-video { display: block; width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: contain; background: #000; }
+.fv-media-audio { padding: var(--base-size-24) var(--base-size-16); background: var(--bgColor-inset); }
+.fv-audio-card {
+  display: flex; flex-direction: column; align-items: center; gap: var(--base-size-8); width: 100%; max-width: 480px; padding: var(--base-size-24);
+  background: var(--bgColor-default); border: var(--borderWidth-thin) solid var(--borderColor-default); border-radius: var(--borderRadius-medium);
+}
+.fv-audio-icon { display: flex; color: var(--fgColor-muted); }
+.fv-audio-name { margin: 0 0 var(--base-size-8); font-weight: var(--base-text-weight-semibold); text-align: center; overflow-wrap: anywhere; }
+.fv-audio { width: 100%; }
+
+@media (max-width: calc(48rem - 0.02px)) {
+  .fv-toolbar, .fv-find { gap: var(--base-size-4); padding: var(--base-size-4) var(--base-size-8); }
+  .fv-group { gap: var(--base-size-4); }
+  .fv-page-field { gap: var(--base-size-4); }
+  .fv-find-box { flex: 1 1 0; min-width: 6rem; }
+  .fv-find-count { min-width: 0; }
+  .fv-pdf-thumbs { display: none !important; }
+  .fv-text-host { margin: var(--base-size-8); }
+  .fv-table-scroll { padding: 0 var(--base-size-8) var(--base-size-8); }
+  .fv-csv-table { margin-top: var(--base-size-8); }
+  .fv-csv > .item-pagination { margin: 0 var(--base-size-8) var(--base-size-8); }
+}
+
+@media (max-width: calc(48rem - 0.02px)), (pointer: coarse) {
+  .fv-toolbar .btn-icon, .fv-find .btn-icon { width: var(--control-minTarget-coarse, 44px); height: var(--control-minTarget-coarse, 44px); }
+  .fv-toolbar .btn:not(.btn-icon) { height: var(--control-minTarget-coarse, 44px); }
+  .fv-zoom-presets.segmented-control { height: calc(var(--control-minTarget-coarse, 44px) + 2px); }
+  .fv-zoom-presets .segmented-control-button { min-width: var(--control-minTarget-coarse, 44px); }
+  .fv-page-box { width: calc(4ch + 22px); min-height: calc(var(--control-minTarget-coarse, 44px) + 2px); }
+  .fv-page-input, .fv-find-input { font-size: 16px; }
+  .fv-find-box { min-height: calc(var(--control-minTarget-coarse, 44px) + 2px); }
+  .fv-pdf-thumbs-dialog .fv-pdf-thumb { min-width: var(--control-minTarget-coarse, 44px); }
+}

@@ -1,0 +1,850 @@
+/* Editor chrome, CodeMirror surface, live preview, AI editor and image editor. docs/primer.md 5.10 and 8.3. */
+
+/* ---------- Document scroll on the editor route (docs/primer.md 8.3) ---------- */
+
+/* Focused lines stay clear of the sticky editor bar and of the keyboard bar. editor.js sets --ms-kbar-space. */
+html.ms-editing {
+  scroll-padding-top: var(--ms-bar-h, 48px);
+  scroll-padding-bottom: var(--ms-kbar-space, 0px);
+}
+
+/* While the shell still scrolls .main on wide viewports, the same padding applies there. */
+html.ms-editing .main {
+  scroll-padding-top: var(--ms-bar-h, 48px);
+  scroll-padding-bottom: var(--ms-kbar-space, 0px);
+}
+
+/* A short visual viewport with the keyboard open lets the editor bar scroll away (editor.js sets is-short). */
+.ms-editor.is-short .ms-editor-bar { position: static; }
+
+/* ---------- Editor frame ---------- */
+
+/* The note fills the main column up to Primer's container-xl, 1280px including the side padding. The padding follows
+   Primer's page padding: 16px below 768px, 24px from 768px and 32px from 1012px. */
+.ms-editor {
+  --ms-measure: 1280px;
+  --ms-pad-inline: var(--base-size-16, 16px);
+  position: relative;
+  display: block;
+  color: var(--fgColor-default);
+  background: var(--bgColor-default);
+}
+
+@media (min-width: 768px) {
+  .ms-editor { --ms-pad-inline: var(--base-size-24, 24px); }
+}
+
+@media (min-width: 1012px) {
+  .ms-editor { --ms-pad-inline: var(--base-size-32, 32px); }
+}
+
+.ms-file { display: none; }
+
+/* Editor bar: 48px, a 32px control row with 8px above and below, sticky at the top of the scroll container. */
+.ms-editor-bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--zIndex-sticky, 100);
+  display: flex;
+  align-items: center;
+  gap: var(--base-size-8, 8px);
+  box-sizing: border-box;
+  height: 48px;
+  /* Past 1280px the controls keep to the text edges of the centred note. */
+  padding: var(--base-size-8, 8px) max(var(--ms-pad-inline), calc((100% - var(--ms-measure)) / 2 + var(--ms-pad-inline)));
+  background: var(--bgColor-default);
+  border-bottom: var(--borderWidth-thin, 1px) solid var(--borderColor-muted);
+}
+
+.ms-bar-spacer { flex: 1 1 auto; }
+
+.ms-editor-bar .ms-seg { flex: none; }
+
+.ms-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--base-size-4, 4px);
+  min-width: 0;
+  margin-inline-start: var(--base-size-8, 8px);
+  font-size: var(--text-body-size-small, 12px);
+  line-height: 20px;
+  color: var(--fgColor-muted);
+  white-space: nowrap;
+}
+
+.ms-status-icon { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 16px; height: 16px; color: var(--fgColor-muted); }
+.ms-status-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ms-editor[data-save="local"] .ms-status-icon,
+.ms-editor[data-save="warn"] .ms-status-icon { color: var(--fgColor-attention); }
+.ms-editor[data-save="error"] .ms-status-icon { color: var(--fgColor-danger); }
+
+.ms-words {
+  font-size: var(--text-body-size-small, 12px);
+  line-height: 20px;
+  color: var(--fgColor-muted);
+  white-space: nowrap;
+}
+
+/* The bar is a size container, so the word count and then the status text give way when the editor column is narrow,
+   also beside the sidebar and the rail. Size containment on the bar leaves the fixed keyboard bar unaffected. */
+.ms-editor-bar { container-type: inline-size; }
+@container (max-width: 899.98px) {
+  .ms-words { display: none; }
+}
+@container (max-width: 759.98px) {
+  .ms-status-text { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+}
+
+/* Focus mode: the bar fades while the person types and returns on pointer movement or focus. Nothing hides on narrow viewports. */
+@media (min-width: 768px) {
+  .ms-editor.is-faded .ms-chrome { opacity: 0; }
+  .ms-editor.is-faded .ms-chrome:focus-within { opacity: 1; }
+}
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .ms-chrome { transition: opacity 200ms cubic-bezier(0.33, 1, 0.68, 1); }
+}
+
+/* ---------- Banners and page ---------- */
+
+.ms-editor-banners:empty { display: none; }
+
+.ms-editor-banners {
+  box-sizing: border-box;
+  max-width: var(--ms-measure);
+  margin: var(--base-size-16, 16px) auto 0;
+  padding-inline: var(--ms-pad-inline);
+}
+
+.ms-editor-banners > .banner + .banner { margin-top: var(--base-size-8, 8px); }
+
+/* The space under the note is the keyboard bar plus 16px. No viewport units in content padding. In live and source
+   modes the space is .cm-content padding, so CodeMirror's scroller box includes it (see scrollMargins in editor.js). */
+.ms-page,
+.ms-preview-page {
+  box-sizing: border-box;
+  max-width: var(--ms-measure);
+  margin: 0 auto;
+  padding: var(--base-size-24, 24px) var(--ms-pad-inline) calc(var(--ms-kbar-space, 0px) + var(--base-size-16, 16px));
+}
+
+.ms-page { padding-bottom: 0; }
+
+/* Tracked change controls sit in the start margin, which needs room for one pair. */
+@media (min-width: 768px) {
+  .ms-page:has(.hunk-actions) { padding-inline-start: max(var(--ms-pad-inline), 72px); }
+  /* Two hunks on one line show two pairs side by side. */
+  .ms-page:has(.hunk-actions.is-stacked) { padding-inline-start: max(var(--ms-pad-inline), 136px); }
+}
+
+/* Title field: PageHeader title type. On focus a 2px accent bottom border replaces the outline. */
+.ms-editor .ms-title {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  margin: 0 0 var(--base-size-8, 8px);
+  padding: 0;
+  font: 400 32px/1.5 var(--fontStack-sansSerif);
+  color: var(--fgColor-default);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.ms-editor .ms-title:focus,
+.ms-editor .ms-title:focus-visible { outline: none; box-shadow: none; border-bottom-color: var(--borderColor-accent-emphasis); }
+.ms-editor .ms-title::placeholder { color: var(--fgColor-muted); opacity: 1; }
+.ms-editor .ms-title[hidden] { display: none; }
+
+.ms-preview-page.md-body > .ms-preview-title { margin: 0 0 var(--base-size-16, 16px); padding: 0; font: 400 32px/1.5 var(--fontStack-sansSerif); border: 0; }
+.ms-preview-page img[src=""] { min-width: 120px; min-height: 60px; background: var(--bgColor-muted); }
+.ms-reading-fallback { font-family: var(--fontStack-monospace); white-space: pre-wrap; }
+
+/* ---------- Drawer for panels without the shell ---------- */
+
+.ms-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--zIndex-overlay, 300);
+  box-sizing: border-box;
+  width: min(400px, 100%);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--overlay-bgColor);
+  border-left: var(--borderWidth-thin, 1px) solid var(--borderColor-default);
+  box-shadow: var(--shadow-floating-small);
+}
+
+/* ---------- Phone keyboard bar ---------- */
+
+.ms-kbar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--zIndex-sticky, 100);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  box-sizing: border-box;
+  padding: var(--base-size-4, 4px) calc(8px + env(safe-area-inset-right, 0px)) calc(4px + env(safe-area-inset-bottom, 0px)) calc(8px + env(safe-area-inset-left, 0px));
+  background: var(--bgColor-default);
+  border-top: var(--borderWidth-thin, 1px) solid var(--borderColor-default);
+}
+
+.ms-kbar[hidden] { display: none; }
+
+/* IconButtons invisible large with 24px Octicons, spread evenly up to 56px each. */
+.ms-kbar-tools {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--base-size-4, 4px);
+  min-width: 0;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.ms-kbar-tools[hidden] { display: none; }
+.ms-kbar .ms-kbar-btn.btn-icon { flex: 1 1 0; width: auto; min-width: var(--control-large-size, 40px); max-width: 56px; }
+.ms-kbar .ms-kbar-btn .btn-visual { color: var(--fgColor-default); }
+.ms-kbar .ms-kbar-btn[data-inactive] .btn-visual { color: var(--button-inactive-fgColor, var(--fgColor-muted)); }
+.ms-kbar .ms-kbar-btn[aria-disabled="true"]:not([data-inactive]) .btn-visual { color: var(--fgColor-disabled); }
+.ms-kbar-count { flex: none; min-width: 48px; font-size: var(--text-body-size-small, 12px); font-weight: 600; color: var(--fgColor-muted); text-align: center; font-variant-numeric: tabular-nums; }
+.ms-kbar-dock { flex: 1 0 100%; min-width: 0; }
+.ms-kbar-dock:empty { display: none; }
+/* The docked bar fits the visual viewport, which the keyboard shrinks. editor.js writes --ms-vvh and --ms-bar-h.
+   Above the keyboard bar stay the editor bar and a 48px band of note text, so the bar's controls and the line the ask
+   bar works on never sit under it. 16px is the keyboard bar padding and the dock margins. */
+.ms-kbar-dock .ask-bar { max-height: min(420px, calc(var(--ms-vvh, 100vh) - var(--ms-bar-h, 48px) - 64px)); margin: var(--base-size-4, 4px) 0; overflow-y: auto; box-shadow: none; }
+.ms-kbar:has(.ms-kbar-tools:not([hidden])) .ms-kbar-dock .ask-bar { max-height: min(420px, calc(var(--ms-vvh, 100vh) - var(--ms-bar-h, 48px) - 112px)); }
+
+/* ---------- CodeMirror surface ---------- */
+
+.ms-editor[data-mode="reading"] .ms-write,
+.ms-editor:not([data-mode="reading"]) .ms-read { display: none; }
+
+.ms-cm .cm-editor { height: auto; font: 400 16px/1.5 var(--fontStack-sansSerif); color: var(--fgColor-default); background: transparent; }
+.ms-cm .cm-editor.cm-focused { outline: none; }
+.ms-cm .cm-scroller { overflow: visible; font-family: inherit; line-height: inherit; }
+.ms-cm .cm-content { min-height: 10rem; padding: 0 0 calc(var(--ms-kbar-space, 0px) + var(--base-size-16, 16px)); caret-color: var(--codeMirror-cursor-fgColor, var(--fgColor-default)); }
+.ms-cm .cm-line { padding: 0; }
+.ms-cm .cm-cursor, .ms-cm .cm-dropCursor { border-left: 2px solid var(--codeMirror-cursor-fgColor, var(--fgColor-default)); }
+.ms-cm .cm-selectionBackground, .ms-cm .cm-content ::selection { background: var(--selection-bgColor) !important; }
+.ms-cm .cm-placeholder { color: var(--fgColor-muted); }
+.ms-cm .cm-activeLine { background: var(--bgColor-muted); }
+.ms-editor[data-mode="source"] .ms-cm .cm-editor { font-family: var(--fontStack-monospace); font-size: 14px; }
+
+@media (pointer: coarse) {
+  .ms-editor[data-mode="source"] .ms-cm .cm-editor { font-size: 16px; }
+}
+
+/* ---------- Find bar (find.js) ---------- */
+
+/* The CodeMirror search panel only keeps the search state open. find.js draws the bar outside CodeMirror. */
+.ms-cm .cm-panels-top:has(> .ms-find-cm-panel) { display: none; }
+
+/* The bar sticks under the editor bar and takes its own space in the page flow, so at rest it covers no text. The note
+   scrolls under it. find.js sets html.ms-finding and --ms-find-h. Two classes outrank the rule in shell.css. */
+html.ms-editing.ms-finding,
+html.ms-editing.ms-finding .main { scroll-padding-top: calc(var(--ms-bar-h, 48px) + var(--ms-find-h, 0px)); }
+
+.ms-find {
+  position: sticky;
+  top: var(--ms-bar-h, 48px);
+  z-index: var(--zIndex-sticky, 100);
+  box-sizing: border-box;
+  padding: var(--base-size-8, 8px) max(var(--ms-pad-inline), calc((100% - var(--ms-measure)) / 2 + var(--ms-pad-inline)));
+  color: var(--fgColor-default);
+  background: var(--bgColor-default);
+  border-bottom: var(--borderWidth-thin, 1px) solid var(--borderColor-muted);
+}
+
+.ms-find-inner { display: flex; flex-direction: column; gap: var(--base-size-8, 8px); min-width: 0; }
+.ms-find-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-4, 4px); min-width: 0; }
+.ms-find-box { flex: 0 1 18rem; min-width: 8rem; }
+.ms-find-status { display: inline-flex; align-items: center; min-width: 5.5em; margin-inline: var(--base-size-4, 4px); }
+.ms-find-count { font-size: var(--text-body-size-small, 12px); line-height: 20px; color: var(--fgColor-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ms-find-count.is-error { white-space: normal; }
+.ms-find-options { display: inline-flex; gap: var(--base-size-4, 4px); }
+.ms-find-glyph { font: 600 12px/16px var(--fontStack-monospace); letter-spacing: 0; }
+.ms-find-glyph-wholeWord { text-decoration: underline; text-underline-offset: 2px; }
+.ms-find-main > .ms-find-source { margin-inline-start: auto; }
+.ms-find-main > .ms-find-close { margin-inline-start: auto; }
+.ms-find-main > .ms-find-source:not([hidden]) + .ms-find-close { margin-inline-start: 0; }
+/* The Replace field lines up with the Find field, after the 28px disclosure and its 4px gap. */
+.ms-find-replace { padding-inline-start: calc(var(--control-small-size, 28px) + var(--base-size-4, 4px)); }
+
+/* On phones with the on-screen keyboard open the bar sits above the keyboard bar (find.js sets is-docked). */
+.ms-find.is-docked {
+  position: fixed;
+  top: auto;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: var(--base-size-4, 4px) calc(8px + env(safe-area-inset-right, 0px)) var(--base-size-4, 4px) calc(8px + env(safe-area-inset-left, 0px));
+  border-top: var(--borderWidth-thin, 1px) solid var(--borderColor-default);
+  border-bottom: 0;
+}
+/* From 768px the docked bar keeps one row, so a landscape phone with the keyboard open keeps note text in view. */
+.ms-find.is-docked .ms-find-main > .ms-find-box { flex: 1 1 8rem; }
+
+/* The Reading pane takes focus only from find.js when the bar closes. The selected match shows where focus is. */
+.ms-editor .ms-read[tabindex="-1"]:focus { outline: none; }
+
+/* The note view opens a Reading find bar from its More actions menu. Nothing sits above it, so it sticks at the top of
+   the scroll container. The note view's own padding sets the inline edges. */
+.note-view > .ms-find { --ms-pad-inline: 0px; --ms-measure: 100%; top: 0; margin-bottom: var(--base-size-16, 16px); }
+/* Focused and scrolled-to elements stay clear of the open bar. find.js sets --ms-find-h while the bar is open. */
+html.ms-finding:not(.ms-editing),
+html.ms-finding:not(.ms-editing) .main { scroll-padding-top: var(--ms-find-h, 0px); }
+/* Below 768px the bar spans the note view's 16px padding, so its grid has the full width, as in the editor. */
+@media (max-width: calc(48rem - 0.02px)) {
+  .note-view > .ms-find { margin-inline: calc(-1 * var(--base-size-16, 16px)); }
+}
+.note-view > .md-body[tabindex="-1"]:focus { outline: none; }
+
+/* 44px targets on touch screens and narrow viewports (docs/primer.md 9.2). */
+@media (pointer: coarse), (max-width: calc(48rem - 0.02px)) {
+  .ms-find .btn-icon { width: var(--control-minTarget-coarse, 44px); height: var(--control-minTarget-coarse, 44px); }
+  .ms-find .btn:not(.btn-icon) { min-height: var(--control-minTarget-coarse, 44px); }
+  .ms-find .ms-find-box { min-height: calc(var(--control-minTarget-coarse, 44px) + 2px); }
+  .ms-find .text-input-control { font-size: 16px; }
+  .ms-find-replace { padding-inline-start: calc(var(--control-minTarget-coarse, 44px) + var(--base-size-4, 4px)); }
+}
+
+/* Narrow viewports: Find and Close on the first row, the count, options and steps on the second. The Source link of
+   Reading takes a third row. Nothing is wider than 320px. */
+@media (max-width: calc(48rem - 0.02px)) {
+  .ms-find:not(.is-docked) { padding: var(--base-size-4, 4px) var(--base-size-8, 8px); }
+  .ms-find-inner { gap: var(--base-size-4, 4px); }
+  .ms-find-main { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto 44px 44px; }
+  .ms-find-main > .ms-find-disclosure { grid-area: 1 / 1; }
+  .ms-find-main > .ms-find-box { grid-area: 1 / 2 / 2 / 5; min-width: 0; }
+  .ms-find-main > .ms-find-disclosure[hidden] + .ms-find-box { grid-column: 1 / 5; }
+  .ms-find-main > .ms-find-close { grid-area: 1 / 5; margin: 0; }
+  .ms-find-main > .ms-find-status { grid-area: 2 / 1 / 3 / 3; min-width: 0; margin-inline: var(--base-size-8, 8px) 0; }
+  .ms-find-main > .ms-find-options { grid-area: 2 / 3; }
+  .ms-find-main > .ms-find-prev { grid-area: 2 / 4; }
+  .ms-find-main > .ms-find-next { grid-area: 2 / 5; }
+  .ms-find-main > .ms-find-source { grid-area: 3 / 1 / 4 / 6; justify-self: start; margin-inline: var(--base-size-8, 8px) 0; }
+  .ms-find-count { overflow: hidden; text-overflow: ellipsis; }
+  .ms-find-replace { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; padding-inline-start: 0; }
+  .ms-find-replace > .ms-find-box { min-width: 0; }
+}
+
+/* The short count ("6" for "6 matches") shows only below 382px, where the count cell is 64px wide. It is aria-hidden
+   and has the full text as its tooltip. The full count stays in the accessibility tree as visually hidden text. */
+.ms-find-count-short { display: none; }
+@media (max-width: 381.98px) {
+  .ms-find-status:not(:has(.is-error)) .ms-find-count { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .ms-find-status:not(:has(.is-error)) .ms-find-count-short { display: inline; font-size: var(--text-body-size-small, 12px); line-height: 20px; color: var(--fgColor-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+}
+
+/* Match highlights: orange for every match and fuchsia for the current one, in CodeMirror and in Reading. The
+   selectors outrank the yellow and cyan of CodeMirror's base theme. */
+.ms-cm .cm-editor .cm-searchMatch { background-color: var(--highlight-neutral-bgColor); border-radius: 2px; }
+.ms-read mark.ms-find-hit,
+.note-view > .md-body mark.ms-find-hit { padding: 0; color: inherit; background-color: var(--highlight-neutral-bgColor); border-radius: 2px; }
+.ms-cm .cm-editor .cm-searchMatch.cm-searchMatch-selected,
+.ms-read mark.ms-find-hit.is-current,
+.note-view > .md-body mark.ms-find-hit.is-current {
+  background-color: color-mix(in srgb, var(--bgColor-accent-emphasis) 40%, transparent);
+  box-shadow: inset 0 -2px 0 var(--borderColor-accent-emphasis);
+}
+
+/* Token colours from Primer's syntax tokens. */
+.cm-ms-t-h1, .cm-ms-t-h2, .cm-ms-t-h3 { font-weight: 600; }
+.cm-ms-t-link { color: var(--fgColor-link); }
+.cm-ms-t-mono { font-family: var(--fontStack-monospace); font-size: 85%; }
+.cm-ms-t-mark, .cm-ms-t-quote { color: var(--fgColor-muted); }
+.cm-ms-t-keyword { color: var(--color-prettylights-syntax-keyword); }
+.cm-ms-t-string { color: var(--color-prettylights-syntax-string); }
+.cm-ms-t-comment { font-style: italic; color: var(--color-prettylights-syntax-comment); }
+.cm-ms-t-number { color: var(--color-prettylights-syntax-constant); }
+.cm-ms-t-function, .cm-ms-t-type { color: var(--color-prettylights-syntax-entity); }
+.cm-ms-t-property { color: var(--color-prettylights-syntax-constant); }
+.cm-ms-t-tag { color: var(--color-prettylights-syntax-entity-tag); }
+
+/* ---------- Live preview ---------- */
+
+/* Headings follow the markdown scale of docs/primer.md 3.2. Vertical space is line padding, which CodeMirror measures. */
+.ms-cm .cm-ms-h1 { padding-top: 0.5em; font-size: 2em; font-weight: 600; line-height: 1.25; }
+.ms-cm .cm-ms-h2 { padding-top: 0.5em; font-size: 1.5em; font-weight: 600; line-height: 1.25; }
+.ms-cm .cm-ms-h3 { padding-top: 0.5em; font-size: 1.25em; font-weight: 600; line-height: 1.25; }
+.ms-cm .cm-ms-h4 { padding-top: 0.5em; font-size: 1em; font-weight: 600; }
+.ms-cm .cm-ms-h5 { padding-top: 0.5em; font-size: 0.875em; font-weight: 600; }
+.ms-cm .cm-ms-h6 { padding-top: 0.5em; font-size: 0.85em; font-weight: 600; color: var(--fgColor-muted); }
+.ms-cm :is(.cm-ms-h1, .cm-ms-h2, .cm-ms-h3) .cm-ms-t-mark { font-weight: 400; }
+.cm-ms-strong { font-weight: 600; }
+.cm-ms-em { font-style: italic; }
+.cm-ms-strike { text-decoration: line-through; }
+.cm-ms-code-inline { padding: 0.2em 0.4em; font-family: var(--fontStack-monospace); font-size: 85%; white-space: break-spaces; background: var(--bgColor-neutral-muted); border-radius: 6px; }
+.cm-ms-link { color: var(--fgColor-link); text-decoration: underline; text-underline-offset: 0.2em; cursor: text; }
+.cm-ms-image-src { font-size: 85%; color: var(--fgColor-muted); }
+.cm-ms-olmark { color: var(--fgColor-muted); font-variant-numeric: tabular-nums; }
+.cm-ms-task-done { color: var(--fgColor-muted); text-decoration: line-through; }
+
+/* Wikilinks are links: underlined in the link colour, muted with a dashed underline when nothing matches. */
+.cm-ms-wikilink { color: var(--fgColor-link); text-decoration: underline; text-underline-offset: 0.2em; cursor: pointer; border-radius: 3px; }
+.cm-ms-wikilink:hover { text-decoration-thickness: 2px; }
+.cm-ms-wikilink:focus-visible { outline: 2px solid var(--focus-outlineColor); outline-offset: 1px; }
+.cm-ms-wikilink.is-missing { color: var(--fgColor-muted); text-decoration-style: dashed; }
+.cm-ms-wikilink-src { color: var(--fgColor-link); }
+
+/* Comment anchors. */
+.cm-ms-comment { background: var(--bgColor-accent-muted); }
+.cm-ms-comment.is-active, .cm-ms-comment.is-flash { background: var(--borderColor-accent-muted); box-shadow: inset 0 -2px 0 var(--borderColor-accent-emphasis); }
+
+.cm-ms-bullet { display: inline-block; width: 1.1em; text-align: center; }
+.cm-ms-bullet::before { content: ""; display: inline-block; width: 0.36em; height: 0.36em; vertical-align: 0.2em; background: var(--fgColor-default); border-radius: 50%; }
+.cm-ms-check { width: 16px; height: 16px; margin: 0 0.35em 0 0.05em; vertical-align: -0.15em; accent-color: var(--control-checked-bgColor-rest); cursor: pointer; }
+.cm-ms-check:focus-visible { outline: 2px solid var(--focus-outlineColor); outline-offset: 1px; }
+
+.ms-cm .cm-ms-hr-line { padding-block: 24px; line-height: 1; }
+.cm-ms-hr { display: inline-block; width: 100%; height: 0.25em; vertical-align: middle; background: var(--borderColor-default); border-radius: 0; }
+
+.ms-cm .cm-ms-quote { padding-left: 1em; color: var(--fgColor-muted); border-left: 0.25em solid var(--borderColor-default); }
+.ms-cm .cm-ms-callout { color: var(--fgColor-default); border-left-color: var(--borderColor-accent-emphasis); }
+.ms-cm .cm-ms-callout.is-first { padding-top: 0.25em; }
+.cm-ms-callout-label { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--fgColor-accent); }
+.cm-ms-callout-icon { display: inline-flex; }
+.ms-cm .cm-ms-callout-tip, .ms-cm .cm-ms-callout-success { border-left-color: var(--borderColor-success-emphasis); }
+.ms-cm :is(.cm-ms-callout-tip, .cm-ms-callout-success) .cm-ms-callout-label { color: var(--fgColor-success); }
+.ms-cm .cm-ms-callout-important { border-left-color: var(--borderColor-done-emphasis); }
+.ms-cm .cm-ms-callout-important .cm-ms-callout-label { color: var(--fgColor-done); }
+.ms-cm .cm-ms-callout-warning { border-left-color: var(--borderColor-attention-emphasis); }
+.ms-cm .cm-ms-callout-warning .cm-ms-callout-label { color: var(--fgColor-attention); }
+.ms-cm :is(.cm-ms-callout-caution, .cm-ms-callout-danger, .cm-ms-callout-error) { border-left-color: var(--borderColor-danger-emphasis); }
+.ms-cm :is(.cm-ms-callout-caution, .cm-ms-callout-danger, .cm-ms-callout-error) .cm-ms-callout-label { color: var(--fgColor-danger); }
+
+/* Code blocks: 16px padding, 6px radius, a 12px language label and a Copy IconButton. */
+.ms-cm .cm-ms-codeblock { padding: 0 16px; font-family: var(--fontStack-monospace); font-size: 85%; line-height: 1.45; background: var(--bgColor-muted); }
+.ms-cm .cm-ms-codeblock.is-first { padding-top: 16px; border-radius: 6px 6px 0 0; }
+.ms-cm .cm-ms-codeblock.is-last { padding-bottom: 16px; border-radius: 0 0 6px 6px; }
+.ms-cm .cm-ms-codeblock-fold { height: 0; overflow: hidden; font-size: 0; line-height: 0; }
+.cm-ms-code-head { display: inline-flex; width: 100%; align-items: center; justify-content: space-between; font-family: var(--fontStack-sansSerif); font-size: 12px; line-height: 20px; color: var(--fgColor-muted); }
+.cm-ms-code-head .cm-ms-code-copy { margin: -4px -8px -4px 0; }
+
+.ms-cm .cm-ms-table-line { font-family: var(--fontStack-monospace); font-size: 85%; }
+
+/* Block widgets keep their vertical space as padding. CodeMirror measures a widget's border box and never its margins. */
+.cm-ms-block {
+  box-sizing: border-box;
+  margin: 0;
+  padding-block: 4px 16px;
+  font-family: var(--fontStack-sansSerif);
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: normal;
+}
+
+.cm-ms-table-block { padding-block: 4px 16px; cursor: text; }
+/* The wrapper scrolls a wide table. markdown.css makes .md-body tables scroll themselves as blocks, and inside a
+   CodeMirror widget that raised live preview scroll CLS from 0.03 to 0.93 on the seeded note, so the table stays a table here. */
+.cm-ms-table { overflow-x: auto; font-size: 16px; }
+.cm-ms-table table { display: table; width: auto; max-width: none; margin: 0; overflow: visible; border-collapse: collapse; }
+
+.cm-ms-media { position: relative; display: block; width: fit-content; max-width: 100%; }
+.cm-ms-media img { display: block; width: auto; max-width: 100%; height: auto; max-height: 640px; border-radius: 6px; cursor: pointer; }
+/* An image without known dimensions keeps a 4:3 box until its source is set. */
+.cm-ms-media img:not([src]) { width: min(320px, 100%); aspect-ratio: 4 / 3; background: var(--bgColor-muted); }
+.cm-ms-media.is-broken { min-width: 160px; min-height: 60px; background: var(--bgColor-muted); border-radius: 6px; }
+
+/* File and note embeds: a card with a fixed height that matches its estimatedHeight. */
+.cm-ms-file-block { height: 72px; }
+.cm-ms-file-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  width: min(420px, 100%);
+  height: 52px;
+  padding: 8px 12px;
+  color: var(--fgColor-default);
+  text-decoration: none;
+  background: var(--bgColor-default);
+  border: var(--borderWidth-thin, 1px) solid var(--borderColor-default);
+  border-radius: 6px;
+}
+
+.cm-ms-file-card:hover { text-decoration: none; background: var(--bgColor-muted); }
+.cm-ms-file-card:focus-visible { outline: 2px solid var(--focus-outlineColor); outline-offset: -2px; }
+.cm-ms-file-card-icon { display: flex; flex: none; align-items: center; justify-content: center; width: 32px; height: 32px; color: var(--fgColor-muted); background: var(--bgColor-muted); border-radius: 6px; }
+.cm-ms-file-card-body { display: flex; flex-direction: column; min-width: 0; }
+.cm-ms-file-card-name { overflow: hidden; font-size: 14px; font-weight: 600; line-height: 20px; text-overflow: ellipsis; white-space: nowrap; }
+.cm-ms-file-card-meta { overflow: hidden; font-size: 12px; line-height: 16px; color: var(--fgColor-muted); text-overflow: ellipsis; white-space: nowrap; }
+
+/* Upload widget: a Box row with a 40px thumbnail, the name, meta, a small ProgressBar and actions. */
+.cm-ms-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  width: min(420px, 100%);
+  min-height: 52px;
+  padding: 8px 12px;
+  background: var(--bgColor-default);
+  border: var(--borderWidth-thin, 1px) solid var(--borderColor-default);
+  border-radius: 6px;
+}
+
+.cm-ms-upload-thumb { display: flex; flex: none; align-items: center; justify-content: center; width: 40px; height: 40px; overflow: hidden; color: var(--fgColor-muted); background: var(--bgColor-muted); border-radius: 6px; }
+.cm-ms-upload-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.cm-ms-upload-body { display: flex; flex: 1 1 auto; flex-direction: column; gap: 2px; min-width: 0; }
+.cm-ms-upload-name { overflow: hidden; font-size: 14px; font-weight: 600; line-height: 20px; text-overflow: ellipsis; white-space: nowrap; }
+.cm-ms-upload-meta { font-size: 12px; line-height: 16px; color: var(--fgColor-muted); }
+.cm-ms-upload-status:empty { display: none; }
+.cm-ms-upload-actions { display: flex; flex: none; gap: 4px; }
+
+/* ---------- Selection toolbar (desktop) ---------- */
+
+.ms-cm .cm-tooltip { color: var(--fgColor-default); background: var(--overlay-bgColor); border: 0; border-radius: 12px; box-shadow: var(--shadow-floating-small); }
+.ms-cm .cm-tooltip:has(> .cm-ms-bubble) { background: transparent; box-shadow: none; }
+.cm-ms-bubble { display: flex; align-items: center; gap: 2px; padding: 4px; font-family: var(--fontStack-sansSerif); background: var(--overlay-bgColor); border-radius: 12px; box-shadow: var(--shadow-floating-small); }
+.cm-ms-bubble-divider { flex: none; width: 1px; height: 20px; margin: 0 4px; background: var(--borderColor-muted); }
+
+/* ---------- Slash menu and link completion: an ActionList anchored to the caret ---------- */
+
+/* A column, so the list shrinks and scrolls when CodeMirror limits the tooltip height to the space it has. */
+.ms-cm .cm-tooltip.cm-tooltip-autocomplete.ms-completion {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  padding: 0;
+  overflow: hidden;
+  font-family: var(--fontStack-sansSerif);
+}
+
+.ms-cm .ms-completion.cm-tooltip-autocomplete > ul {
+  box-sizing: border-box;
+  flex: 0 1 auto;
+  min-width: 0;
+  min-height: 0;
+  max-width: none;
+  max-height: min(320px, 100vh);
+  max-height: min(320px, 100dvh);
+  padding: 8px 0;
+  font-family: inherit;
+}
+
+.ms-cm .ms-completion.cm-tooltip-autocomplete > ul > li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 32px;
+  margin: 0 8px;
+  padding: 6px 8px;
+
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--fgColor-default);
+  border-radius: 6px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.ms-cm .ms-completion.cm-tooltip-autocomplete > ul > li + li { margin-top: 2px; }
+
+@media (hover: hover) {
+  .ms-cm .ms-completion.cm-tooltip-autocomplete > ul > li:hover { background: var(--control-transparent-bgColor-hover); }
+}
+
+.ms-cm .ms-completion.cm-tooltip-autocomplete > ul > li[aria-selected] { color: var(--fgColor-default); background: var(--control-transparent-bgColor-selected); }
+.ms-cm .ms-completion.cm-tooltip-autocomplete > ul > li[aria-selected]::after { content: ""; position: absolute; top: calc(50% - 12px); left: -8px; width: 4px; height: 24px; background: var(--borderColor-accent-emphasis); border-radius: 6px; }
+.ms-completion-icon { display: flex; flex: none; align-items: center; height: 20px; color: var(--fgColor-muted); }
+/* CodeMirror's theme clips items horizontally, which also clipped the hit area below an item. The extra .cm-editor
+   outranks that theme rule. The label and detail wrap instead. */
+.ms-cm .cm-editor .ms-completion.cm-tooltip-autocomplete > ul > li { overflow: visible; }
+.ms-cm .cm-editor .ms-completion.cm-tooltip-autocomplete > ul > completion-section { display: block; margin-top: 8px; }
+.ms-cm .cm-editor .ms-completion.cm-tooltip-autocomplete > ul > completion-section:first-child { margin-top: 0; }
+
+/* Long note titles and paths wrap, as an ActionList inline description does, so the full text stays readable. */
+.ms-cm .ms-completion.cm-tooltip-autocomplete > ul > li { align-items: flex-start; }
+.ms-cm .ms-completion .cm-completionLabel { flex: 0 1 auto; min-width: 0; max-width: 70%; white-space: normal; overflow-wrap: anywhere; }
+.ms-cm .ms-completion .cm-completionDetail { flex: 1 1 0; min-width: 0; margin: 0; font-size: 12px; font-style: normal; color: var(--fgColor-muted); white-space: normal; overflow-wrap: anywhere; }
+.ms-cm .ms-completion .cm-completionMatchedText { font-weight: 600; text-decoration: none; }
+/* Group headings stay in the flow, as ActionList headings do. CodeMirror's sticky heading covered the item above it. */
+.ms-cm .ms-completion .cm-completionSection { position: static; display: block; margin: 8px 0 0; padding: 6px 16px; font-size: 12px; font-weight: 600; line-height: 18px; color: var(--fgColor-muted); background: transparent; border: 0; opacity: 1; }
+.ms-cm .ms-completion .cm-completionSection:first-child { margin-top: 0; }
+
+/* ---------- Wikilink preview and small overlays ---------- */
+
+.ms-wiki-preview { display: flex; flex-direction: column; gap: 8px; }
+.ms-wiki-title { margin: 0; font-size: 14px; font-weight: 600; line-height: 20px; }
+.ms-wiki-excerpt { max-height: 180px; overflow: hidden; font-size: 14px; color: var(--fgColor-muted); -webkit-mask-image: linear-gradient(#000 70%, transparent); mask-image: linear-gradient(#000 70%, transparent); }
+.ms-wiki-excerpt > :first-child { margin-top: 0; }
+.ms-wiki-excerpt :is(h1, h2) { font-size: 1em; border: 0; }
+.ms-wiki-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- AI editor ---------- */
+
+/* Ask bar: a block widget in the note, or docked in the keyboard bar on a phone. */
+.ask-block { padding-block: 8px 16px; }
+
+.ask-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+  padding: 8px;
+  font: 400 14px/20px var(--fontStack-sansSerif);
+  color: var(--fgColor-default);
+  white-space: normal;
+  background: var(--bgColor-default);
+  border: var(--borderWidth-thin, 1px) solid var(--borderColor-default);
+  border-radius: 6px;
+  box-shadow: var(--shadow-resting-small);
+}
+
+.ask-bar[hidden], .ask-actions[hidden], .ask-mentions[hidden], .answer-card[hidden], .image-gen-options[hidden], .ask-bar-note[hidden] { display: none; }
+/* The rows keep their height when the docked bar is capped, so the bar scrolls instead of squeezing them together. */
+.ask-bar > * { flex-shrink: 0; }
+/* The row is the input's box, with a control border of 3:1 against the bar (docs/primer.md 9.3). */
+.ask-input-row { display: flex; align-items: flex-start; gap: 8px; box-sizing: border-box; padding-inline: 4px; border: var(--borderWidth-thin, 1px) solid var(--control-borderColor-rest); border-radius: 6px; }
+.ask-input-visual { display: flex; flex: none; align-items: center; height: 32px; padding-inline-start: 4px; color: var(--fgColor-muted); }
+
+.ask-input {
+  flex: 1 1 auto;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 32px;
+  margin: 0;
+  padding: 6px 0;
+  font: inherit;
+  line-height: 20px;
+  color: var(--fgColor-default);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  resize: none;
+}
+
+.ask-input:focus, .ask-input:focus-visible { outline: none; box-shadow: none; }
+.ask-input::placeholder { color: var(--fgColor-muted); }
+/* The borderless field shows focus on its row, as Primer's TextInput does on its box. */
+.ask-input-row:has(.ask-input:focus-visible), .ask-input-row:has(.ask-input:focus) { outline: 2px solid var(--borderColor-accent-emphasis); outline-offset: 2px; }
+.ask-send, .ask-bar-close { flex: none; margin-top: 2px; }
+.ask-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ask-other { width: 10em; }
+.ask-outputs { display: flex; }
+.ask-chips-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ask-chips { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; margin: 0; padding: 0; list-style: none; }
+.ask-chip-item { display: flex; min-width: 0; max-width: 100%; }
+.ask-chip { max-width: 260px; }
+.ask-chip-thumb { width: 16px; height: 16px; object-fit: cover; border-radius: 3px; }
+.ask-estimate { margin-left: auto; font-size: 12px; color: var(--fgColor-muted); white-space: nowrap; }
+.ask-estimate.is-warn { color: var(--fgColor-attention); }
+.ask-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ask-spacer { flex: 1 1 auto; }
+.model-chip { max-width: 220px; }
+.model-chip .btn-label { overflow: hidden; text-overflow: ellipsis; }
+.ask-bar-note { margin: 0; }
+
+/* Mentions: an Autocomplete list under the field. */
+/* The outline is an inset shadow, so the list keeps the 8px ActionList inset from its edge. */
+.ask-mentions { max-height: 240px; margin: 0; overflow-y: auto; background: var(--overlay-bgColor); border: 0; border-radius: 6px; box-shadow: inset 0 0 0 1px var(--borderColor-default); }
+.ask-mention { display: flex; align-items: center; gap: 8px; width: auto; margin-inline: 8px; cursor: pointer; }
+.ask-mention + .ask-mention { margin-top: 2px; }
+.ask-mention[aria-selected="true"] { background: var(--control-transparent-bgColor-selected); }
+.ask-mentions-empty { padding: 6px 16px; font-size: 14px; color: var(--fgColor-muted); }
+
+.image-gen-options, .image-count { display: inline-flex; align-items: center; gap: 4px; }
+.image-count-value { min-width: 1.5em; text-align: center; font-variant-numeric: tabular-nums; }
+.image-size select { min-width: 8em; }
+
+/* Answer card and citations. */
+.answer-card { padding: 12px; background: var(--bgColor-default); border: var(--borderWidth-thin, 1px) solid var(--borderColor-muted); border-radius: 6px; }
+.answer-title { margin-bottom: 4px; font-weight: 600; }
+.answer-body { overflow-wrap: anywhere; }
+.answer-body.md-body { font-size: 14px; }
+.answer-body > :first-child { margin-top: 0; }
+.answer-body > :last-child { margin-bottom: 0; }
+.answer-foot { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.answer-foot:empty { display: none; }
+.answer-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.citation-list { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.citation-item { display: flex; min-width: 0; max-width: 100%; }
+.citation-chip.token { max-width: 100%; font: inherit; font-size: 12px; cursor: pointer; border: var(--borderWidth-thin, 1px) solid var(--borderColor-emphasis); }
+.citation-chip.token:focus-visible { outline: 2px solid var(--focus-outlineColor); outline-offset: 1px; }
+.citation { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; padding: 0 4px; font: 600 11px/1 var(--fontStack-sansSerif); color: var(--fgColor-accent); vertical-align: super; background: var(--bgColor-accent-muted); border: 0; border-radius: 999px; }
+button.citation { cursor: pointer; }
+button.citation:focus-visible { outline: 2px solid var(--focus-outlineColor); outline-offset: 1px; }
+.citation-chip .citation { vertical-align: 0; }
+
+/* The spark IconButton in the start margin of the cursor line. */
+.ask-spark-line { position: relative; }
+.ms-cm .ask-spark.btn { position: absolute; top: -2px; left: -36px; }
+
+/* Tracked changes: Primer diff word colours. */
+.hunk-del { color: var(--fgColor-default); text-decoration: line-through; background: var(--diffBlob-deletionWord-bgColor); border-radius: 3px; }
+.hunk-ins { color: var(--fgColor-default); text-decoration: none; white-space: pre-wrap; background: var(--diffBlob-additionWord-bgColor); border-radius: 3px; }
+.hunk.is-current { box-shadow: 0 0 0 2px var(--borderColor-accent-emphasis); }
+/* A line with hunks is 28px tall, so its 28px IconButtons never overlap the pair of the next line. */
+.hunk-line { position: relative; padding-block: 2px; }
+.hunk-actions { position: absolute; top: 0; right: calc(100% + 8px); display: inline-flex; gap: 8px; font-family: var(--fontStack-sansSerif); line-height: 1; }
+.hunk-actions.is-stacked { gap: 8px; }
+.hunk-pair { display: inline-flex; gap: 2px; background: var(--bgColor-default); border-radius: 6px; }
+.change-block { padding-block: 8px 4px; }
+.change-header { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-height: 28px; font: 600 12px/20px var(--fontStack-sansSerif); color: var(--fgColor-muted); white-space: normal; }
+.change-state { font-weight: 400; }
+/* The header scrolls into view with room around it, so its buttons keep their full hit areas next to a bar. */
+.change-block .change-header { scroll-margin-block: 8px; }
+.change-actions { display: inline-flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.change-actions:empty { display: none; }
+.change-header > .inline-message { flex-basis: 100%; font-weight: 400; }
+
+/* Image actions and generation. */
+.image-actions-block { padding-block: 0 16px; }
+.image-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; box-sizing: border-box; width: fit-content; max-width: 100%; padding: 4px; font: 400 14px/20px var(--fontStack-sansSerif); white-space: normal; background: var(--bgColor-default); border: var(--borderWidth-thin, 1px) solid var(--borderColor-default); border-radius: 6px; }
+.image-actions-name { max-width: 180px; margin: 0 4px; overflow: hidden; font-size: 12px; color: var(--fgColor-muted); text-overflow: ellipsis; white-space: nowrap; }
+.image-actions-link { padding: 0 8px; font-size: 12px; }
+.image-gen-block { padding-block: 8px 16px; }
+.image-gen { padding: 12px; font: 400 14px/20px var(--fontStack-sansSerif); white-space: normal; background: var(--bgColor-default); border: var(--borderWidth-thin, 1px) solid var(--borderColor-default); border-radius: 6px; box-shadow: var(--shadow-resting-small); }
+.image-gen .change-header { margin: 0 0 8px; }
+.image-gen-progress { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; font-size: 12px; color: var(--fgColor-muted); }
+.image-gen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 8px 0; }
+.image-gen-result { display: flex; flex-direction: column; gap: 8px; margin: 0; }
+.image-gen-result img { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--bgColor-muted); border-radius: 6px; }
+.image-gen-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Image editor: a Dialog that fills the screen on narrow viewports, with Back. */
+.dialog.image-editor .dialog-body { display: flex; flex-direction: column; }
+.image-editor-body { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+.image-editor-stage { display: flex; align-items: center; justify-content: center; min-height: 160px; padding: 16px; overflow: hidden; background: var(--bgColor-inset); border-radius: 6px; }
+.image-editor-frame { position: relative; display: flex; max-width: 100%; }
+.image-editor-before, .image-editor-after { display: block; max-width: 100%; max-height: calc(100vh - 440px); max-height: calc(100dvh - 440px); min-height: 120px; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+.image-editor-after { position: absolute; inset: 0; width: 100%; height: 100%; }
+.image-editor-after[hidden], .image-editor-mask[hidden] { display: none; }
+.image-editor-mask { position: absolute; top: 0; left: 0; cursor: crosshair; touch-action: none; }
+.image-editor-compare-row, .image-editor-tools, .image-editor-save-row, .image-editor-prompt-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.image-editor-compare-row[hidden], .image-editor-tools[hidden], .image-editor-save-row[hidden], .image-editor-progress[hidden] { display: none; }
+.image-editor-field { display: flex; align-items: center; gap: 8px; }
+.image-editor-label { font-size: 14px; font-weight: 600; line-height: 20px; }
+.image-editor-prompt-row { align-items: flex-end; }
+.image-editor-prompt-field { display: flex; flex: 1 1 240px; flex-direction: column; gap: 4px; }
+.image-editor-prompt-field .text-input > textarea { min-height: 52px; padding: 6px 12px; font: inherit; resize: vertical; background: transparent; border: 0; outline: none; }
+.image-editor-progress { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; color: var(--fgColor-muted); }
+.image-editor-save-line { flex: 1 1 260px; margin: 0; font-size: 12px; color: var(--fgColor-muted); }
+.image-editor input[type="range"] { min-height: 32px; accent-color: var(--control-checked-bgColor-rest); }
+.image-editor-compare { flex: 1 1 200px; }
+
+@media (pointer: coarse) {
+  .image-editor input[type="range"] { min-height: 44px; }
+}
+
+/* AI rail tab. */
+.ai-tab .ai-thread { display: flex; flex-direction: column; gap: 16px; margin: 0; padding: 0; list-style: none; }
+.ai-tab .ai-turn.is-user { align-self: flex-end; max-width: 85%; }
+.ai-tab .ai-question { padding: 8px 12px; font-size: 14px; line-height: 20px; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bgColor-muted); border: var(--borderWidth-thin, 1px) solid var(--borderColor-muted); border-radius: 12px; }
+.ai-tab .ai-turn.is-answer .answer-body { font-size: 14px; }
+.ai-tab .ai-turn .citation-list, .ai-tab .ai-turn .answer-actions { margin-top: 8px; }
+.ai-tab .ai-error-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ai-thread-composer { display: flex; flex-direction: column; gap: 8px; padding: 8px; background: var(--bgColor-default); border: var(--borderWidth-thin, 1px) solid var(--borderColor-default); border-radius: 6px; }
+.ai-thread-composer[hidden] { display: none; }
+.ai-usage { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-top: 8px; font-size: 12px; color: var(--fgColor-muted); }
+.ai-usage:empty { display: none; }
+.ai-usage .progress-bar { flex: 1 1 80px; }
+.ai-usage.is-warn .usage-text { color: var(--fgColor-attention); }
+
+/* The offline message under an inactive AI trigger. */
+.ai-offline-overlay .overlay-body { padding: 8px 12px; }
+
+/* ---------- Touch targets (docs/primer.md 9.2) ---------- */
+
+/* Coarse pointers get 44px hit areas from invisible pseudo-elements, as Primer CSS's minTouchTarget does. */
+@media (pointer: coarse) {
+  .ask-chip .token-remove, .ai-tab .token-remove, .citation-chip.token, button.citation { position: relative; }
+  .ask-chip .token-remove::before, .ai-tab .token-remove::before, .citation-chip.token::before, button.citation::before {
+    content: ""; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%;
+    min-width: var(--control-minTarget-coarse, 44px); min-height: var(--control-minTarget-coarse, 44px); transform: translate(-50%, -50%);
+  }
+  .ai-usage .usage-link { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; }
+  .citation-list { gap: 8px; }
+  /* Rows of 24px and 20px Tokens are 28px tall, so with the 8px gaps around them each Token has a 44px target. */
+  .ask-chips-row { box-sizing: border-box; min-height: 28px; padding-block: 2px; }
+  /* Wrapped chips keep 10px between rows, so each 24px Token has a 44px target. */
+  .ask-chips { gap: 10px 8px; }
+  /* The small Buttons in a tracked change header get 44px hit areas, as Primer CSS's minTouchTarget does. */
+  .change-actions .btn { position: relative; }
+  .change-actions .btn::before { content: ""; position: absolute; top: 50%; left: 0; width: 100%; min-height: var(--control-minTarget-coarse, 44px); transform: translateY(-50%); }
+  .citation-item { align-items: center; min-height: 28px; }
+}
+
+/* ---------- Narrow viewports and short touch screens ---------- */
+
+@media (max-width: 767.98px), (pointer: coarse) and (max-height: 500px) {
+  .ms-editor-bar { padding-inline: calc(var(--ms-pad-inline) + env(safe-area-inset-left, 0px)) calc(var(--ms-pad-inline) + env(safe-area-inset-right, 0px)); }
+  .ms-words { display: none; }
+  .ms-status { margin-inline-start: 0; }
+  .ms-status-text { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .ms-editor-bar .ms-done { height: var(--control-large-size, 40px); padding-inline: 16px; }
+  .ms-editor .ms-title, .ms-preview-page.md-body > .ms-preview-title { font-size: 20px; font-weight: 600; }
+  .ms-page, .ms-preview-page { padding-top: 16px; }
+  .ms-drawer { top: auto; left: 0; width: auto; max-height: calc(100vh - 64px); max-height: calc(100dvh - 64px); border-top: var(--borderWidth-thin, 1px) solid var(--borderColor-default); border-left: 0; border-radius: 12px 12px 0 0; }
+  .ask-input { min-height: 44px; padding-block: 12px; font-size: 16px; }
+  /* Icon-only mode segments are 44px wide, so each has a 44 x 44px target. */
+  .ms-seg .segmented-control-button { min-width: 44px; }
+  .ask-actions { flex-wrap: nowrap; overflow-x: auto; }
+  /* Chips wrap, so no chip is cut at the edge of a sideways scroller or next to the estimate. */
+  .ask-bar .ask-chips { flex: 1 1 auto; }
+  .ask-input-row { align-items: center; }
+  .ask-input-visual { height: auto; }
+  .ask-bar .ask-chip { max-width: 100%; }
+}
+
+/* Completion items are 40px below 768px, as viewport ranges decide layout (docs/primer.md 8.1 row 8). */
+@media (max-width: 767.98px) {
+  .ms-cm .ms-completion.cm-tooltip-autocomplete > ul > li { min-height: 40px; padding-block: 10px; }
+}
+
+/* On touch screens 6px between items gives each one a 44px target together with the space around it (docs/primer.md 9.2). */
+@media (pointer: coarse) {
+  .ms-cm .ms-completion.cm-tooltip-autocomplete > ul > li + li { margin-top: 6px; }
+  /* The hit area reaches 6px past the item, also over a section heading that follows it. */
+  .ms-cm .ms-completion.cm-tooltip-autocomplete > ul > li::before { content: ""; position: absolute; inset: -6px 0; }
+}
+
+/* At 320px the icon-only SegmentedControl, two IconButtons and Done fit the bar with 6px gaps, which still give the
+   32px IconButtons 44px targets. */
+@media (max-width: 359.98px) {
+  .ms-editor-bar { gap: 6px; }
+}
+
+/* The AI tab rail is narrow, so its chips wrap and each Token fits the row, with the estimate on its own line. */
+.ai-tab .ask-chips-row { flex-wrap: wrap; }
+.ai-tab .ask-chips { flex: 1 1 100%; flex-wrap: wrap; overflow: visible; }
+.ai-tab .ask-chip-item { max-width: 100%; }
+.ai-tab .ask-chip { max-width: 100%; }
+
+/* ---------- Server editor page without the offline client (docs/primer.md 9.2) ---------- */
+
+/* Coarse pointers and narrow viewports get 44px targets in the plain editor form. */
+@media (pointer: coarse), (max-width: 767.98px) {
+  .editor-main .toolbar .tool { min-width: 44px; height: 44px; }
+  .editor-rail .field :is(input, select), .editor-rail textarea { min-height: 44px; }
+  .editor-rail .btn { min-height: 44px; }
+}
+
+/* ---------- Editor bar with the Find button on narrow screens ---------- */
+
+/* This rule stays last, after the 6px bar gaps of the coarse pointer and 320px rules above. At 320px the icon-only
+   SegmentedControl, the status icon, Find, typewriter scrolling, focus mode and Done need 346px. Below 382px these
+   three IconButtons leave the bar for the More editor actions ActionMenu, which takes one 32px slot. */
+.ms-editor-bar .ms-bar-more { display: none; }
+@media (max-width: 381.98px) {
+  .ms-editor-bar :is(.ms-find-btn, .ms-type-btn, .ms-focus-btn) { display: none; }
+  .ms-editor-bar .ms-bar-more { display: inline-flex; }
+}

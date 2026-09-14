@@ -1,0 +1,17 @@
+{{ define "title" }}{{ .Status }} {{ .Title }}{{ end }}
+{{ define "content" }}
+{{/* A spacious Blankslate (docs/primer.md 5.9). The error code is part of the
+     description. fail() leaves Page.Error empty, so no flash Banner repeats
+     the heading. */}}
+<div class="interstitial-blankslate error-page">
+  <div class="blankslate blankslate-spacious">
+    <div class="blankslate-inner">
+      <span class="blankslate-visual" aria-hidden="true">{{ octicon "alert" 24 }}</span>
+      <h1 class="blankslate-heading">{{ .Title }}</h1>
+      <p class="blankslate-description">{{ with .Get "Detail" }}{{ . }} {{ end }}Error {{ .Status }}.</p>
+      <div class="blankslate-action"><a class="btn btn-primary" href="/">Go to the home page</a></div>
+      <div class="blankslate-action">{{ if .User }}<a href="/spaces">All spaces</a>{{ else }}<a href="/login">Sign in</a>{{ end }}</div>
+    </div>
+  </div>
+</div>
+{{ end }}

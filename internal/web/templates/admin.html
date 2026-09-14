@@ -1,0 +1,34 @@
+{{ define "title" }}Administration{{ end }}
+{{ define "sidebar" }}{{ template "admin_sidebar" . }}{{ end }}
+{{ define "content" }}
+<div class="admin-page">
+  <div class="page-header" data-border="true">
+    <div class="page-header-title-area"><h1 class="page-header-title" tabindex="-1">Administration</h1></div>
+    <p class="page-header-description">People, AI, plugins, jobs and settings of {{ .InstanceName }}.</p>
+  </div>
+  {{ template "admin_index" . }}
+  <section class="admin-section" aria-labelledby="stats-title">
+    <div class="section-heading"><h2 class="section-heading-title" id="stats-title">Overview</h2></div>
+    {{ with .Get "Stats" }}
+    <dl class="admin-stats">
+      <div class="tile"><dt class="tile-label">Users</dt><dd class="tile-value">{{ .Users }}</dd></div>
+      <div class="tile"><dt class="tile-label">Spaces</dt><dd class="tile-value">{{ .Spaces }}</dd></div>
+      <div class="tile"><dt class="tile-label">Notes</dt><dd class="tile-value">{{ .Notes }}</dd></div>
+      <div class="tile"><dt class="tile-label">Files</dt><dd class="tile-value">{{ .Files }}</dd></div>
+      <div class="tile"><dt class="tile-label">Comments</dt><dd class="tile-value">{{ .Comments }}</dd></div>
+      <div class="tile"><dt class="tile-label">On disk</dt><dd class="tile-value">{{ bytes .DiskBytes }}</dd></div>
+    </dl>
+    {{ if not .IndexedAt.IsZero }}<p class="admin-stats-note">The search index was last rebuilt {{ timeAgo .IndexedAt }}. <a href="/admin/settings#index-title">Rebuild the index</a></p>{{ end }}
+    {{ else }}
+    <div class="blankslate blankslate-small blankslate-border">
+      <div class="blankslate-inner">
+        <div class="blankslate-visual" aria-hidden="true">{{ octicon "alert" 24 }}</div>
+        <h3 class="blankslate-heading">Statistics are unavailable</h3>
+        <p class="blankslate-description">The instance could not count its content. Reload the page to try again.</p>
+      </div>
+    </div>
+    {{ end }}
+  </section>
+</div>
+{{ end }}
+{{ define "scripts" }}<script type="module" src="/static/js/admin.js"></script>{{ end }}

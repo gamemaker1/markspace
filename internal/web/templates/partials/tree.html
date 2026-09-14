@@ -1,0 +1,36 @@
+{{- define "tree" -}}
+{{/* The server page tree: nested links in TreeView style. app.js toggles
+     [data-tree-toggle] and remembers open folders. The client shell draws the
+     keyboard TreeView from filetree.js instead. */}}
+{{ $space := .Space }}{{ $current := .Current }}{{ $expanded := .Expanded }}{{ $depth := .Depth }}
+{{ if .Nodes }}
+<ul class="server-tree"{{ if eq $depth 0 }} aria-labelledby="pages-heading"{{ end }} data-depth="{{ $depth }}">
+  {{ range $node := .Nodes }}
+  {{ $id := treeID $node }}
+  {{ $open := index $expanded $id }}
+  {{ $here := treeCurrent $node $current }}
+  <li class="tree-item tree-{{ $node.Kind }}{{ if $open }} open{{ end }}" data-tree-item="{{ $id }}" data-kind="{{ $node.Kind }}">
+    <div class="tree-row{{ if $here }} current{{ end }}">
+      {{ if $node.Children }}
+      <button class="tree-view-toggle btn-invisible" type="button" data-tree-toggle aria-expanded="{{ if $open }}true{{ else }}false{{ end }}" aria-label="Toggle {{ treeLabel $node }}">
+        <span class="tree-view-chevron-closed" aria-hidden="true">{{ octicon "chevron-right" 16 }}</span><span class="tree-view-chevron-open" aria-hidden="true">{{ octicon "chevron-down" 16 }}</span>
+      </button>
+      {{ else }}
+      <span class="tree-toggle-spacer" aria-hidden="true"></span>
+      {{ end }}
+      <a class="tree-link" href="{{ treeURL $space $node }}"{{ if $here }} aria-current="page"{{ end }}>
+        <span class="tree-glyph" aria-hidden="true">{{ if eq (print $node.Kind) "folder" }}{{ octicon "file-directory-fill" 16 }}{{ else if eq (print $node.Kind) "file" }}{{ octicon "file" 16 }}{{ else if and $node.Note $node.Note.Icon }}{{ $node.Note.Icon }}{{ else }}{{ octicon "note" 16 }}{{ end }}</span><span class="tree-label">{{ treeLabel $node }}</span>
+      </a>
+    </div>
+    {{ if $node.Children }}
+    <div class="tree-children"{{ if not $open }} hidden{{ end }}>
+      {{ template "tree" dict "Nodes" $node.Children "Space" $space "Current" $current "Expanded" $expanded "Depth" (add $depth 1) }}
+    </div>
+    {{ end }}
+  </li>
+  {{ end }}
+</ul>
+{{ else }}
+<p class="tree-empty">No pages yet</p>
+{{ end }}
+{{- end -}}

@@ -1,0 +1,127 @@
+{{ define "title" }}{{ with .Note }}{{ .Title }}{{ end }}{{ end }}
+{{ define "content" }}
+{{ $rendered := .Get "Rendered" }}
+{{/* base.html does not load the panel styles, so the side column links them here. */}}
+<link rel="stylesheet" href="/static/css/panels.css">
+<div class="note-layout">
+  <article class="note" data-note-view>
+    <section class="banner banner-warning" aria-label="Warning" data-note-changed data-ui-banner data-variant="warning" hidden>
+      <div class="banner-icon" aria-hidden="true">{{ octicon "alert" 16 }}</div>
+      <div class="banner-container"><div class="banner-content"><h2 class="banner-title">This page changed on disk</h2><div class="banner-description"><p><a href="{{ .RequestPath }}">Reload</a> to see the latest version.</p></div></div></div>
+    </section>
+    {{ with .Get "Confirm" }}
+    <section class="box box-danger note-confirm" id="confirm" role="alertdialog" aria-labelledby="confirm-title" aria-describedby="confirm-body">
+      <div class="box-body">
+        <h2 class="note-confirm-title" id="confirm-title">{{ .Title }}</h2>
+        <p id="confirm-body">{{ .Body }}</p>
+        <form class="note-confirm-actions" method="post" action="{{ noteURL $.Space $.Note }}">
+          <input type="hidden" name="action" value="{{ .Action }}">
+          <input type="hidden" name="{{ .Field }}" value="{{ .Target }}">
+          <input type="hidden" name="confirmed" value="1">
+          <a class="btn" href="{{ noteURL $.Space $.Note }}">Cancel</a>
+          <button class="btn btn-danger" type="submit">{{ .Label }}</button>
+        </form>
+      </div>
+    </section>
+    {{ end }}
+    {{ with .Crumbs }}
+    <nav class="breadcrumb" aria-label="Breadcrumbs">
+      <ol>
+        <li><a href="{{ spaceURL $.Space }}">{{ with $.Space }}{{ .Name }}{{ end }}</a></li>
+        {{ range . }}
+        <li>{{ if .URL }}<a href="{{ .URL }}">{{ .Name }}</a>{{ else }}<span aria-current="page">{{ .Name }}</span>{{ end }}</li>
+        {{ end }}
+      </ol>
+    </nav>
+    {{ end }}
+    <header class="note-header">
+      <h1 class="note-title" tabindex="-1">{{ with .Note.Icon }}<span class="note-icon" aria-hidden="true">{{ . }}</span>{{ end }}<span>{{ .Note.Title }}</span></h1>
+      <div class="note-toolbar">
+        {{ if hasAccess .Grant "edit" }}
+        <a class="btn btn-primary" href="{{ noteURL .Space .Note }}?edit=1"><span class="btn-visual btn-leading" aria-hidden="true">{{ octicon "pencil" 16 }}</span><span class="btn-label">Edit</span></a>
+        {{ end }}
+        <form method="post" action="{{ noteURL .Space .Note }}" class="inline-form">
+          <input type="hidden" name="action" value="{{ if .Note.Starred }}unstar{{ else }}star{{ end }}">
+          <button class="btn" type="submit" data-star="{{ .Note.ID }}" data-starred="{{ .Note.Starred }}" aria-pressed="{{ .Note.Starred }}">{{ if .Note.Starred }}&#9733; Starred{{ else }}&#9734; Star{{ end }}</button>
+        </form>
+        <button class="btn btn-icon" type="button" popovertarget="note-menu" aria-label="More actions for {{ .Note.Title }}">{{ octicon "kebab-horizontal" 16 }}</button>
+        <div class="row-menu" id="note-menu" popover data-action-menu>
+          {{ if hasAccess .Grant "manage" }}<a class="menu-item" href="#share">Share</a>{{ end }}
+          <a class="menu-item" href="#history" data-history="{{ .Note.ID }}">History</a>
+          <a class="menu-item" href="/n/{{ .Note.ID }}">Permalink</a>
+          {{ if hasAccess .Grant "edit" }}
+          <form method="post" action="{{ noteURL .Space .Note }}">
+            <input type="hidden" name="action" value="child">
+            <button class="menu-item" type="submit">Add child page</button>
+          </form>
+          <hr class="menu-sep">
+          <form method="post" action="{{ noteURL .Space .Note }}">
+            <input type="hidden" name="action" value="trash">
+            <button class="menu-item danger" type="submit" data-undo-action="restore" data-undo-field-note-id="{{ .Note.ID }}" data-undo-label="Moved {{ .Note.Title }} to the trash">Move to trash</button>
+          </form>
+          {{ end }}
+        </div>
+      </div>
+    </header>
+    {{ template "note_meta" . }}
+
+    {{ if .Get "ShowTOC" }}
+    <nav class="toc" aria-labelledby="toc-title">
+      <h2 id="toc-title">Contents</h2>
+      <ol>
+        {{ range $rendered.TOC }}
+        <li class="toc-l{{ .Level }}"><a href="#{{ .ID }}">{{ .Text }}</a></li>
+        {{ end }}
+      </ol>
+    </nav>
+    {{ end }}
+
+    <div class="md-body">{{ with $rendered }}{{ safeHTML .HTML }}{{ end }}</div>
+
+    <section class="note-history" id="history" data-history-panel hidden aria-labelledby="history-title">
+      <h2 class="note-rail-title" id="history-title">History</h2>
+      <div data-history-list><p class="muted">Loading versions.</p></div>
+    </section>
+  </article>
+
+  <aside class="note-rail" aria-label="Page details">
+    {{ template "comments" . }}
+    <section class="note-rail-section" aria-labelledby="backlinks-title">
+      <h2 class="note-rail-title" id="backlinks-title">Backlinks</h2>
+      {{ with .Get "Backlinks" }}
+      <ul class="list-rows">
+        {{ range $link := . }}
+        {{ with $link.FromNote }}
+        <li class="list-row no-lead">
+          <span class="list-row-main">
+            <a class="list-row-title" href="{{ if .SpaceSlug }}{{ noteURL . . }}{{ else }}{{ noteURL $.Space . }}{{ end }}">{{ .Title }}</a>
+            {{ with $link.Context }}<span class="list-row-sub is-wrap">{{ truncate 140 . }}</span>{{ end }}
+          </span>
+        </li>
+        {{ end }}
+        {{ end }}
+      </ul>
+      {{ else }}
+      <div class="blankslate blankslate-small blankslate-border">
+        <div class="blankslate-inner">
+          <span class="blankslate-visual" aria-hidden="true">{{ octicon "link" 24 }}</span>
+          <h3 class="blankslate-heading">No backlinks</h3>
+          <p class="blankslate-description">No other page links here.</p>
+        </div>
+      </div>
+      {{ end }}
+    </section>
+    {{ with .Get "Children" }}
+    <section class="note-rail-section" aria-labelledby="children-title">
+      <h2 class="note-rail-title" id="children-title">Child pages</h2>
+      <ul class="list-rows">
+        {{ range . }}
+        <li class="list-row"><span class="list-row-lead"><span class="list-row-glyph" aria-hidden="true">{{ iconOr . }}</span></span><span class="list-row-main"><a class="list-row-title" href="{{ noteURL $.Space . }}">{{ .Title }}</a></span></li>
+        {{ end }}
+      </ul>
+    </section>
+    {{ end }}
+    {{ template "share_panel" . }}
+  </aside>
+</div>
+{{ end }}

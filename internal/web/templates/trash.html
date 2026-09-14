@@ -1,0 +1,57 @@
+{{ define "title" }}Trash{{ end }}
+{{ define "content" }}
+{{ $action := printf "%s/trash" (spaceURL .Space) }}
+{{ $notes := .Get "Notes" }}
+<div class="browse-page">
+<div class="page-header" data-border="true">
+  <div class="page-header-title-area"><h1 class="page-header-title" id="page-title">Trash</h1></div>
+  {{ if and $notes (hasAccess .SpaceAccess "manage") }}
+  <div class="page-header-actions">
+    {{/* With scripting on, the form asks in a ConfirmationDialog. With it off,
+         the noscript form posts noscript=1 and the handler renders a
+         confirmation page first. */}}
+    <form method="post" action="{{ $action }}" data-js-only hidden>
+      <input type="hidden" name="action" value="empty">
+      <button class="btn btn-danger" type="submit" data-confirm="Empty the trash?" data-confirm-detail="Every page in the trash is deleted forever. This cannot be undone.">Empty trash</button>
+    </form>
+    <noscript><form method="post" action="{{ $action }}"><input type="hidden" name="action" value="empty"><input type="hidden" name="noscript" value="1"><button class="btn btn-danger" type="submit">Empty trash</button></form></noscript>
+  </div>
+  {{ end }}
+  <p class="page-header-description">{{ with .Space }}Deleted pages from {{ .Name }}. Restore a page to put it back where it was.{{ end }}</p>
+</div>
+
+{{ with $notes }}
+<ul class="rows trash-rows" role="list" aria-labelledby="page-title">
+  {{ range . }}
+  <li data-row="{{ .ID }}">
+    <div class="note-row">
+      <span class="note-row-icon" aria-hidden="true">{{ with .Icon }}{{ . }}{{ else }}{{ octicon "note" 16 }}{{ end }}</span>
+      <div class="note-row-body">
+        <span class="note-row-title">{{ .Title }}</span>
+        <span class="note-row-meta">{{ with .DeletedAt }}Deleted {{ timeAgo . }}{{ else }}Deleted{{ end }}</span>
+      </div>
+      <div class="note-row-actions">
+        <form method="post" action="{{ $action }}" class="inline-form">
+          <input type="hidden" name="noteId" value="{{ .ID }}">
+          <input type="hidden" name="action" value="restore">
+          <button class="btn btn-sm" type="submit" aria-label="Restore {{ .Title }}" data-restore="{{ .ID }}">Restore</button>
+        </form>
+        <button class="btn btn-icon btn-invisible btn-sm row-menu-btn" type="button" popovertarget="trash-menu-{{ .ID }}" aria-label="More actions: {{ .Title }}" data-tooltip="More actions: {{ .Title }}">{{ octicon "kebab-horizontal" 16 }}</button>
+        <div class="row-menu" id="trash-menu-{{ .ID }}" popover>
+          <form method="post" action="{{ $action }}" data-js-only hidden>
+            <input type="hidden" name="noteId" value="{{ .ID }}">
+            <input type="hidden" name="action" value="delete">
+            <button class="menu-item danger" type="submit" data-delete-note="{{ .ID }}" data-confirm="Delete {{ .Title }} forever?" data-confirm-detail="The page cannot be restored afterwards.">Delete forever</button>
+          </form>
+          <noscript><form method="post" action="{{ $action }}"><input type="hidden" name="noteId" value="{{ .ID }}"><input type="hidden" name="action" value="delete"><input type="hidden" name="noscript" value="1"><button class="menu-item danger" type="submit">Delete forever</button></form></noscript>
+        </div>
+      </div>
+    </div>
+  </li>
+  {{ end }}
+</ul>
+{{ else }}
+{{ template "ui_blankslate" dict "Icon" "trash" "Title" "The trash is empty" "Description" "Pages you move to the trash show up here until someone deletes them forever." }}
+{{ end }}
+</div>
+{{ end }}

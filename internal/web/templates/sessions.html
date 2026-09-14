@@ -1,0 +1,36 @@
+{{ define "title" }}Sessions{{ end }}
+{{ define "sidebar" }}{{ template "settings_pane" . }}{{ end }}
+{{ define "content" }}
+<div class="settings-page">
+{{ template "ui_page_header" dict "Title" "Sessions" "Description" "Browsers and devices signed in to your account. Sign out the ones you no longer use." "Parent" "Settings" "ParentURL" "/settings" "Border" true }}
+{{ with .Get "Sessions" }}
+<div class="table-scroll" role="region" tabindex="0" aria-label="Sessions table">
+  <table class="data-table settings-table" aria-labelledby="page-title">
+    <thead>
+      <tr><th scope="col">Browser</th><th scope="col" class="col-hide-narrow">Address</th><th scope="col">Last seen</th><th scope="col" class="col-actions"><span class="sr-only">Actions</span></th></tr>
+    </thead>
+    <tbody>
+      {{ range . }}
+      {{ $name := $.BrowserName .UserAgent }}
+      <tr data-row="{{ .ID }}">
+        <th scope="row"><span class="cell-main"><span class="cell-title">{{ $name }}</span>{{ with .IP }}<span class="cell-sub only-narrow-cell">{{ . }}</span>{{ end }}</span></th>
+        <td class="col-nowrap col-hide-narrow">{{ .IP }}</td>
+        <td class="col-nowrap">{{ timeAgo .LastSeen }}</td>
+        <td class="col-actions">
+          <form method="post" action="/settings/sessions" class="inline-form">
+            <input type="hidden" name="action" value="session-revoke">
+            <input type="hidden" name="sessionId" value="{{ .ID }}">
+            {{ template "ui_noscript_marker" }}
+            <button class="btn btn-sm" type="submit" aria-label="Sign out {{ $name }}" data-confirm="Sign out {{ $name }}?" data-confirm-detail="That browser has to sign in again. Notes it saved offline stay on it until then.">Sign out</button>
+          </form>
+        </td>
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+</div>
+{{ else }}
+{{ template "ui_blankslate" dict "Icon" "device-desktop" "Title" "No sessions" "Description" "Browsers you sign in with show up here." "Border" true }}
+{{ end }}
+</div>
+{{ end }}

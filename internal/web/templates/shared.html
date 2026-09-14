@@ -1,0 +1,32 @@
+{{ define "title" }}Shared with me{{ end }}
+{{ define "content" }}
+<div class="browse-page">
+{{ template "ui_page_header" dict "Title" "Shared with me" "Border" true }}
+{{ with .Get "Shares" }}
+<ul class="rows" role="list" aria-labelledby="page-title">
+  {{ range . }}
+  <li>
+    {{ $shared := .CreatedAt }}
+    <div class="note-row">
+      {{ with .Note }}
+      <span class="note-row-icon" aria-hidden="true">{{ with .Icon }}{{ . }}{{ else }}{{ octicon "note" 16 }}{{ end }}</span>
+      <div class="note-row-body">
+        <a class="note-row-link note-row-title" href="{{ noteURL . . }}">{{ .Title }}</a>
+        <span class="note-row-meta">{{ .SpaceSlug }} &middot; Shared {{ timeAgo $shared }}</span>
+      </div>
+      {{ else }}
+      <span class="note-row-icon" aria-hidden="true">{{ octicon "note" 16 }}</span>
+      <div class="note-row-body">
+        <span class="note-row-title is-muted">A note that is no longer available</span>
+      </div>
+      {{ end }}
+      <span class="note-row-trailing"><span class="ui-label ui-label-secondary">{{ accessLabel .Access }}</span></span>
+    </div>
+  </li>
+  {{ end }}
+</ul>
+{{ else }}
+{{ template "ui_blankslate" dict "Icon" "people" "Title" "Nothing shared with you" "Description" (.Get "Empty") }}
+{{ end }}
+</div>
+{{ end }}

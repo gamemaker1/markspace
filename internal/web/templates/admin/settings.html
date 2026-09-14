@@ -1,0 +1,88 @@
+{{ define "title" }}Instance settings{{ end }}
+{{ define "sidebar" }}{{ template "admin_sidebar" . }}{{ end }}
+{{ define "content" }}
+{{ $fe := .Get "FormErrors" }}
+<div class="admin-page">
+  <div class="page-header" data-border="true">
+    {{ template "admin_parent" }}
+    <div class="page-header-title-area"><h1 class="page-header-title" tabindex="-1">Settings</h1></div>
+    <p class="page-header-description">Options that apply to every person on {{ .InstanceName }}.</p>
+  </div>
+
+  {{ with .Settings }}
+  {{ $st := . }}
+  <section class="settings-section" aria-labelledby="st-title">
+    <div class="settings-intro"><h2 id="st-title">Instance</h2></div>
+    <form method="post" action="/admin/settings" class="settings-form" novalidate data-validate data-unsaved>
+      <input type="hidden" name="action" value="save">
+      {{ $nameErr := "" }}{{ $spaceErr := "" }}{{ with $fe }}{{ $nameErr = index . "instanceName" }}{{ $spaceErr = index . "defaultSpaceId" }}{{ end }}
+      <div class="field{{ if $nameErr }} has-error{{ end }}">
+        <label class="field-label" for="st-name">Instance name<span class="field-required" aria-hidden="true">*</span></label>
+        <input id="st-name" type="text" name="instanceName" value="{{ .InstanceName }}" required autocomplete="off" aria-describedby="st-name-hint{{ if $nameErr }} st-name-error{{ end }}"{{ if $nameErr }} aria-invalid="true" autofocus{{ end }}>
+        <p class="field-hint" id="st-name-hint">Shows in the browser title, the installed app and shared links.</p>
+        {{ template "admin_field_error" dict "ID" "st-name" "Msg" $nameErr }}
+      </div>
+      <div class="field{{ if $spaceErr }} has-error{{ end }}">
+        <label class="field-label" for="st-space">Default space</label>
+        <span class="text-input select-box text-input-block"><select class="text-input-control" id="st-space" name="defaultSpaceId" aria-describedby="st-space-hint{{ if $spaceErr }} st-space-error{{ end }}"{{ if $spaceErr }} aria-invalid="true"{{ end }}>
+          <option value="">None</option>
+          {{ range $.Spaces }}<option value="{{ .ID }}"{{ if eq .ID $st.DefaultSpaceID }} selected{{ end }}>{{ .Name }}</option>{{ end }}
+        </select><span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span></span>
+        <p class="field-hint" id="st-space-hint">New accounts join this space.</p>
+        {{ template "admin_field_error" dict "ID" "st-space" "Msg" $spaceErr }}
+      </div>
+      <div class="form-control form-control-horizontal">
+        <input id="st-signup" type="checkbox" name="allowSignup" value="1" aria-describedby="st-signup-hint"{{ if .AllowSignup }} checked{{ end }}>
+        <div class="form-control-horizontal-text">
+          <label class="form-label" for="st-signup">Allow sign up</label>
+          <p class="form-caption" id="st-signup-hint">Anyone who reaches this instance may create an account. Invites work either way.</p>
+        </div>
+      </div>
+      <fieldset class="admin-checkbox-group">
+        <legend>AI</legend>
+        <div class="form-control form-control-horizontal">
+          <input id="st-ai" type="checkbox" name="aiEnabled" value="1"{{ if .AIEnabled }} checked{{ end }}>
+          <div class="form-control-horizontal-text"><label class="form-label" for="st-ai">AI features</label></div>
+        </div>
+        <div class="form-control form-control-horizontal">
+          <input id="st-ai-keys" type="checkbox" name="aiAllowUserKeys" value="1"{{ if .AIAllowUserKeys }} checked{{ end }}>
+          <div class="form-control-horizontal-text"><label class="form-label" for="st-ai-keys">People may add their own providers</label></div>
+        </div>
+        <div class="form-control form-control-horizontal">
+          <input id="st-ai-routes" type="checkbox" name="aiAllowUserRoutes" value="1" aria-describedby="st-ai-hint"{{ if .AIAllowUserRoutes }} checked{{ end }}>
+          <div class="form-control-horizontal-text"><label class="form-label" for="st-ai-routes">People may choose their own models</label></div>
+        </div>
+        <p class="form-caption" id="st-ai-hint">The instance models for each task are chosen on the <a href="/admin/ai">AI</a> page.</p>
+      </fieldset>
+      <div class="form-block-actions">
+        <button class="btn btn-primary" type="submit">Save</button>
+        {{ if eq ($.Q "done") "settings" }}{{ template "admin_saved" "Settings saved" }}{{ end }}
+      </div>
+    </form>
+  </section>
+  {{ else }}
+  <div class="blankslate blankslate-small blankslate-border">
+    <div class="blankslate-inner">
+      <div class="blankslate-visual" aria-hidden="true">{{ octicon "alert" 24 }}</div>
+      <h2 class="blankslate-heading">Settings are unavailable</h2>
+      <p class="blankslate-description">The instance settings could not be read. Reload the page to try again.</p>
+    </div>
+  </div>
+  {{ end }}
+
+  <section class="settings-section" aria-labelledby="index-title">
+    <div class="settings-intro">
+      <h2 id="index-title">Search index</h2>
+      <p>Reread every markdown file from disk into the index, for example after editing files outside Markspace.</p>
+    </div>
+    <form method="post" action="/admin/settings" class="settings-form">
+      <input type="hidden" name="action" value="reindex">
+      <div class="form-block-actions">
+        <button class="btn" type="submit">Rebuild index</button>
+        {{ with $.Q "indexed" }}{{ template "admin_saved" (printf "Index rebuilt. %s" .) }}{{ end }}
+      </div>
+    </form>
+  </section>
+</div>
+{{ end }}
+{{ define "scripts" }}<script type="module" src="/static/js/admin.js"></script>{{ end }}

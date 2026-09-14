@@ -1,0 +1,15 @@
+{{- define "pagination" -}}
+{{/* Primer Pagination (docs/primer.md 5.2). Numbered pages show when the total is
+     known. Previous and Next are links while a page exists and plain text in
+     --fgColor-disabled at either end. */}}
+{{ with . }}
+{{ if or .PrevURL .NextURL }}
+<nav class="pagination" aria-label="Pagination">
+  {{ if .PrevURL }}<a class="pagination-item pagination-direction" href="{{ .PrevURL }}" rel="prev" aria-label="Previous Page">{{ octicon "chevron-left" 16 }}<span>Previous</span></a>{{ else }}<span class="pagination-item pagination-direction" aria-disabled="true">{{ octicon "chevron-left" 16 }}<span>Previous</span></span>{{ end }}
+  {{ range .Pages }}{{ if .Gap }}<span class="pagination-gap" aria-hidden="true">…</span>{{ else if .Current }}<a class="pagination-item" href="{{ .URL }}" aria-current="page" aria-label="Page {{ .Number }}">{{ .Number }}</a>{{ else }}<a class="pagination-item" href="{{ .URL }}" aria-label="Page {{ .Number }}">{{ .Number }}</a>{{ end }}{{ end }}
+  {{ if .NextURL }}<a class="pagination-item pagination-direction" href="{{ .NextURL }}" rel="next" aria-label="Next Page"><span>Next</span>{{ octicon "chevron-right" 16 }}</a>{{ else }}<span class="pagination-item pagination-direction" aria-disabled="true"><span>Next</span>{{ octicon "chevron-right" 16 }}</span>{{ end }}
+  <p class="pagination-range">{{ if .Total }}{{ add .Offset 1 }} through {{ add .Offset .Count }} of {{ .Total }}{{ else }}{{ add .Offset 1 }} through {{ add .Offset .Count }}{{ end }}</p>
+</nav>
+{{ end }}
+{{ end }}
+{{- end -}}

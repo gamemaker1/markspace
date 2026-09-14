@@ -1,0 +1,80 @@
+{{ define "title" }}Profile{{ end }}
+{{ define "sidebar" }}{{ template "settings_pane" . }}{{ end }}
+{{ define "content" }}
+<div class="settings-page">
+{{ template "ui_page_header" dict "Title" "Profile" "Description" "Your name and colour show next to your notes and comments." "Parent" "Settings" "ParentURL" "/settings" "Border" true }}
+
+{{ with .User }}
+<section class="settings-section" id="profile" aria-labelledby="page-title">
+  <form method="post" action="/settings/profile" class="settings-form" novalidate data-unsaved>
+    {{ template "ui_error_summary" dict "P" $ "Form" "profile" }}
+    {{ template "ui_form_message" dict "P" $ "Form" "profile" }}
+    <input type="hidden" name="action" value="profile">
+    <div class="profile-head">
+      {{ template "avatar" dict "User" . "Size" "lg" }}
+      <div class="cell-main"><span class="cell-title">{{ orDefault .Name .Email }}</span><span class="cell-sub">Member since {{ formatTime .CreatedAt }}</span></div>
+    </div>
+    {{ template "ui_text_field" dict "P" $ "Form" "profile" "Field" "name" "Label" "Name" "Value" ($.FormValue "profile" "name" .Name) "Required" true "Autocomplete" "name" }}
+    {{ template "ui_text_field" dict "P" $ "Form" "profile" "Field" "email" "Label" "Email address" "Type" "email" "Value" ($.FormValue "profile" "email" .Email) "Required" true "Autocomplete" "email" "Inputmode" "email" "Autocapitalize" "off" "Spellcheck" "false" }}
+    {{ $colorErr := $.FormError "profile" "avatarColor" }}
+    <details class="disclosure"{{ if or ($.FormError "profile" "timezone") ($.FormError "profile" "locale") $colorErr }} open{{ end }}>
+      <summary>More options</summary>
+      <div class="disclosure-body">
+        {{ template "ui_text_field" dict "P" $ "Form" "profile" "Field" "timezone" "Label" "Time zone" "Value" ($.FormValue "profile" "timezone" .Timezone) "Caption" "An IANA name, such as Europe/Berlin. Leave it empty to use the server time zone." "Autocapitalize" "off" "Spellcheck" "false" }}
+        {{ template "ui_text_field" dict "P" $ "Form" "profile" "Field" "locale" "Label" "Language" "Value" ($.FormValue "profile" "locale" .Locale) "Caption" "A language code, such as en or de." "Class" "form-control-short" "Autocapitalize" "off" "Spellcheck" "false" }}
+        <div class="form-control field{{ if $.FormInline "profile" "avatarColor" }} has-error{{ end }}">
+          <label class="form-label" for="profile-avatar-color">Colour</label>
+          <input id="profile-avatar-color" type="color" name="avatarColor" value="{{ $.FormValue "profile" "avatarColor" (orDefault .AvatarColor "#a21caf") }}" aria-describedby="profile-avatar-color-caption{{ if $colorErr }} profile-avatar-color-error{{ end }}"{{ if $colorErr }} aria-invalid="true"{{ end }}>
+          {{ template "ui_field_feedback" dict "ID" "profile-avatar-color" "Caption" "The background of your initials." "Error" $colorErr }}
+        </div>
+      </div>
+    </details>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Save profile</button>
+      {{ template "ui_saved_message" dict "P" $ "Form" "profile" "Text" "Profile saved" }}
+    </div>
+  </form>
+</section>
+{{ end }}
+
+<section class="settings-section" id="password" aria-labelledby="password-title">
+  <div class="settings-intro">
+    <h2 id="password-title">Password</h2>
+    <p>Changing it keeps this session signed in.</p>
+  </div>
+  <form method="post" action="/settings/profile" class="settings-form" novalidate data-unsaved>
+    {{ template "ui_error_summary" dict "P" . "Form" "password" }}
+    {{ template "ui_form_message" dict "P" . "Form" "password" }}
+    <input type="hidden" name="action" value="password">
+    {{ template "ui_text_field" dict "P" . "Form" "password" "Field" "oldPassword" "Label" "Current password" "Type" "password" "Required" true "Autocomplete" "current-password" }}
+    {{ template "ui_text_field" dict "P" . "Form" "password" "Field" "newPassword" "Label" "New password" "Type" "password" "Required" true "Caption" "At least 8 characters." "Autocomplete" "new-password" }}
+    {{ template "ui_text_field" dict "P" . "Form" "password" "Field" "newPasswordConfirm" "Label" "Repeat new password" "Type" "password" "Required" true "Autocomplete" "new-password" }}
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Change password</button>
+      {{ template "ui_saved_message" dict "P" . "Form" "password" "Text" "Password changed" }}
+    </div>
+  </form>
+</section>
+
+<section class="settings-section" id="editor" aria-labelledby="editor-title" data-js-only hidden>
+  <div class="settings-intro">
+    <h2 id="editor-title">Editor</h2>
+    <p>These settings apply to this browser and take effect at once.</p>
+  </div>
+  <div class="toggle-row settings-toggle">
+    <div class="toggle-row-text">
+      <span class="form-label" id="pref-link-preview-label">Link previews</span>
+      <p class="form-caption" id="pref-link-preview-caption">Show a preview when the pointer rests on a link.</p>
+    </div>
+    <span class="toggle-switch" data-checked="false">
+      <span class="toggle-switch-status" aria-hidden="true"><span class="toggle-switch-on">On</span><span class="toggle-switch-off">Off</span></span>
+      <button class="toggle-switch-track" type="button" aria-pressed="false" aria-labelledby="pref-link-preview-label" aria-describedby="pref-link-preview-caption" data-pref-switch="markspace.editor.linkPreview">
+        <span class="toggle-switch-icons" aria-hidden="true"><span class="toggle-switch-line"></span><span class="toggle-switch-circle"></span></span>
+        <span class="toggle-switch-knob" aria-hidden="true"></span>
+      </button>
+    </span>
+  </div>
+</section>
+</div>
+{{ end }}
+{{ define "scripts" }}<script type="module" src="/static/js/preferences.js"></script>{{ end }}

@@ -1,0 +1,30 @@
+{{ define "title" }}AI{{ end }}
+{{ define "sidebar" }}{{ template "admin_sidebar" . }}{{ end }}
+{{ define "content" }}
+<div class="admin-page">
+  <div class="page-header" data-border="true">
+    {{ template "admin_parent" }}
+    <div class="page-header-title-area"><h1 class="page-header-title" tabindex="-1">AI</h1></div>
+    <p class="page-header-description">The models each task uses, the models on offer and the providers that serve them.</p>
+  </div>
+  {{ with .Get "AI" }}
+  <div class="ai-page" data-ai-page data-scope="{{ .Scope }}"{{ if .ErrorForm }} data-error-claimed{{ end }}>
+    {{ template "ai_tasks" . }}
+    {{ template "ai_models" . }}
+    {{ template "ai_provider_table" . }}
+    <section class="admin-section ai-index" aria-labelledby="embeddings-title">
+      <div class="section-heading">
+        <h2 class="section-heading-title" id="embeddings-title">Semantic index</h2>
+        <p class="section-heading-description">Changing the first model of the Embeddings task rebuilds the index. Rebuild it by hand after bulk edits outside Markspace.</p>
+      </div>
+      <form method="post" action="/admin/ai">
+        <input type="hidden" name="action" value="reindex">
+        <button class="btn" type="submit">Rebuild embeddings</button>
+      </form>
+    </section>
+  </div>
+  {{ end }}
+</div>
+{{ end }}
+{{ define "scripts" }}<script type="module" src="/static/js/admin.js"></script>
+<script type="module" src="/static/js/ai/admin.js"></script>{{ end }}

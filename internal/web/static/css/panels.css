@@ -1,0 +1,413 @@
+/* Rail panels (docs/primer.md 5.10): the panel frame, Comments, Suggestions,
+   History, Share, Files, AI and plugin panels, and the side column of the
+   server note page. Every value comes from a Primer functional token. */
+
+/* ---------- Panel frame ---------- */
+
+.ms-panel {
+  display: flex; flex-direction: column; min-width: 0;
+  font-size: var(--text-body-size-medium); line-height: var(--text-body-lineHeight-medium); color: var(--fgColor-default);
+}
+
+.ms-panel p { margin: 0; }
+.ms-panel-head { display: flex; align-items: center; gap: var(--base-size-8); min-height: var(--control-small-size); margin: 0 0 var(--base-size-16); }
+
+/* In a rail tab panel the UnderlinePanels tab already names the panel. The
+   heading stays for screen readers, and the header keeps only its action. */
+.underline-panels-panel .ms-panel:not(.is-drawer) > .ms-panel-head { justify-content: flex-end; min-height: 0; margin-bottom: var(--base-size-8); }
+.underline-panels-panel .ms-panel:not(.is-drawer) > .ms-panel-head:not(:has(.ms-panel-action:not(:empty), .ms-panel-close)) { display: contents; }
+
+.underline-panels-panel .ms-panel:not(.is-drawer) > .ms-panel-head > .ms-panel-title {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+.ms-panel-title { flex: 1 1 auto; min-width: 0; margin: 0; font: var(--text-title-shorthand-small); color: var(--fgColor-default); overflow-wrap: anywhere; }
+.ms-panel-action { display: flex; flex: none; align-items: center; min-width: 0; }
+.ms-panel-action:empty { display: none; }
+.ms-panel-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-8); margin: 0 0 var(--base-size-16); }
+.ms-panel-offline, .ms-panel-messages, .ms-panel-error { margin: 0 0 var(--base-size-16); }
+.ms-panel-offline:empty, .ms-panel-messages:empty { display: none; }
+.ms-panel-messages { display: flex; flex-direction: column; gap: var(--base-size-8); }
+.ms-panel-body { display: flex; flex-direction: column; gap: var(--base-size-24); min-width: 0; }
+.ms-panel-foot { display: flex; flex-direction: column; gap: var(--base-size-16); min-width: 0; margin-top: var(--base-size-24); }
+.ms-panel-foot:empty { display: none; }
+
+/* The editor drawer, used when the editor runs without the shell. */
+.ms-panel.is-drawer { min-height: 100%; background-color: var(--bgColor-default); }
+
+.ms-panel.is-drawer .ms-panel-head {
+  position: sticky; top: 0; z-index: 1; min-height: 48px; margin: 0;
+  padding: var(--base-size-8) var(--base-size-8) var(--base-size-8) var(--base-size-16);
+  background-color: var(--bgColor-default); border-bottom: var(--borderWidth-thin) solid var(--borderColor-muted);
+}
+
+.ms-panel.is-drawer > :is(.ms-panel-toolbar, .ms-panel-offline, .ms-panel-messages, .ms-panel-error) { margin: var(--base-size-16) var(--base-size-16) 0; }
+.ms-panel.is-drawer .ms-panel-body { padding: var(--base-size-16); }
+.ms-panel.is-drawer .ms-panel-foot { margin: 0; padding: 0 var(--base-size-16) var(--base-size-16); }
+
+/* Loading rows appear after 1 s (docs/primer.md 6.5). */
+.ms-loading { animation: ms-reveal 0s linear 1s both; }
+@keyframes ms-reveal { from { visibility: hidden; } to { visibility: visible; } }
+
+.ms-inline-error { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-4) var(--base-size-8); }
+
+/* ---------- Lists, forms and details inside panels ---------- */
+
+.ms-panel .list-row { padding: var(--base-size-12); }
+.ms-panel .list-row-detail { padding-top: var(--base-size-8); }
+.ms-section { display: flex; flex-direction: column; gap: var(--base-size-16); min-width: 0; }
+.ms-form { display: flex; flex-direction: column; gap: var(--base-size-16); min-width: 0; }
+.ms-form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-8); }
+.ms-form-note { font-size: var(--text-body-size-small); color: var(--fgColor-muted); }
+.ms-cards { display: flex; flex-direction: column; gap: var(--base-size-16); margin: 0; padding: 0; list-style: none; }
+
+.ms-details { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--base-size-8) var(--base-size-16); margin: 0; }
+.ms-details-row { display: contents; }
+.ms-details dt { color: var(--fgColor-muted); }
+.ms-details dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.ms-hash { font-family: var(--fontStack-monospace); font-size: var(--text-body-size-small); overflow-wrap: anywhere; }
+.ms-toggle-row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--base-size-16); }
+.ms-toggle-text { display: flex; flex-direction: column; gap: var(--base-size-4); min-width: 0; }
+
+/* ---------- Quoted passages ---------- */
+
+/* A quoted passage is plain muted text of at most 2 lines, with no bar and no
+   box. The full text stays in the element, so it is the accessible name of a
+   quote button. A quote button shows the passage in the note. Only its hover
+   and focus states have a background or an outline. */
+.ms-quote {
+  display: block; box-sizing: border-box; width: 100%; margin: 0; padding: 0;
+  font: inherit; font-size: var(--text-body-size-small); font-style: normal; line-height: 18px; color: var(--fgColor-muted); text-align: start;
+  background: none; border: 0; border-radius: 0;
+}
+
+.ms-quote-text { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* The button reaches 8px past the text on each side, so its hover background
+   has room while the text lines up with the comments. */
+button.ms-quote {
+  width: calc(100% + 2 * var(--base-size-8)); margin: 0 calc(-1 * var(--base-size-8)); padding: var(--base-size-4) var(--base-size-8);
+  border-radius: var(--borderRadius-medium); cursor: pointer;
+}
+
+button.ms-quote:focus-visible { outline: 2px solid var(--focus-outlineColor); outline-offset: -2px; }
+
+/* Touch screens and narrow viewports keep a 44px target. */
+@media (pointer: coarse), (max-width: calc(48rem - 0.02px)) {
+  button.ms-quote { min-height: 44px; }
+}
+
+.ms-quote.is-missing { font-style: italic; }
+.ms-quote-caption { display: block; }
+
+@media (hover: hover) {
+  button.ms-quote:hover { color: var(--fgColor-default); background-color: var(--control-transparent-bgColor-hover); }
+}
+
+/* ---------- Comments ---------- */
+
+.ms-comments-list, .ms-comments-draft { display: flex; flex-direction: column; gap: var(--base-size-16); min-width: 0; }
+.ms-comments-draft:empty { display: none; }
+.ms-threads { display: flex; flex-direction: column; gap: var(--base-size-24); margin: 0; padding: 0; list-style: none; }
+
+/* Threads have no box. A hairline divider sits in the middle of the gap above
+   each thread after the first, as in Primer's list pattern. */
+.ms-threads > li + li::before {
+  content: ""; position: absolute; top: calc(-1 * var(--base-size-12)); inset-inline: 0;
+  height: var(--borderWidth-thin); background-color: var(--borderColor-muted); pointer-events: none;
+}
+.ms-group { display: flex; flex-direction: column; gap: var(--base-size-8); }
+
+.ms-group-title, .ms-history-day-title {
+  margin: 0; font-size: var(--text-body-size-small); font-weight: var(--base-text-weight-semibold); line-height: 18px; color: var(--fgColor-muted);
+}
+
+.ms-thread { position: relative; display: flex; flex-direction: column; gap: var(--base-size-8); min-width: 0; }
+.ms-thread:focus { outline: none; }
+/* The rail tab panel scrolls and clips, so the focus ring sits inside the thread. */
+.ms-thread:focus-visible { outline: 2px solid var(--focus-outlineColor); outline-offset: -2px; border-radius: var(--borderRadius-medium); }
+.ms-thread-head { display: flex; align-items: center; gap: var(--base-size-4); font-size: var(--text-body-size-small); line-height: 18px; color: var(--fgColor-muted); }
+.ms-marker-icon { display: inline-flex; flex: none; color: var(--fgColor-muted); }
+.ms-marker-icon svg { width: 12px; height: 12px; }
+
+/* One thread: comments with a small muted metadata line above a prominent body. */
+.ms-thread-comments { display: flex; flex-direction: column; gap: var(--base-size-12); margin: 0; padding: 0; list-style: none; }
+.ms-comment { min-width: 0; }
+.ms-comment-head { display: flex; align-items: center; gap: 0 6px; min-width: 0; min-height: 20px; font-size: var(--text-body-size-small); line-height: 18px; color: var(--fgColor-muted); }
+.ms-comment-head > .avatar { flex: none; }
+.ms-comment-author { min-width: 0; overflow-wrap: anywhere; }
+.ms-comment-time, .ms-comment-edited { flex: none; }
+.ms-comment-time::before, .ms-comment-edited::before { content: "·"; margin-inline-end: 6px; }
+.ms-comment-actions { display: flex; margin: -6px -8px -6px auto; }
+.ms-comment-body { margin-top: var(--base-size-4); font-size: var(--text-body-size-medium); line-height: 1.5; color: var(--fgColor-default); white-space: pre-wrap; overflow-wrap: anywhere; }
+.ms-resolved-event { display: flex; align-items: center; gap: var(--base-size-4); font-size: var(--text-body-size-small); line-height: 18px; color: var(--fgColor-muted); }
+.ms-comment-body.is-deleted { font-style: italic; color: var(--fgColor-muted); }
+
+.ms-thread-foot { display: flex; flex-direction: column; gap: var(--base-size-8); }
+
+.ms-thread-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--base-size-8); }
+.ms-composer { display: flex; flex-direction: column; gap: var(--base-size-8); min-width: 0; margin: 0; }
+.ms-composer textarea { resize: vertical; }
+.ms-composer-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--base-size-8); }
+.ms-draft-label { font-size: var(--text-body-size-small); color: var(--fgColor-muted); }
+.ms-comments .details-body { padding-top: var(--base-size-8); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .ms-thread.is-flash, .ms-card.is-flash { animation: ms-flash 1200ms ease-out; }
+}
+
+@keyframes ms-flash {
+  from { background-color: var(--bgColor-accent-muted); }
+  to { background-color: var(--bgColor-default); }
+}
+
+/* ---------- Suggestions ---------- */
+
+.ms-suggestion .list-row-title { white-space: normal; }
+
+button.ms-suggestion-title {
+  display: block; width: 100%; margin: 0; padding: 0; font: inherit; font-weight: var(--base-text-weight-semibold);
+  color: var(--fgColor-default); text-align: start; overflow-wrap: anywhere; background: none; border: 0; cursor: pointer;
+}
+
+button.ms-suggestion-title:focus-visible { outline: 2px solid var(--focus-outlineColor); outline-offset: 2px; border-radius: var(--borderRadius-small); }
+.ms-suggestion .list-row-sub.ms-suggestion-meta { white-space: normal; }
+
+.ms-suggestion .list-row-sub.ms-suggestion-rationale {
+  margin-top: var(--base-size-4); overflow: visible; font-size: var(--text-body-size-medium); line-height: 20px;
+  color: var(--fgColor-default); white-space: pre-wrap; overflow-wrap: anywhere;
+}
+
+.ms-suggestion-actions { display: flex; flex-wrap: wrap; gap: var(--base-size-8); }
+.ms-suggestion.is-current { background-color: var(--control-transparent-bgColor-selected); }
+
+@media (hover: hover) {
+  button.ms-suggestion-title:hover { text-decoration: underline; }
+}
+
+/* ---------- History ---------- */
+
+.ms-versions { min-width: 0; }
+.ms-history-day { padding: var(--base-size-16) 0 0; }
+.ms-history-day + .timeline-item { padding-top: var(--base-size-8); }
+.ms-version .timeline-body { min-width: 0; color: var(--fgColor-default); }
+.ms-version-title { font-weight: var(--base-text-weight-semibold); overflow-wrap: anywhere; }
+.ms-version-via { font-weight: var(--base-text-weight-normal); color: var(--fgColor-muted); }
+.ms-version-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--base-size-8); font-size: var(--text-body-size-small); color: var(--fgColor-muted); }
+.ms-delta { font-weight: var(--base-text-weight-semibold); font-variant-numeric: tabular-nums; }
+.ms-delta[data-sign="up"] { color: var(--fgColor-success); }
+.ms-delta[data-sign="down"] { color: var(--fgColor-danger); }
+.ms-version .details { margin-top: var(--base-size-4); }
+.ms-version .details-body { padding-top: var(--base-size-8); }
+.ms-version-actions { display: flex; flex-wrap: wrap; gap: var(--base-size-8); margin-top: var(--base-size-8); }
+
+/* ---------- Version timeline: the rail History tab and the history Dialog ---------- */
+
+/* Each version is a point in time on one vertical line: a dot, the clock
+   time, the author and the change. Day headings split the line. */
+.history-timeline, .history-listbox { display: flex; flex-direction: column; margin: 0 calc(-1 * var(--base-size-8)); }
+.history-day-group { margin: 0; }
+
+.history-day-label {
+  margin: 0; padding: var(--base-size-12) var(--base-size-8) var(--base-size-4) calc(var(--base-size-8) + 24px);
+  font-size: var(--text-body-size-small); font-weight: var(--base-text-weight-semibold); line-height: 18px; color: var(--fgColor-muted);
+}
+
+.history-day-group:first-child .history-day-label { padding-top: var(--base-size-4); }
+.history-points { position: relative; display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.history-points::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(var(--base-size-8) + 7px); width: 2px; background-color: var(--borderColor-muted); }
+
+.history-point {
+  position: relative; display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; align-items: start; column-gap: var(--base-size-8);
+  box-sizing: border-box; width: 100%; min-height: 44px; padding: 6px var(--base-size-8); font: inherit; text-align: start;
+  color: var(--fgColor-default); list-style: none; background: none; border: 0; border-radius: var(--borderRadius-medium); cursor: pointer;
+}
+
+@media (hover: hover) {
+  .history-point:hover { background-color: var(--control-transparent-bgColor-hover); }
+}
+
+.history-point:focus-visible { outline: 2px solid var(--focus-outlineColor); outline-offset: -2px; }
+.history-point[aria-selected="true"] { background-color: var(--control-transparent-bgColor-selected); }
+
+.history-dot {
+  position: relative; z-index: 1; box-sizing: border-box; width: 12px; height: 12px; margin: 4px 2px 0;
+  background-color: var(--bgColor-default); border: 2px solid var(--borderColor-emphasis); border-radius: 50%;
+}
+
+.history-point.is-current .history-dot { background-color: var(--bgColor-accent-emphasis); border-color: var(--bgColor-accent-emphasis); }
+.history-point-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.history-point-head { display: flex; align-items: center; gap: var(--base-size-8); font-size: var(--text-body-size-medium); font-weight: var(--base-text-weight-semibold); line-height: 20px; font-variant-numeric: tabular-nums; }
+.history-point-by { display: flex; flex-wrap: wrap; align-items: center; gap: 0 6px; min-width: 0; font-size: var(--text-body-size-small); line-height: 18px; color: var(--fgColor-muted); }
+.history-point-by > .avatar { flex: none; }
+.history-point-author { min-width: 0; overflow-wrap: anywhere; }
+.history-point .ms-delta { font-size: var(--text-body-size-small); line-height: 20px; white-space: nowrap; }
+/* The success and danger colours miss 4.5:1 on the selected fill. The sign and the hidden words carry the meaning. */
+.history-point[aria-selected="true"] :is(.ms-delta[data-sign], .ui-label) { color: var(--fgColor-default); }
+.ms-history-open { margin-top: var(--base-size-12); }
+
+/* ---------- Version history Dialog ---------- */
+
+.dialog.history-dialog { width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; margin: 0; border-radius: 0; }
+
+@supports (height: 100dvh) {
+  .dialog.history-dialog { width: 100dvw; max-width: 100dvw; height: 100dvh; max-height: 100dvh; }
+}
+
+.history-dialog .dialog-body { display: flex; min-height: 0; padding: 0; overflow: hidden; }
+/* One row as tall as the Dialog body, so the list and the diff each scroll inside it. */
+.history-dialog-layout { display: grid; flex: 1 1 auto; grid-template-columns: 320px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); min-width: 0; min-height: 0; }
+.history-dialog-list { min-height: 0; padding: var(--base-size-8) var(--base-size-16); overflow-y: auto; overscroll-behavior: contain; border-inline-end: var(--borderWidth-thin) solid var(--borderColor-default); }
+.history-more { display: flex; justify-content: center; padding: var(--base-size-12) 0; }
+.history-more[hidden] { display: none; }
+.history-dialog-diff { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.history-diff-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-8) var(--base-size-12); padding: var(--base-size-12) var(--base-size-16); border-bottom: var(--borderWidth-thin) solid var(--borderColor-muted); }
+.history-diff-heading { flex: 1 1 16rem; min-width: 0; }
+.history-diff-title { margin: 0; font-size: var(--text-body-size-large); font-weight: var(--base-text-weight-semibold); line-height: 1.5; overflow-wrap: anywhere; }
+.history-diff-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0 6px; margin: 0; font-size: var(--text-body-size-small); line-height: 18px; color: var(--fgColor-muted); }
+.history-diff-meta > .avatar { flex: none; }
+.history-diff-summary:not(:empty)::before { content: "·"; margin-inline-end: 6px; }
+.history-diff-caption { flex-basis: 100%; margin: 0; font-size: var(--text-body-size-small); color: var(--fgColor-muted); }
+.history-back { display: none; }
+.history-diff { flex: 1 1 auto; min-height: 0; overflow: auto; }
+.history-diff:focus-visible { outline: 2px solid var(--focus-outlineColor); outline-offset: -2px; }
+.history-diff > .skeleton, .history-diff > .ms-diff-same, .history-diff > .inline-message { margin: var(--base-size-16); }
+.history-diff .cm-editor { font-family: var(--fontStack-monospace); font-size: var(--text-body-size-small); background-color: var(--bgColor-default); }
+.history-diff .cm-gutters { color: var(--fgColor-muted); background-color: var(--bgColor-default); border-color: var(--borderColor-muted); }
+
+/* Diff colours come from the Primer diffBlob tokens. */
+.history-diff .cm-merge-a .cm-changedLine, .history-diff .cm-deletedChunk { background-color: var(--diffBlob-deletionLine-bgColor); }
+.history-diff .cm-merge-b .cm-changedLine, .history-diff .cm-editor:not(.cm-merge-a) > .cm-scroller .cm-changedLine { background-color: var(--diffBlob-additionLine-bgColor); }
+.history-diff .cm-merge-a .cm-changedText, .history-diff .cm-deletedChunk .cm-deletedText { background: var(--diffBlob-deletionWord-bgColor); }
+.history-diff .cm-merge-b .cm-changedText, .history-diff .cm-editor:not(.cm-merge-a) > .cm-scroller .cm-changedText { background: var(--diffBlob-additionWord-bgColor); }
+.history-diff .cm-collapsedLines { color: var(--fgColor-muted); background: var(--bgColor-muted); }
+
+/* On short viewports the header and the footer leave too little height for
+   the diff, so the Dialog body scrolls and the diff keeps a usable height of
+   its own. */
+@media (max-height: 32rem) {
+  .history-dialog .dialog-body { overflow-y: auto; }
+  .history-dialog-layout, .history-dialog-diff, .history-dialog-list { min-height: auto; }
+  .history-diff { flex: none; height: max(12rem, 60dvh); }
+}
+
+/* Below 768px the version list and the diff are two screens. Choosing a
+   version opens the diff, and Back returns to the list. */
+@media (max-width: calc(48rem - 0.02px)) {
+  .history-dialog-layout { grid-template-columns: minmax(0, 1fr); }
+  .history-dialog-list { border-inline-end: 0; }
+  .history-back { display: inline-flex; }
+  .history-dialog-layout[data-screen="list"] .history-dialog-diff, .history-dialog-layout[data-screen="diff"] .history-dialog-list { display: none; }
+}
+
+.ms-diff {
+  max-height: 360px; overflow: auto; font-family: var(--fontStack-monospace); font-size: var(--text-body-size-small);
+  border: var(--borderWidth-thin) solid var(--borderColor-default); border-radius: var(--borderRadius-medium);
+}
+
+.ms-diff:focus-visible { outline: 2px solid var(--focus-outlineColor); outline-offset: -2px; }
+.ms-diff .diff { margin: 0; font-size: inherit; border: 0; border-radius: 0; }
+.ms-diff .diff-word { border-radius: var(--borderRadius-small); }
+.ms-diff .diff-add .diff-word { background-color: var(--diffBlob-additionWord-bgColor); }
+.ms-diff .diff-del .diff-word { background-color: var(--diffBlob-deletionWord-bgColor); }
+.ms-diff-same { font-size: var(--text-body-size-small); color: var(--fgColor-muted); }
+
+/* ---------- Share ---------- */
+
+.ms-access-btn { flex: none; }
+/* A person row puts the access button and the menu under the name. The name
+   and the email keep the width of the panel and wrap instead of truncating
+   (docs/primer.md 5.9). */
+.ms-person .list-row-trail { grid-column: 2 / -1; justify-content: flex-start; gap: var(--base-size-4); padding-top: var(--base-size-8); }
+.ms-person :is(.list-row-title, .list-row-sub) { white-space: normal; overflow-wrap: anywhere; }
+.ms-link .list-row-main { gap: var(--base-size-8); }
+.ms-link-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-4) var(--base-size-8); font-size: var(--text-body-size-small); color: var(--fgColor-muted); }
+.ms-labels { display: flex; flex-wrap: wrap; gap: var(--base-size-4); margin: 0; padding: 0; list-style: none; }
+.ms-link.is-expired input { color: var(--fgColor-muted); }
+.ms-link-edit { padding: var(--base-size-16); }
+
+/* ---------- Files ---------- */
+
+.ms-file .list-row-lead { width: 40px; height: 40px; }
+.ms-file-thumb { display: block; flex: none; width: 40px; height: 40px; object-fit: cover; background-color: var(--bgColor-muted); border-radius: var(--borderRadius-medium); }
+.ms-file-thumb.is-generic { display: inline-flex; align-items: center; justify-content: center; color: var(--fgColor-muted); }
+.ms-file .list-row-title { color: var(--fgColor-default); }
+
+/* ---------- AI tab frame ---------- */
+
+.ms-ai-output { line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ms-ai-meta { white-space: normal; }
+.ms-estimate { font-size: var(--text-body-size-small); }
+.ms-source.is-skipped { color: var(--fgColor-muted); }
+.ms-source .ms-quote { font-size: var(--text-body-size-small); }
+
+.ms-ai-output.is-streaming::after {
+  content: ""; display: inline-block; width: 0.5em; height: 1em; margin-left: 2px; vertical-align: text-bottom;
+  background-color: var(--fgColor-accent); border-radius: 1px;
+}
+
+.ms-chips { display: flex; flex-wrap: wrap; gap: var(--base-size-8); }
+
+.ms-chip {
+  display: inline-flex; align-items: center; gap: var(--base-size-4); max-width: 100%; min-height: var(--control-small-size);
+  padding: 0 var(--base-size-12); font: inherit; font-size: var(--text-body-size-small); font-weight: var(--base-text-weight-medium);
+  color: var(--button-default-fgColor-rest); background-color: var(--button-default-bgColor-rest);
+  border: var(--borderWidth-thin) solid var(--button-default-borderColor-rest); border-radius: var(--borderRadius-medium); cursor: pointer;
+}
+
+.ms-chip[aria-pressed="true"] { color: var(--fgColor-accent); background-color: var(--bgColor-accent-muted); border-color: var(--borderColor-accent-muted); }
+.ms-chip[aria-disabled="true"], .ms-chip:disabled { color: var(--fgColor-disabled); cursor: default; }
+.ms-chip-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.ms-chip-badge {
+  display: inline-flex; align-items: center; height: 20px; padding: 0 6px; font-size: var(--text-body-size-small); font-weight: var(--base-text-weight-medium);
+  color: var(--fgColor-muted); border: var(--borderWidth-thin) solid var(--borderColor-muted); border-radius: var(--borderRadius-full);
+}
+
+@media (hover: hover) {
+  .ms-chip:hover { background-color: var(--button-default-bgColor-hover); }
+}
+
+@media (pointer: coarse) {
+  .ms-chip { min-height: 44px; }
+}
+
+/* ---------- Plugin panels ---------- */
+
+.ms-plugin-body { display: flex; flex-direction: column; gap: var(--base-size-16); min-width: 0; }
+
+/* ---------- Server note page side column ---------- */
+
+.note-rail { display: flex; flex-direction: column; gap: var(--base-size-32); }
+.note-rail .note-rail-section, .note-rail .comments { display: flex; flex-direction: column; gap: var(--base-size-16); min-width: 0; margin: 0; padding: 0; border: 0; }
+.note-rail-title { margin: 0; font: var(--text-title-shorthand-small); color: var(--fgColor-default); }
+.note-rail .comment-list { gap: var(--base-size-24); }
+
+/* A server page thread has no box either. It keeps the .ms-card class for the
+   flash, so these rules remove the card border and shadow. */
+.note-rail .comment.ms-card { position: relative; gap: var(--base-size-8); min-width: 0; padding: 0; background: none; border: 0; border-radius: 0; box-shadow: none; }
+.note-rail .comment-form { margin: 0; padding: 0; align-items: stretch; }
+.note-rail .comment-form textarea, .note-rail .comment-reply-form textarea { width: 100%; }
+.note-rail .details-body > .ms-threads { margin: 0; }
+.note-meta { margin: 0 0 var(--base-size-16); padding: 0; list-style: none; font-size: var(--text-body-size-small); }
+.note-meta li + li::before { content: "·"; margin-right: var(--base-size-8); color: var(--fgColor-muted); }
+
+/* On narrow viewports the details wrap, so no line may start with a separator. */
+@media (max-width: calc(48rem - 0.02px)) {
+  .note-meta { column-gap: var(--base-size-16); }
+  .note-meta li + li::before { content: none; }
+}
+.note-share > summary { display: flex; align-items: center; justify-content: space-between; gap: var(--base-size-8); min-height: var(--control-medium-size); list-style: none; cursor: pointer; }
+.note-share > summary::-webkit-details-marker { display: none; }
+.note-share > summary:focus-visible { outline: 2px solid var(--focus-outlineColor); outline-offset: 2px; border-radius: var(--borderRadius-small); }
+.note-share-chevron { display: flex; color: var(--fgColor-muted); }
+.note-share .details-open, .note-share[open] > summary .details-closed { display: none; }
+.note-share[open] > summary .details-open { display: flex; }
+.note-share-body { display: flex; flex-direction: column; gap: var(--base-size-24); padding-top: var(--base-size-16); }
+.note-rail .list-row { padding: var(--base-size-12); }
+.note-confirm { margin: 0 0 var(--base-size-16); }
+.note-confirm-title { margin: 0 0 var(--base-size-8); font: var(--text-title-shorthand-small); }
+.note-confirm-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--base-size-8); margin-top: var(--base-size-16); }
+.note-rail .ms-composer { align-items: stretch; margin: 0; }
+.note-rail .ms-composer-actions { justify-content: flex-end; }
+.note-rail .ms-thread-actions { justify-content: flex-start; }

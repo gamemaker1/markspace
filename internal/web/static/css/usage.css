@@ -1,0 +1,136 @@
+/* Usage pages (docs/primer.md 5.2 and 5.9), and the usage meter of the AI panel. */
+
+/* One class per colour slot, from Primer's data colour tokens. SVG marks use
+   the fill, legend swatches the background. Slot 1 is pink for the fuchsia
+   theme. No slot is yellow. Every adjacent pair keeps a colour-blind
+   separation of at least ΔE 15 in light and dark (OKLab, protan and deutan),
+   checked against --bgColor-default. Other is neutral gray. */
+.uc-s1 { --uc-color: var(--data-pink-color-emphasis); }
+.uc-s2 { --uc-color: var(--data-orange-color-emphasis); }
+.uc-s3 { --uc-color: var(--data-blue-color-emphasis); }
+.uc-s4 { --uc-color: var(--data-green-color-emphasis); }
+.uc-s5 { --uc-color: var(--data-purple-color-emphasis); }
+.uc-s6 { --uc-color: var(--data-teal-color-emphasis); }
+.uc-s7 { --uc-color: var(--data-plum-color-emphasis); }
+.uc-other { --uc-color: var(--data-gray-color-emphasis); }
+:is(.uc-s1, .uc-s2, .uc-s3, .uc-s4, .uc-s5, .uc-s6, .uc-s7, .uc-other) { fill: var(--uc-color); background: var(--uc-color); }
+
+/* ---------- Page ---------- */
+
+.usage-page { display: flex; flex-direction: column; gap: var(--base-size-24); min-width: 0; max-width: 1012px; }
+.usage-page > .page-header { margin-bottom: 0; }
+.usage-page > .tabs { margin: 0; }
+.usage-page .page-header-title:focus { outline: none; }
+
+/* ---------- Filters ---------- */
+
+.usage-filters { display: flex; flex-direction: column; gap: var(--stack-gap-normal); min-width: 0; margin: 0; }
+.usage-filter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--stack-gap-normal); align-items: start; }
+.usage-filter-grid > * { min-width: 0; }
+/* Stacked radios keep the 8px gap of a Primer RadioGroup (docs/primer.md 5.3). */
+.usage-stack { display: flex; flex-direction: column; gap: var(--base-size-8); }
+.usage-stack > legend, .usage-subject-kind > legend { margin-bottom: var(--base-size-8); }
+
+/* The custom dates show only for the custom range, or while they hold an
+   error, where the browser supports :has. */
+@supports selector(:has(*)) {
+  .usage-filters:not(:has(#uf-range option[value="custom"]:checked)) .usage-custom:not(.has-error) { display: none; }
+  .usage-subject:has(input[name="subjectKind"][value="user"]:checked) .usage-subject-plugin,
+  .usage-subject:has(input[name="subjectKind"][value="plugin"]:checked) .usage-subject-person { display: none; }
+}
+
+/* ---------- Summary tiles ---------- */
+
+/* Primer data display: Box tiles with the label at 12px, the value at 20px
+   weight 600, and a muted detail line. */
+.usage-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--base-size-16); margin: 0; }
+.usage-tiles .tile { gap: var(--base-size-4); min-width: 0; margin: 0; }
+.usage-tiles dt, .usage-tiles dd { margin: 0; }
+.usage-tiles .tile-value { overflow-wrap: anywhere; }
+.usage-tile-sub { font-size: var(--text-body-size-small); color: var(--fgColor-muted); }
+.usage-tile-progress { padding-block: var(--base-size-4); }
+
+/* A budget share: a Primer ProgressBar with its percent beside it. */
+.usage-used { display: flex; align-items: center; gap: var(--base-size-8); min-width: 9rem; }
+.usage-used .progress-bar { flex: 1 1 auto; min-width: 4rem; }
+.usage-used-text { flex: none; font-variant-numeric: tabular-nums; }
+
+/* ---------- Chart ---------- */
+
+/* The chart scrolls inside its own region. The region is right to left, so
+   a narrow screen opens on the latest days. */
+.usage-chart { display: flex; flex-direction: column; gap: var(--base-size-12); min-width: 0; }
+.usage-chart-frame { display: flex; align-items: flex-start; min-width: 0; }
+.usage-chart-axis { flex: none; }
+.usage-chart-scroll { flex: 1 1 auto; min-width: 0; max-width: 100%; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; direction: rtl; border-radius: var(--borderRadius-medium); }
+.usage-chart-scroll:focus-visible { outline: var(--focus-outline-width) solid var(--focus-outlineColor); outline-offset: 2px; }
+.usage-chart-svg { display: block; max-width: none; margin: 0 auto 0 0; direction: ltr; }
+.usage-chart-svg text { font-family: var(--fontStack-system); font-size: 11px; font-variant-numeric: tabular-nums; fill: var(--fgColor-muted); }
+.usage-chart-svg .uc-grid line { stroke: var(--borderColor-muted); stroke-width: 1; shape-rendering: crispEdges; }
+.usage-chart-svg .uc-axis { stroke: var(--borderColor-default); stroke-width: 1; shape-rendering: crispEdges; }
+.usage-chart-svg .uc-hit { fill: transparent; }
+
+@media (hover: hover) {
+  .usage-chart-svg .uc-bar:hover .uc-hit { fill: var(--control-transparent-bgColor-hover); }
+}
+
+.usage-legend { display: flex; flex-wrap: wrap; gap: var(--base-size-8) var(--base-size-16); margin: 0; padding: 0; list-style: none; font-size: var(--text-body-size-small); }
+.usage-legend li { display: inline-flex; align-items: center; gap: var(--base-size-8); min-width: 0; }
+.usage-swatch { flex: none; width: 10px; height: 10px; border-radius: var(--borderRadius-small); }
+.usage-legend-label { color: var(--fgColor-default); overflow-wrap: anywhere; }
+.usage-legend-value { color: var(--fgColor-muted); font-variant-numeric: tabular-nums; }
+
+@media (forced-colors: active) {
+  .usage-swatch { forced-color-adjust: none; outline: 1px solid CanvasText; }
+}
+
+/* ---------- Tables and budgets ---------- */
+
+.usage-call-error { margin-top: var(--base-size-4); }
+.usage-defaults { max-width: 440px; }
+.usage-limit-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--stack-gap-normal); align-items: start; }
+.usage-limit-fields > .field { min-width: 0; }
+.usage-subject-kind { display: flex; flex-direction: column; gap: var(--base-size-4); }
+.usage-budgets { gap: var(--base-size-24); }
+
+/* A horizontal FormControl centres its label beside the radio. forms.css
+   aligns the label to the top, which splits the row on narrow viewports. */
+:is(.usage-stack, .usage-subject-kind) > .form-control-horizontal { align-items: center; }
+:is(.usage-stack, .usage-subject-kind) > .form-control-horizontal > .form-label { align-self: center; }
+:is(.usage-stack, .usage-subject-kind) input[type="radio"] { margin-top: 0; }
+
+@media (max-width: calc(48rem - 0.02px)) {
+  .usage-page { gap: var(--base-size-16); }
+  .usage-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--base-size-8); }
+  .usage-filter-grid { grid-template-columns: minmax(0, 1fr); }
+  .usage-defaults { max-width: none; }
+  .usage-used { min-width: 7rem; }
+  /* Text inputs and selects reach the 44px narrow target (docs/primer.md 9.2). */
+  .usage-page :is(input:not([type="checkbox"]):not([type="radio"]), select) { min-height: var(--control-minTarget-coarse); }
+  .usage-page .data-table-actions .btn { height: var(--control-large-size); }
+  .usage-budgets { gap: var(--base-size-16); }
+  .dialog .usage-limit-fields input { min-height: var(--control-minTarget-coarse); }
+}
+
+@media (max-width: 20.5rem) {
+  .usage-tiles { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* AI editor */
+
+/* AI tab */
+.ai-tab .ms-panel-foot { display: flex; flex-direction: column; gap: 8px; }
+.ai-thread { display: flex; flex-direction: column; gap: 16px; margin: 0; padding: 0; list-style: none; }
+.ai-turn { display: flex; flex-direction: column; gap: 8px; }
+.ai-turn.is-user { align-items: flex-end; }
+.ai-question { max-width: 90%; padding: 8px 12px; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bgColor-muted); border-radius: var(--borderRadius-medium); }
+.ai-thread-composer { display: flex; flex-direction: column; gap: 8px; }
+.applied-badge { font-size: 0.75rem; font-weight: 600; color: var(--fgColor-success); }
+.ai-error-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ai-usage { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--fgColor-muted); }
+.ai-usage:empty { display: none; }
+.usage-text { flex: 1 1 auto; min-width: 0; }
+.usage-meter { flex: none; width: 64px; height: 4px; overflow: hidden; background: var(--bgColor-neutral-muted); border-radius: 2px; }
+.usage-meter-fill { display: block; height: 100%; background: var(--bgColor-accent-emphasis); }
+.ai-usage.is-warn, .ai-usage.is-warn .usage-link { color: var(--fgColor-attention); }
+.ai-usage.is-warn .usage-meter-fill { background: var(--bgColor-attention-emphasis); }

@@ -1,0 +1,166 @@
+{{- define "share_panel" -}}
+{{/* The Share panel of the server note page (docs/primer.md 5.10). Remove access
+     acts at once, and app.js offers Undo. Revoke link asks in a
+     ConfirmationDialog, and without scripting through the confirmation step
+     of notes.go. */}}
+{{ if hasAccess .Grant "manage" }}
+{{ $action := noteURL .Space .Note }}
+{{ $shares := .Get "Shares" }}
+{{ $links := .Get "Links" }}
+<details class="note-rail-section note-share" id="share">
+  <summary class="note-share-summary">
+    <h2 class="note-rail-title">Share</h2>
+    <span class="note-share-chevron" aria-hidden="true"><span class="details-closed">{{ octicon "chevron-down" 16 }}</span><span class="details-open">{{ octicon "chevron-up" 16 }}</span></span>
+  </summary>
+  <div class="note-share-body">
+    <section class="list-section" aria-labelledby="share-people-title">
+      <div class="section-heading">
+        <h3 class="section-heading-title" id="share-people-title"><span>People</span>{{ with $shares }}<span class="counter-label"><span aria-hidden="true">{{ len . }}</span><span class="sr-only">({{ len . }})</span></span>{{ end }}</h3>
+      </div>
+      {{ with $shares }}
+      <ul class="list-rows">
+        {{ range . }}
+        {{ $name := .UserID }}{{ with .User }}{{ $name = orDefault .Name .Email }}{{ end }}
+        <li class="list-row ms-person">
+          <span class="list-row-lead">{{ template "avatar" dict "User" .User "Size" "32" }}</span>
+          <span class="list-row-main">
+            <span class="list-row-title">{{ $name }}</span>
+            {{ with .User }}{{ if and .Name .Email }}<span class="list-row-sub">{{ .Email }}</span>{{ end }}{{ end }}
+            {{ if .IncludeChildren }}<span class="list-row-sub">Includes child pages</span>{{ end }}
+          </span>
+          <span class="list-row-trail">
+            <span class="ui-label ui-label-secondary">{{ accessLabel .Access }}</span>
+            <button class="btn btn-invisible btn-sm btn-icon" type="button" popovertarget="share-menu-{{ .ID }}" aria-label="Actions for {{ $name }}">{{ octicon "kebab-horizontal" 16 }}</button>
+            <div class="row-menu" id="share-menu-{{ .ID }}" popover>
+              <form method="post" action="{{ $action }}">
+                <input type="hidden" name="action" value="share-remove">
+                <input type="hidden" name="shareId" value="{{ .ID }}">
+                <button class="menu-item danger" type="submit" data-undo-label="Removed access for {{ $name }}" data-undo-action="share-add" data-undo-field-user-id="{{ .UserID }}" data-undo-field-access="{{ .Access }}"{{ if .IncludeChildren }} data-undo-field-include-children="1"{{ end }}>Remove access</button>
+              </form>
+            </div>
+          </span>
+        </li>
+        {{ end }}
+      </ul>
+      {{ else }}
+      <div class="blankslate blankslate-small blankslate-border">
+        <div class="blankslate-inner">
+          <span class="blankslate-visual" aria-hidden="true">{{ octicon "people" 24 }}</span>
+          <h4 class="blankslate-heading">Not shared with anyone</h4>
+          <p class="blankslate-description">Members of the space can open this page.</p>
+        </div>
+      </div>
+      {{ end }}
+    </section>
+
+    <form class="ms-form" method="post" action="{{ $action }}" novalidate aria-labelledby="share-add-title">
+      <input type="hidden" name="action" value="share-add">
+      <h3 class="section-heading-title" id="share-add-title">Add a person</h3>
+      <div class="form-control field">
+        <label class="form-label field-label" for="share-email">Email address</label>
+        <span class="text-input text-input-block"><input class="text-input-control" id="share-email" type="email" name="email" autocomplete="off" required></span>
+      </div>
+      <div class="form-control field">
+        <label class="form-label field-label" for="share-access">Access</label>
+        <span class="text-input select-box text-input-block">
+          <select class="select" id="share-access" name="access">
+            <option value="view">Can view</option>
+            <option value="comment">Can comment</option>
+            <option value="edit">Can edit</option>
+            <option value="manage">Can manage</option>
+          </select>
+          <span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span>
+        </span>
+      </div>
+      <details class="details">
+        <summary class="btn btn-invisible btn-sm details-summary"><span class="btn-visual btn-leading details-chevron" aria-hidden="true"><span class="details-closed">{{ octicon "chevron-down" 16 }}</span><span class="details-open">{{ octicon "chevron-up" 16 }}</span></span><span class="btn-label">More options</span></summary>
+        <div class="details-body">
+          <div class="form-control form-control-horizontal field field-check">
+            <input class="checkbox" type="checkbox" id="share-children" name="includeChildren" value="1">
+            <div class="form-control-horizontal-text"><label class="form-label field-label" for="share-children">Include child pages</label></div>
+          </div>
+        </div>
+      </details>
+      <div class="ms-form-actions"><button class="btn btn-primary" type="submit">Share</button></div>
+    </form>
+
+    <section class="list-section" aria-labelledby="share-links-title">
+      <div class="section-heading">
+        <h3 class="section-heading-title" id="share-links-title"><span>Public links</span>{{ with $links }}<span class="counter-label"><span aria-hidden="true">{{ len . }}</span><span class="sr-only">({{ len . }})</span></span>{{ end }}</h3>
+      </div>
+      {{ with $links }}
+      <ul class="list-rows">
+        {{ range . }}
+        <li class="list-row no-lead ms-link">
+          <div class="list-row-main">
+            <span class="text-input text-input-sm text-input-block has-trailing-action">
+              <input class="text-input-control is-monospace" id="link-url-{{ .ID }}" type="text" readonly value="{{ $.BaseURL }}/p/{{ .Token }}" aria-label="Public link">
+              <button class="btn btn-invisible btn-sm btn-icon text-input-action" type="button" data-copy="{{ $.BaseURL }}/p/{{ .Token }}" aria-label="Copy link">{{ octicon "copy" 16 }}</button>
+            </span>
+            <div class="ms-link-meta">
+              <ul class="ms-labels" aria-label="Link details">
+                <li><span class="ui-label ui-label-secondary">{{ accessLabel .Access }}</span></li>
+                {{ if .HasPassword }}<li><span class="ui-label ui-label-secondary">Password</span></li>{{ end }}
+              </ul>
+              <span>{{ pluralize .Views "view" "views" }}</span>
+            </div>
+          </div>
+          <span class="list-row-trail">
+            <button class="btn btn-invisible btn-sm btn-icon" type="button" popovertarget="link-menu-{{ .ID }}" aria-label="Actions for this public link">{{ octicon "kebab-horizontal" 16 }}</button>
+            <div class="row-menu" id="link-menu-{{ .ID }}" popover>
+              <button class="menu-item" type="button" data-copy="{{ $.BaseURL }}/p/{{ .Token }}">Copy link</button>
+              <hr class="menu-sep">
+              <form method="post" action="{{ $action }}">
+                <input type="hidden" name="action" value="link-delete">
+                <input type="hidden" name="linkId" value="{{ .ID }}">
+                <noscript><input type="hidden" name="nojs" value="1"></noscript>
+                <button class="menu-item danger" type="submit" data-confirm="Revoke public link? People who have the link can no longer open it. This cannot be undone.">Revoke link</button>
+              </form>
+            </div>
+          </span>
+        </li>
+        {{ end }}
+      </ul>
+      {{ else }}
+      <div class="blankslate blankslate-small blankslate-border">
+        <div class="blankslate-inner">
+          <span class="blankslate-visual" aria-hidden="true">{{ octicon "globe" 24 }}</span>
+          <h4 class="blankslate-heading">No public links</h4>
+          <p class="blankslate-description">Anyone with a public link can read the page without an account.</p>
+        </div>
+      </div>
+      {{ end }}
+      <details class="details details-add">
+        <summary class="btn details-summary"><span class="btn-visual btn-leading" aria-hidden="true">{{ octicon "plus" 16 }}</span><span class="btn-label">Add public link</span></summary>
+        <div class="details-body">
+          <form class="ms-form" method="post" action="{{ $action }}" novalidate aria-labelledby="share-link-title">
+            <input type="hidden" name="action" value="link-create">
+            <h4 class="section-heading-title" id="share-link-title">New public link</h4>
+            <div class="form-control field">
+              <label class="form-label field-label" for="link-access">Access</label>
+              <span class="text-input select-box text-input-block">
+                <select class="select" id="link-access" name="access">
+                  <option value="view">Can view</option>
+                  <option value="comment">Can comment</option>
+                </select>
+                <span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span>
+              </span>
+            </div>
+            <div class="form-control field">
+              <label class="form-label field-label" for="link-password">Password</label>
+              <span class="text-input text-input-block"><input class="text-input-control" id="link-password" type="password" name="password" autocomplete="new-password" aria-describedby="link-password-caption"></span>
+              <p class="form-caption field-hint" id="link-password-caption">Optional. People need the password to open the link.</p>
+            </div>
+            <div class="form-control form-control-horizontal field field-check">
+              <input class="checkbox" type="checkbox" id="link-children" name="includeChildren" value="1">
+              <div class="form-control-horizontal-text"><label class="form-label field-label" for="link-children">Include child pages</label></div>
+            </div>
+            <div class="ms-form-actions"><button class="btn btn-primary" type="submit">Create link</button></div>
+          </form>
+        </div>
+      </details>
+    </section>
+  </div>
+</details>
+{{ end }}
+{{- end -}}

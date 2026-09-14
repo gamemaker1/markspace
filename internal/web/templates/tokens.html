@@ -1,0 +1,85 @@
+{{ define "title" }}API tokens{{ end }}
+{{ define "sidebar" }}{{ template "settings_pane" . }}{{ end }}
+{{ define "content" }}
+{{ $tokens := .Get "Tokens" }}
+<div class="settings-page">
+<div class="page-header" data-border="true">
+  <div class="page-header-context"><a class="page-header-parent" href="/settings">{{ octicon "arrow-left" 16 }}<span>Settings</span></a></div>
+  <div class="page-header-title-area"><h1 class="page-header-title" id="page-title">API tokens</h1></div>
+  <p class="page-header-description"><span>Scripts send a token as <code>Authorization: Bearer &lt;token&gt;</code>. A token acts as you.</span></p>
+</div>
+
+{{ with .Get "NewToken" }}
+<section class="banner banner-success new-token" aria-labelledby="new-token-title" tabindex="-1" autofocus>
+  <div class="banner-icon" aria-hidden="true">{{ octicon "check-circle" 16 }}</div>
+  <div class="banner-container"><div class="banner-content">
+    <h2 class="banner-title" id="new-token-title">Copy your new token now</h2>
+    <div class="banner-description">
+      <p>It is shown this once. Store it in your password manager or script configuration.</p>
+      <div class="text-input text-input-block has-trailing-action new-token-box">
+        <input class="text-input-control" id="new-token-value" type="text" value="{{ . }}" readonly aria-label="New token" spellcheck="false">
+        <button class="btn btn-icon btn-invisible btn-sm text-input-action" type="button" data-copy="{{ . }}" aria-label="Copy token" data-tooltip="Copy token"><span class="btn-visual" aria-hidden="true">{{ octicon "copy" 16 }}</span></button>
+      </div>
+    </div>
+  </div></div>
+</section>
+{{ end }}
+
+<details class="add-toggle page-add" id="new-token"{{ if .FormOpen "token" }} open{{ end }}>
+  <summary class="btn"><span class="btn-visual" aria-hidden="true">{{ octicon "plus" 16 }}</span><span class="btn-label">New token</span></summary>
+  <form method="post" action="/settings/tokens" class="settings-form" novalidate data-unsaved aria-label="New token">
+    {{ template "ui_error_summary" dict "P" . "Form" "token" }}
+    {{ template "ui_form_message" dict "P" . "Form" "token" }}
+    <input type="hidden" name="action" value="create">
+    {{ template "ui_text_field" dict "P" . "Form" "token" "Field" "name" "Label" "Name" "Value" (.FormValue "token" "name" "") "Required" true "Caption" "Name it after what uses it, so you know what stops working when you revoke it." "Autocomplete" "off" }}
+    {{ $ttl := .FormValue "token" "ttlDays" "90" }}
+    {{ $ttlErr := .FormError "token" "ttlDays" }}
+    <fieldset class="radio-group"{{ if $ttlErr }} aria-describedby="token-ttl-days-error"{{ end }}>
+      <legend class="form-label">Expires after</legend>
+      <div class="radio-group-options">
+        <label class="check"><input id="token-ttl-days" type="radio" name="ttlDays" value="7"{{ if eq $ttl "7" }} checked{{ end }}> 7 days</label>
+        <label class="check"><input type="radio" name="ttlDays" value="30"{{ if eq $ttl "30" }} checked{{ end }}> 30 days</label>
+        <label class="check"><input type="radio" name="ttlDays" value="90"{{ if eq $ttl "90" }} checked{{ end }}> 90 days</label>
+        <label class="check"><input type="radio" name="ttlDays" value="365"{{ if eq $ttl "365" }} checked{{ end }}> 1 year</label>
+        <label class="check"><input type="radio" name="ttlDays" value="0"{{ if eq $ttl "0" }} checked{{ end }}> Never</label>
+      </div>
+      {{ template "ui_field_feedback" dict "ID" "token-ttl-days" "Error" $ttlErr }}
+    </fieldset>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Create token</button>
+      <a class="btn" href="/settings/tokens">Cancel</a>
+    </div>
+  </form>
+</details>
+
+{{ if $tokens }}
+<div class="table-scroll" role="region" tabindex="0" aria-label="API tokens table">
+  <table class="data-table settings-table" aria-labelledby="page-title">
+    <thead>
+      <tr><th scope="col">Name</th><th scope="col" class="col-hide-narrow">Created</th><th scope="col">Last used</th><th scope="col" class="col-hide-narrow">Expires</th><th scope="col" class="col-actions"><span class="sr-only">Actions</span></th></tr>
+    </thead>
+    <tbody>
+      {{ range $tokens }}
+      <tr data-row="{{ .ID }}">
+        <th scope="row"><span class="cell-main"><span class="cell-title">{{ .Name }}</span><code class="cell-sub">{{ .Prefix }}</code></span></th>
+        <td class="col-nowrap col-hide-narrow">{{ timeAgo .CreatedAt }}</td>
+        <td class="col-nowrap">{{ with .LastUsed }}{{ timeAgo . }}{{ else }}<span class="cell-muted">Never used</span>{{ end }}</td>
+        <td class="col-nowrap col-hide-narrow">{{ with .ExpiresAt }}{{ preciseTime . }}{{ else }}<span class="cell-muted">Does not expire</span>{{ end }}</td>
+        <td class="col-actions">
+          <form method="post" action="/settings/tokens" class="inline-form">
+            <input type="hidden" name="action" value="revoke">
+            <input type="hidden" name="tokenId" value="{{ .ID }}">
+            {{ template "ui_noscript_marker" }}
+            <button class="btn btn-sm" type="submit" aria-label="Revoke {{ .Name }}" data-revoke-token="{{ .ID }}" data-confirm="Revoke {{ .Name }}?" data-confirm-detail="Scripts that use it stop working at once. This cannot be undone." data-confirm-danger>Revoke</button>
+          </form>
+        </td>
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+</div>
+{{ else }}
+{{ template "ui_blankslate" dict "Icon" "key" "Title" "No tokens yet" "Description" "Create one token for each script, so you can revoke one without breaking the others." "Border" true }}
+{{ end }}
+</div>
+{{ end }}

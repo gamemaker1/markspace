@@ -1,0 +1,19 @@
+{{ define "title" }}First run setup{{ end }}
+{{ define "content" }}
+<div class="auth-card interstitial">
+  <span class="auth-brand">{{ .InstanceName }}</span>
+  <div class="page-header">
+    <div class="page-header-title-area"><h1 class="page-header-title">Set up {{ .InstanceName }}</h1></div>
+    <p class="page-header-description">This instance has no accounts yet. The first account becomes the administrator and can manage everything.</p>
+  </div>
+  <form method="post" action="/setup" class="stack" novalidate>
+    {{ template "ui_error_summary" dict "P" . "Form" "setup" }}
+    {{ template "ui_form_message" dict "P" . "Form" "setup" }}
+    {{ template "ui_text_field" dict "P" . "Form" "setup" "Field" "name" "Label" "Your name" "Value" (.FormValue "setup" "name" "") "Required" true "HideRequired" true "Autofocus" (not (.FormOpen "setup")) "Autocomplete" "name" }}
+    {{ template "ui_text_field" dict "P" . "Form" "setup" "Field" "email" "Label" "Email address" "Type" "email" "Value" (.FormValue "setup" "email" "") "Required" true "HideRequired" true "Autocomplete" "username" "Inputmode" "email" "Autocapitalize" "off" "Spellcheck" "false" }}
+    {{ template "ui_text_field" dict "P" . "Form" "setup" "Field" "password" "Label" "Password" "Type" "password" "Required" true "HideRequired" true "Caption" "At least 8 characters." "Autocomplete" "new-password" }}
+    {{ template "ui_text_field" dict "P" . "Form" "setup" "Field" "passwordConfirm" "Label" "Repeat password" "Type" "password" "Required" true "HideRequired" true "Autocomplete" "new-password" }}
+    <button class="btn btn-primary btn-block" type="submit">Create the administrator</button>
+  </form>
+</div>
+{{ end }}

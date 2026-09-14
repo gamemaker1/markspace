@@ -1,0 +1,14 @@
+{{ define "title" }}Offline{{ end }}
+{{ define "content" }}
+<div class="interstitial-blankslate offline-page">
+  <div class="blankslate blankslate-spacious">
+    <div class="blankslate-inner">
+      <span class="blankslate-visual" aria-hidden="true">{{ octicon "cloud-offline" 24 }}</span>
+      <h1 class="blankslate-heading">This page needs a connection</h1>
+      <p class="blankslate-description">You are offline. Your notes are still on this device, and changes you make sync when the connection returns.</p>
+      <div class="blankslate-action"><a class="btn btn-primary" href="/">Go to your notes</a></div>
+      <div class="blankslate-action"><button class="btn" type="button" data-reload>Try again</button></div>
+    </div>
+  </div>
+</div>
+{{ end }}

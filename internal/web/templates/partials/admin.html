@@ -1,0 +1,63 @@
+{{/* Administration layout (docs/primer.md 5.2). Every admin page defines the
+     "sidebar" block as admin_sidebar, so the SplitPageLayout pane holds the
+     admin NavList instead of the notes sidebar. On narrow viewports /admin
+     shows the NavList as the page (admin_index) and every other page shows
+     the PageHeader parent link (admin_parent). The page content sits in
+     <div class="admin-page"> and starts with a PageHeader:
+
+     <div class="page-header" data-border="true">
+       {{ template "admin_parent" }}
+       <div class="page-header-title-area"><h1 class="page-header-title" tabindex="-1">Users</h1></div>
+       <div class="page-header-actions">…</div>
+       <p class="page-header-description">…</p>
+     </div> */}}
+
+{{- define "admin_sidebar" -}}
+<nav class="split-nav" aria-labelledby="admin-nav-title">
+  <h2 class="split-nav-title" id="admin-nav-title">Administration</h2>
+  {{ template "admin_navlist" . }}
+</nav>
+{{- end -}}
+
+{{- define "admin_index" -}}
+<nav class="split-nav admin-index" aria-labelledby="admin-index-title">
+  <h2 class="sr-only" id="admin-index-title">Administration pages</h2>
+  {{ template "admin_navlist" . }}
+</nav>
+{{- end -}}
+
+{{- define "admin_parent" -}}
+<div class="page-header-context"><a class="page-header-parent" href="/admin">{{ octicon "arrow-left" 16 }}<span>Administration</span></a></div>
+{{- end -}}
+
+{{- define "admin_navlist" -}}
+{{/* dot is the Page. Every item has a leading Octicon (docs/primer.md 5.1). */}}
+{{ $p := .RequestPath }}
+<ul class="nav-list">
+  {{ template "admin_navitem" dict "Href" "/admin" "Label" "Overview" "Icon" "home" "Current" (eq $p "/admin") }}
+  {{ template "admin_navitem" dict "Href" "/admin/users" "Label" "Users" "Icon" "people" "Current" (eq $p "/admin/users") }}
+  {{ template "admin_navitem" dict "Href" "/admin/ai" "Label" "AI" "Icon" "ai-model" "Current" (eq $p "/admin/ai") }}
+  {{ template "admin_navitem" dict "Href" "/admin/usage" "Label" "AI usage" "Icon" "report" "Current" (eq $p "/admin/usage") }}
+  {{ template "admin_navitem" dict "Href" "/admin/plugins" "Label" "Plugins" "Icon" "apps" "Current" (eq $p "/admin/plugins") }}
+  {{ template "admin_navitem" dict "Href" "/jobs" "Label" "Jobs" "Icon" "tasklist" "Current" (eq $p "/jobs") }}
+  {{ template "admin_navitem" dict "Href" "/admin/settings" "Label" "Settings" "Icon" "gear" "Current" (eq $p "/admin/settings") }}
+</ul>
+{{- end -}}
+
+{{- define "admin_navitem" -}}
+<li><a class="nav-list-item" href="{{ .Href }}"{{ if .Current }} aria-current="page"{{ end }}><span class="nav-list-visual" aria-hidden="true">{{ octicon .Icon 16 }}</span><span class="nav-list-label">{{ .Label }}</span></a></li>
+{{- end -}}
+
+{{- define "admin_field_error" -}}
+{{/* dot is a dict with ID and Msg. The FormControl validation message (docs/primer.md 5.3). */}}
+{{ with .Msg }}<p class="field-error form-validation" id="{{ $.ID }}-error"><span class="form-validation-icon" aria-hidden="true">{{ octicon "alert-fill" 16 }}</span><span class="form-validation-text">{{ . }}</span></p>{{ end }}
+{{- end -}}
+
+{{- define "admin_saved" -}}
+{{/* dot is the message. An InlineMessage success beside a Save button that
+     admin.js announces once (docs/primer.md 6.1). */}}
+<p class="inline-message inline-message-success" data-saved-message><span class="inline-message-icon" aria-hidden="true">{{ octicon "check-circle" 16 }}</span><span>{{ . }}</span></p>
+{{- end -}}
+
+{{/* admin_nav is the older name module.html still calls. */}}
+{{- define "admin_nav" -}}{{ template "admin_index" . }}{{- end -}}

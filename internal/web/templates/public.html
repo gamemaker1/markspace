@@ -1,0 +1,22 @@
+{{ define "title" }}{{ with .Note }}{{ .Title }}{{ end }}{{ end }}
+{{ define "content" }}
+{{ $rendered := .Get "Rendered" }}
+<article class="public-page public-note-page">
+  {{ with .Note }}
+  <div class="page-header page-header-large">
+    {{ with .Icon }}<span class="page-header-leading-visual" aria-hidden="true">{{ . }}</span>{{ end }}
+    <div class="page-header-title-area"><h1 class="page-header-title">{{ .Title }}</h1></div>
+    <p class="page-header-description"><span>Updated {{ timeAgo .UpdatedAt }}</span><span aria-hidden="true">&middot;</span><span>{{ pluralize .Words "word" "words" }}</span></p>
+  </div>
+  {{ end }}
+  {{ if .Get "ShowTOC" }}
+  <nav class="toc" aria-labelledby="toc-title">
+    <h2 id="toc-title">Contents</h2>
+    <ol>{{ range $rendered.TOC }}<li class="toc-l{{ .Level }}"><a href="#{{ .ID }}">{{ .Text }}</a></li>{{ end }}</ol>
+  </nav>
+  {{ end }}
+  <div class="md-body">{{ with $rendered }}{{ safeHTML .HTML }}{{ end }}</div>
+  {{ if hasAccess .Grant "comment" }}{{ template "comments" . }}{{ end }}
+  <footer class="public-foot">Shared from {{ .InstanceName }}</footer>
+</article>
+{{ end }}

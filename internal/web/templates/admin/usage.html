@@ -1,0 +1,255 @@
+{{ define "title" }}AI usage{{ end }}
+{{ define "sidebar" }}{{ template "admin_sidebar" . }}{{ end }}
+{{ define "content" }}
+<div class="admin-page usage-page">
+  <div class="page-header" data-border="true">
+    {{ template "admin_parent" }}
+    <div class="page-header-title-area"><h1 class="page-header-title" tabindex="-1">AI usage</h1></div>
+    <p class="page-header-description">Calls, tokens and cost of the AI features on this instance, and the monthly budgets.</p>
+  </div>
+{{ with .Get "AdminUsage" }}
+{{ $v := . }}
+{{ $f := .Filter }}
+{{ $cur := .Currency }}
+  <form method="get" action="/admin/usage" class="usage-filters" aria-labelledby="uf-title" novalidate>
+    <div class="section-heading">
+      <h2 class="section-heading-title" id="uf-title">Filters</h2>
+      <p class="section-heading-description">Days are in UTC. Every chart and table on this page uses these filters.</p>
+    </div>
+    <div class="usage-filter-grid">
+      <div class="field">
+        <label class="field-label" for="uf-range">Date range</label>
+        <span class="text-input select-box text-input-block"><select class="text-input-control" id="uf-range" name="range">
+          {{ range .Ranges }}<option value="{{ .Value }}"{{ if eq .Value $f.Range }} selected{{ end }}>{{ .Label }}</option>{{ end }}
+        </select><span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span></span>
+      </div>
+      <div class="field usage-custom{{ if $v.FieldError "from" }} has-error{{ end }}">
+        <label class="field-label" for="uf-from">From</label>
+        <input id="uf-from" type="date" name="from" value="{{ $f.From }}"{{ if $v.FieldError "from" }} aria-invalid="true" aria-describedby="uf-from-error"{{ end }}>
+        {{ template "admin_field_error" dict "ID" "uf-from" "Msg" ($v.FieldError "from") }}
+      </div>
+      <div class="field usage-custom{{ if $v.FieldError "to" }} has-error{{ end }}">
+        <label class="field-label" for="uf-to">To</label>
+        <input id="uf-to" type="date" name="to" value="{{ $f.To }}"{{ if $v.FieldError "to" }} aria-invalid="true" aria-describedby="uf-to-error"{{ end }}>
+        {{ template "admin_field_error" dict "ID" "uf-to" "Msg" ($v.FieldError "to") }}
+      </div>
+      <div class="field">
+        <label class="field-label" for="uf-user">Person</label>
+        <span class="text-input select-box text-input-block"><select class="text-input-control" id="uf-user" name="user">
+          <option value="">Everyone</option>
+          {{ range .Users }}<option value="{{ .ID }}"{{ if eq .ID $f.User }} selected{{ end }}>{{ orDefault .Name .Email }}</option>{{ end }}
+        </select><span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span></span>
+      </div>
+      <div class="field">
+        <label class="field-label" for="uf-provider">Provider</label>
+        <span class="text-input select-box text-input-block"><select class="text-input-control" id="uf-provider" name="provider">
+          <option value="">Any provider</option>
+          {{ range .ProviderOptions }}<option value="{{ .Value }}"{{ if eq .Value $f.Provider }} selected{{ end }}>{{ .Label }}</option>{{ end }}
+        </select><span class="select-caret" aria-hidden="true">{{ octicon "triangle-down" 16 }}</span></span>
+      </div>
+      <div class="field">
+        <label class="field-label" for="uf-model">Model</label>
+        <input id="uf-model" type="text" name="model" value="{{ $f.Model }}" list="uf-models" autocomplete="off" autocapitalize="off" aria-describedby="uf-model-caption">
+        <p class="field-hint" id="uf-model-caption">Empty means any model.</p>
+        <datalist id="uf-models">{{ range .ModelOptions }}<option value="{{ . }}"></option>{{ end }}</datalist>
+      </div>
+      <div class="field">
+        <label class="field-label" for="uf-plugin">Plugin</label>
+        <input id="uf-plugin" type="text" name="plugin" value="{{ $f.Plugin }}" list="uf-plugins" autocomplete="off" autocapitalize="off" aria-describedby="uf-plugin-caption">
+        <p class="field-hint" id="uf-plugin-caption">Empty means any plugin.</p>
+        <datalist id="uf-plugins">{{ range .PluginOptions }}<option value="{{ . }}"></option>{{ end }}</datalist>
+      </div>
+      <fieldset class="usage-stack">
+        <legend class="form-label">Stack the chart by</legend>
+        <div class="form-control form-control-horizontal"><input id="uf-stack-user" type="radio" name="stack" value="user"{{ if ne $f.Stack "plugin" }} checked{{ end }}><label class="form-label" for="uf-stack-user">Person</label></div>
+        <div class="form-control form-control-horizontal"><input id="uf-stack-plugin" type="radio" name="stack" value="plugin"{{ if eq $f.Stack "plugin" }} checked{{ end }}><label class="form-label" for="uf-stack-plugin">Plugin</label></div>
+      </fieldset>
+    </div>
+    <div class="form-block-actions">
+      <button class="btn btn-primary" type="submit">Apply filters</button>
+      <a class="btn" href="/admin/usage">Reset</a>
+    </div>
+  </form>
+
+  {{ with .Totals }}
+  <section aria-labelledby="ut-title">
+    <h2 class="sr-only" id="ut-title">Totals</h2>
+    <dl class="usage-tiles">
+      <div class="tile"><dt class="tile-label">Calls</dt><dd class="tile-value">{{ usageNum .Calls }}</dd><dd class="usage-tile-sub">{{ usageNum .Errors }} failed</dd></div>
+      <div class="tile"><dt class="tile-label">Tokens</dt><dd class="tile-value">{{ usageTokens (usageSum .InputTokens .OutputTokens) }}</dd><dd class="usage-tile-sub">{{ usageTokens .InputTokens }} in, {{ usageTokens .OutputTokens }} out</dd></div>
+      <div class="tile"><dt class="tile-label">Cost</dt><dd class="tile-value">{{ usageMoney .Cost $cur }}</dd><dd class="usage-tile-sub">{{ if $cur }}At the recorded prices{{ else }}No prices are set{{ end }}</dd></div>
+      <div class="tile"><dt class="tile-label">Average duration</dt><dd class="tile-value">{{ usageDuration .AvgDurationMs }}</dd><dd class="usage-tile-sub">{{ usageCount .ImagesOut "image made" "images made" }}</dd></div>
+    </dl>
+  </section>
+  {{ end }}
+
+  <section class="admin-section" aria-labelledby="uc-title">
+    <div class="section-heading">
+      <h2 class="section-heading-title" id="uc-title">Tokens per day</h2>
+      <p class="section-heading-description">Stacked by {{ if eq $f.Stack "plugin" }}plugin{{ else }}person{{ end }}.</p>
+    </div>
+    {{ if .Totals.Calls }}{{ template "usage_chart" .Chart }}{{ else }}{{ template "usage_empty" dict "Title" "No calls match these filters" "Text" "Change the date range or clear a filter." }}{{ end }}
+  </section>
+
+  {{ template "usage_breakdown" dict "ID" "by-person" "Title" "By person" "Head" "Person" "Rows" .People "Currency" $cur "Empty" "No calls match these filters" }}
+  {{ template "usage_breakdown" dict "ID" "by-provider" "Title" "By provider" "Head" "Provider" "Rows" .Providers "Currency" $cur "Empty" "No calls match these filters" }}
+  {{ template "usage_breakdown" dict "ID" "by-model" "Title" "By model" "Head" "Model" "Rows" .Models "Currency" $cur "Empty" "No calls match these filters" }}
+  {{ template "usage_breakdown" dict "ID" "by-plugin" "Title" "By plugin" "Head" "Plugin" "Rows" .Plugins "Currency" $cur "Empty" "No calls match these filters" }}
+  {{ template "usage_calls" dict "ID" "slowest" "Title" "Slowest calls" "Calls" .Slowest "Empty" "No calls in this range" "Mine" false }}
+  {{ template "usage_calls" dict "ID" "failed" "Title" "Failed calls" "Calls" .Failed "Empty" "No call failed in this range" "Mine" false }}
+
+  <section class="admin-section usage-budgets" id="budgets" aria-labelledby="budgets-title">
+    <div class="section-heading">
+      <h2 class="section-heading-title" id="budgets-title">Budgets</h2>
+      <p class="section-heading-description">A budget caps the tokens or cost of one UTC month. From 80 percent the AI tools warn. At 100 percent calls stop until the month ends or you lift the budget.</p>
+    </div>
+
+    <form method="post" action="/admin/usage" class="form-block usage-defaults" id="budget-defaults" aria-labelledby="bd-title" novalidate data-validate data-unsaved>
+      <input type="hidden" name="action" value="defaults-save">
+      <div class="form-block-head">
+        <h3 class="form-block-title" id="bd-title">Default for every person</h3>
+        <p class="form-block-desc">An empty limit or 0 means no limit. Plugins have no default.</p>
+      </div>
+      <div class="usage-limit-fields">
+        <div class="field{{ if .FieldError "defaultTokens" }} has-error{{ end }}">
+          <label class="field-label" for="bd-tokens">Monthly tokens</label>
+          <input id="bd-tokens" type="number" name="defaultTokens" min="0" step="1" inputmode="numeric" value="{{ .DefaultTokens }}"{{ if .FieldError "defaultTokens" }} aria-invalid="true" aria-describedby="bd-tokens-error"{{ end }}>
+          {{ template "admin_field_error" dict "ID" "bd-tokens" "Msg" (.FieldError "defaultTokens") }}
+        </div>
+        <div class="field{{ if .FieldError "defaultCost" }} has-error{{ end }}">
+          <label class="field-label" for="bd-cost">Monthly cost{{ with $cur }}{{ if ne . "mixed" }} in {{ . }}{{ end }}{{ end }}</label>
+          <input id="bd-cost" type="number" name="defaultCost" min="0" step="0.01" inputmode="decimal" value="{{ .DefaultCost }}"{{ if .FieldError "defaultCost" }} aria-invalid="true" aria-describedby="bd-cost-error"{{ end }}>
+          {{ template "admin_field_error" dict "ID" "bd-cost" "Msg" (.FieldError "defaultCost") }}
+        </div>
+      </div>
+      <div class="form-block-actions">
+        <button class="btn btn-primary" type="submit">Save defaults</button>
+        {{ if .DefaultsSaved }}{{ template "admin_saved" "Defaults saved" }}{{ end }}
+      </div>
+    </form>
+
+    <div class="admin-section">
+      <div class="data-table-header">
+        <div class="data-table-titles">
+          <h3 class="data-table-title" id="bo-title">Overrides{{ template "usage_counter" (len .Budgets) }}</h3>
+          <p class="data-table-subtitle" id="bo-subtitle">People and plugins with their own limits.</p>
+        </div>
+        <div class="data-table-actions">
+          <a class="btn btn-sm" href="/admin/usage?add=1#budget-add" data-dialog-open="budget-add"><span class="btn-visual" aria-hidden="true">{{ octicon "plus" 16 }}</span><span class="btn-label">Add override</span></a>
+        </div>
+      </div>
+      {{ with .Budgets }}
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Overrides table">
+        <table class="data-table usage-budget-table" aria-labelledby="bo-title" aria-describedby="bo-subtitle">
+          <thead>
+            <tr><th scope="col">Person or plugin</th><th scope="col" class="hide-narrow">Limits</th><th scope="col">Used this month</th><th scope="col">State</th><th scope="col" class="col-actions"><span class="sr-only">Actions</span></th></tr>
+          </thead>
+          <tbody>
+            {{ range . }}
+            <tr id="{{ .Anchor }}">
+              <th scope="row"><span class="cell-main"><span class="cell-title">{{ .Name }}</span><span class="cell-sub">{{ breakable .Sub }}</span></span></th>
+              <td class="hide-narrow"><span class="cell-main"><span>{{ .TokenLimit }}</span><span class="cell-sub">{{ .CostLimit }}</span></span></td>
+              <td>{{ if .Limited }}<span class="usage-used">{{ usageProgress .State.UsedPct (printf "Budget used by %s" .Name) }}<span class="usage-used-text">{{ usagePct .State.UsedPct }}</span></span>{{ else }}<span class="cell-muted">{{ usageTokens .State.TokensUsed }} tokens</span>{{ end }}</td>
+              <td class="col-nowrap col-state">{{ if .State.Stopped }}<span class="ui-label ui-label-danger">Stopped</span>{{ else if .LiftActive }}<span class="ui-label ui-label-accent">Lifted until {{ usageDate .LiftEnds }}</span>{{ else if .State.Exceeded }}<span class="ui-label ui-label-danger">Over limit</span>{{ else if .State.Warn }}<span class="ui-label ui-label-attention">Near limit</span>{{ end }}</td>
+              <td class="col-actions">
+                <button class="icon-btn row-menu-btn" type="button" popovertarget="budget-menu-{{ .Index }}" aria-label="Actions: {{ .Name }}" data-tooltip="Actions: {{ .Name }}">{{ octicon "kebab-horizontal" 16 }}</button>
+                <div class="row-menu" id="budget-menu-{{ .Index }}" popover>
+                  <a class="menu-item" href="{{ .EditURL }}" data-dialog-open="budget-edit-{{ .Index }}">Set budget</a>
+                  <form method="post" action="/admin/usage">
+                    <input type="hidden" name="subjectKind" value="{{ .SubjectKind }}">
+                    <input type="hidden" name="subjectId" value="{{ .SubjectID }}">
+                    <button class="menu-item" type="submit" name="action" value="budget-lift">Lift until month end</button>
+                    <hr class="menu-sep">
+                    <button class="menu-item danger" type="submit" name="action" value="budget-delete" data-confirm="Remove the override for {{ .Name }}?" data-confirm-detail="{{ if eq .SubjectKind "user" }}The default budget applies again.{{ else }}The plugin has no limit again.{{ end }}">Remove override</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {{ end }}
+          </tbody>
+        </table>
+      </div>
+      {{ else }}
+      {{ template "usage_empty" dict "Title" "No overrides" "Text" "Every person uses the default budget. Plugins have no limit." }}
+      {{ end }}
+    </div>
+
+    {{ range .Budgets }}{{ with .Result }}<p class="sr-only" data-saved-message>{{ . }}</p>{{ end }}{{ end }}
+    {{ if .Removed }}<p class="sr-only" data-saved-message>Override removed.</p>{{ end }}
+
+    {{ range .Budgets }}
+    {{ $tokErr := "" }}{{ $costErr := "" }}{{ if .Editing }}{{ $tokErr = $v.FieldError "monthlyTokens" }}{{ $costErr = $v.FieldError "monthlyCost" }}{{ end }}
+    <div class="dialog-source" id="budget-edit-{{ .Index }}" data-dialog-title="Set budget for {{ .Name }}" data-dialog-subtitle="{{ .Sub }}" data-dialog-width="large"{{ if .Editing }} data-dialog-autoopen{{ else }} hidden{{ end }}>
+      <form method="post" action="/admin/usage" novalidate data-validate data-unsaved aria-label="Budget for {{ .Name }}">
+        <h3 class="dialog-source-heading">Set budget for {{ .Name }}</h3>
+        <input type="hidden" name="action" value="budget-save">
+        <input type="hidden" name="subjectKind" value="{{ .SubjectKind }}">
+        <input type="hidden" name="subjectId" value="{{ .SubjectID }}">
+        <div class="usage-limit-fields">
+          <div class="field{{ if $tokErr }} has-error{{ end }}">
+            <label class="field-label" for="be-tokens-{{ .Index }}">Monthly tokens</label>
+            <input id="be-tokens-{{ .Index }}" type="number" name="monthlyTokens" min="0" step="1" inputmode="numeric" value="{{ .TokensValue }}" aria-describedby="be-caption-{{ .Index }}{{ if $tokErr }} be-tokens-{{ .Index }}-error{{ end }}"{{ if $tokErr }} aria-invalid="true"{{ end }}>
+            {{ template "admin_field_error" dict "ID" (printf "be-tokens-%d" .Index) "Msg" $tokErr }}
+          </div>
+          <div class="field{{ if $costErr }} has-error{{ end }}">
+            <label class="field-label" for="be-cost-{{ .Index }}">Monthly cost</label>
+            <input id="be-cost-{{ .Index }}" type="number" name="monthlyCost" min="0" step="0.01" inputmode="decimal" value="{{ .CostValue }}" aria-describedby="be-caption-{{ .Index }}{{ if $costErr }} be-cost-{{ .Index }}-error{{ end }}"{{ if $costErr }} aria-invalid="true"{{ end }}>
+            {{ template "admin_field_error" dict "ID" (printf "be-cost-%d" .Index) "Msg" $costErr }}
+          </div>
+        </div>
+        <p class="field-hint" id="be-caption-{{ .Index }}">{{ if eq .SubjectKind "user" }}An empty limit uses the default budget.{{ else }}An empty limit means no limit.{{ end }} 0 means no limit.</p>
+        <div class="dialog-source-footer">
+          <a class="btn" href="/admin/usage#{{ .Anchor }}" data-dialog-cancel>Cancel</a>
+          <button class="btn btn-primary" type="submit">Save budget</button>
+        </div>
+      </form>
+    </div>
+    {{ end }}
+
+    {{ $addTok := "" }}{{ $addCost := "" }}{{ if .AddOpen }}{{ $addTok = .FieldError "monthlyTokens" }}{{ $addCost = .FieldError "monthlyCost" }}{{ end }}
+    <div class="dialog-source" id="budget-add" data-dialog-title="Add override" data-dialog-subtitle="Limits for one person or one plugin." data-dialog-width="large"{{ if .AddOpen }} data-dialog-autoopen{{ else }} hidden{{ end }}>
+      <form method="post" action="/admin/usage" class="usage-subject" novalidate data-validate data-unsaved aria-label="New override">
+        <h3 class="dialog-source-heading">Add override</h3>
+        <input type="hidden" name="action" value="budget-save">
+        <fieldset class="usage-subject-kind">
+          <legend class="form-label">Applies to</legend>
+          <div class="form-control form-control-horizontal"><input id="bn-kind-user" type="radio" name="subjectKind" value="user"{{ if ne (.Value "subjectKind") "plugin" }} checked{{ end }}><label class="form-label" for="bn-kind-user">A person</label></div>
+          <div class="form-control form-control-horizontal"><input id="bn-kind-plugin" type="radio" name="subjectKind" value="plugin"{{ if eq (.Value "subjectKind") "plugin" }} checked{{ end }}><label class="form-label" for="bn-kind-plugin">A plugin</label></div>
+        </fieldset>
+        <div class="field usage-subject-person{{ if .FieldError "person" }} has-error{{ end }}">
+          <label class="field-label" for="bn-person">Person</label>
+          <input id="bn-person" type="text" name="person" value="{{ .Value "person" }}" list="bn-people" autocomplete="off" autocapitalize="off" aria-describedby="bn-person-caption{{ if .FieldError "person" }} bn-person-error{{ end }}"{{ if .FieldError "person" }} aria-invalid="true"{{ end }}>
+          <p class="field-hint" id="bn-person-caption">Their name or email address.</p>
+          <datalist id="bn-people">{{ range .Users }}<option value="{{ .Email }}">{{ .Name }}</option>{{ end }}</datalist>
+          {{ template "admin_field_error" dict "ID" "bn-person" "Msg" (.FieldError "person") }}
+        </div>
+        <div class="field usage-subject-plugin{{ if .FieldError "pluginId" }} has-error{{ end }}">
+          <label class="field-label" for="bn-plugin">Plugin id</label>
+          <input id="bn-plugin" type="text" name="pluginId" value="{{ .Value "pluginId" }}" list="uf-plugins" autocomplete="off" autocapitalize="off" aria-describedby="bn-plugin-caption{{ if .FieldError "pluginId" }} bn-plugin-error{{ end }}"{{ if .FieldError "pluginId" }} aria-invalid="true"{{ end }}>
+          <p class="field-hint" id="bn-plugin-caption">Such as com.example.summaries.</p>
+          {{ template "admin_field_error" dict "ID" "bn-plugin" "Msg" (.FieldError "pluginId") }}
+        </div>
+        <div class="usage-limit-fields">
+          <div class="field{{ if $addTok }} has-error{{ end }}">
+            <label class="field-label" for="bn-tokens">Monthly tokens</label>
+            <input id="bn-tokens" type="number" name="monthlyTokens" min="0" step="1" inputmode="numeric" value="{{ if .AddOpen }}{{ .Value "monthlyTokens" }}{{ end }}" aria-describedby="bn-caption{{ if $addTok }} bn-tokens-error{{ end }}"{{ if $addTok }} aria-invalid="true"{{ end }}>
+            {{ template "admin_field_error" dict "ID" "bn-tokens" "Msg" $addTok }}
+          </div>
+          <div class="field{{ if $addCost }} has-error{{ end }}">
+            <label class="field-label" for="bn-cost">Monthly cost</label>
+            <input id="bn-cost" type="number" name="monthlyCost" min="0" step="0.01" inputmode="decimal" value="{{ if .AddOpen }}{{ .Value "monthlyCost" }}{{ end }}" aria-describedby="bn-caption{{ if $addCost }} bn-cost-error{{ end }}"{{ if $addCost }} aria-invalid="true"{{ end }}>
+            {{ template "admin_field_error" dict "ID" "bn-cost" "Msg" $addCost }}
+          </div>
+        </div>
+        <p class="field-hint" id="bn-caption">An empty limit keeps the default for a person and means no limit for a plugin. 0 means no limit.</p>
+        <div class="dialog-source-footer">
+          <a class="btn" href="/admin/usage#budgets" data-dialog-cancel>Cancel</a>
+          <button class="btn btn-primary" type="submit">Add override</button>
+        </div>
+      </form>
+    </div>
+  </section>
+{{ end }}
+</div>
+{{ end }}
+{{ define "scripts" }}<script type="module" src="/static/js/admin.js"></script>{{ end }}

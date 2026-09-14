@@ -1,0 +1,53 @@
+{{ define "title" }}AI usage{{ end }}
+{{ define "sidebar" }}{{ template "settings_pane" . }}{{ end }}
+{{ define "content" }}
+<div class="usage-page">
+  <div class="page-header" data-border="true">
+    <div class="page-header-context"><a class="page-header-parent" href="/settings">{{ octicon "arrow-left" 16 }}<span>Settings</span></a></div>
+    <div class="page-header-title-area"><h1 class="page-header-title" tabindex="-1">AI usage</h1></div>
+    <p class="page-header-description">Your AI calls in the last 30 days, with their tokens, time and cost. Days are in UTC.</p>
+  </div>
+{{ with .Get "Usage" }}
+  {{ if .Empty }}
+  <div class="blankslate blankslate-spacious usage-empty">
+    <div class="blankslate-inner">
+      <div class="blankslate-visual" aria-hidden="true">{{ octicon "report" 24 }}</div>
+      <h2 class="blankslate-heading">No AI usage yet</h2>
+      <p class="blankslate-description">When you use Ask, Rewrite, Chat or the image tools, each call shows up here with its tokens, time and cost.</p>
+    </div>
+  </div>
+  {{ else }}
+  {{ $cur := .Currency }}
+  {{ with .Summary }}
+  {{ $sumCur := .Currency }}
+  <section aria-labelledby="usage-summary-title">
+    <h2 class="sr-only" id="usage-summary-title">Summary</h2>
+    <dl class="usage-tiles">
+      <div class="tile"><dt class="tile-label">Tokens today</dt><dd class="tile-value">{{ usageTokens .Today.Tokens }}</dd><dd class="usage-tile-sub">{{ usageCount .Today.Calls "call" "calls" }}</dd></div>
+      <div class="tile"><dt class="tile-label">Tokens this month</dt><dd class="tile-value">{{ usageTokens .Month.Tokens }}</dd><dd class="usage-tile-sub">{{ usageCount .Month.Calls "call" "calls" }}</dd></div>
+      <div class="tile"><dt class="tile-label">Cost this month</dt><dd class="tile-value">{{ usageMoney .Month.Cost $sumCur }}</dd><dd class="usage-tile-sub">{{ if $sumCur }}At the recorded prices{{ else }}No prices are set{{ end }}</dd></div>
+      {{ with .Budget }}
+      {{ if or .TokenLimit .CostLimit }}
+      <div class="tile"><dt class="tile-label">Monthly budget used</dt><dd class="tile-value">{{ usagePct .UsedPct }}</dd><dd class="usage-tile-progress">{{ usageProgress .UsedPct "Monthly budget used" }}</dd><dd class="usage-tile-sub">{{ if .Stopped }}Calls are paused until next month{{ else }}Limit {{ if .TokenLimit }}{{ usageTokens .TokenLimit }} tokens{{ end }}{{ if and .TokenLimit .CostLimit }} or {{ end }}{{ if .CostLimit }}{{ usageMoney .CostLimit $sumCur }}{{ end }}{{ end }}</dd></div>
+      {{ else }}
+      <div class="tile"><dt class="tile-label">Monthly budget</dt><dd class="tile-value">None</dd><dd class="usage-tile-sub">No limit applies to you</dd></div>
+      {{ end }}
+      {{ end }}
+    </dl>
+  </section>
+  {{ end }}
+
+  <section class="admin-section" aria-labelledby="usage-chart-title">
+    <div class="section-heading">
+      <h2 class="section-heading-title" id="usage-chart-title">Tokens per day</h2>
+      <p class="section-heading-description">The last 30 days in UTC, stacked by feature.</p>
+    </div>
+    {{ template "usage_chart" .Chart }}
+  </section>
+
+  {{ template "usage_breakdown" dict "ID" "usage-models" "Title" "By model" "Head" "Model" "Rows" .Models "Currency" $cur "Empty" "No calls in the last 30 days" }}
+  {{ template "usage_calls" dict "ID" "usage-recent" "Title" "Recent calls" "Calls" .Recent "Empty" "No recent calls" "Mine" true }}
+  {{ end }}
+{{ end }}
+</div>
+{{ end }}

@@ -1,0 +1,370 @@
+/* Markspace theme on @primer/primitives 11.10.0. docs/primer.md 2.4 lists
+   every value.
+   The accent and the primary button use Primer's pink base scale. Attention
+   uses the orange scale. Neutrals keep Primer's OKLCH lightness with a small
+   chroma at hue 330. The selectors repeat those of the theme files, so each
+   override applies in the same cases and wins by load order. */
+
+[data-color-mode="light"][data-light-theme="light"],
+[data-color-mode="auto"][data-light-theme="light"] {
+  /* Accent, Primer pink scale. */
+  /* Control boundaries. Text fields, selects and default, danger and
+     inactive buttons draw a border of at least 3:1 against the page, the
+     muted surface and overlays (docs/primer.md 9.3). Primer's own control border
+     is lighter. This is a Markspace decision. */
+  --control-borderColor-rest: var(--control-borderColor-emphasis);
+  --button-default-borderColor-hover: var(--control-borderColor-emphasis);
+  --button-default-borderColor-active: var(--control-borderColor-emphasis);
+  --button-inactive-borderColor: var(--control-borderColor-emphasis);
+  --bgColor-accent-emphasis: #bf3989;
+  --bgColor-accent-muted: #ffeff7;
+  --borderColor-accent-emphasis: #bf3989;
+  --borderColor-accent-muted: #ff80c866;
+  --button-outline-bgColor-active: #99286e;
+  --button-outline-fgColor-disabled: #bf398980;
+  --button-outline-shadow-selected: inset 0 1px 0 0 #4d033633;
+  --buttonCounter-outline-bgColor-disabled: #bf39890d;
+  --buttonCounter-outline-bgColor-rest: #bf39891a;
+  --buttonCounter-outline-fgColor-disabled: #bf398980;
+  --buttonCounter-outline-fgColor-rest: #99286e;
+  --control-checked-bgColor-active: #99286e;
+  --control-checked-bgColor-hover: #99286e;
+  --fgColor-accent: #bf3989;
+  --reactionButton-selected-bgColor-hover: #ffd3eb;
+  --reactionButton-selected-bgColor-rest: #ffeff7;
+  --reactionButton-selected-fgColor-hover: #99286e;
+  --selectMenu-bgColor-active: #ffd3eb;
+  --selection-bgColor: #bf398933;
+  --treeViewItem-leadingVisual-iconColor-rest: #ff80c8;
+  /* Primary button, Primer pink scale. */
+  --button-primary-bgColor-active: #b73583;
+  --button-primary-bgColor-disabled: #ffb3dd;
+  --button-primary-bgColor-hover: #c13b8b;
+  --button-primary-bgColor-rest: #c94192;
+  --button-primary-borderColor-disabled: var(--button-primary-bgColor-disabled);
+  --button-primary-shadow-selected: inset 0 1px 0 0 #4d03364d;
+  /* Attention and highlight, Primer orange scale. */
+  --bgColor-attention-emphasis: #bc4c00;
+  --bgColor-attention-muted: #fff1e5;
+  --borderColor-attention-emphasis: #bc4c00;
+  --borderColor-attention-muted: #fb8f4466;
+  --fgColor-attention: #bc4c00;
+  --highlight-neutral-bgColor: #ffd8b5;
+  /* Brand uses that follow the accent. */
+  --bgColor-sponsors-emphasis: var(--bgColor-accent-emphasis);
+  --bgColor-sponsors-muted: var(--bgColor-accent-muted);
+  --borderColor-sponsors-emphasis: var(--borderColor-accent-emphasis);
+  --borderColor-sponsors-muted: var(--borderColor-accent-muted);
+  --fgColor-sponsors: var(--fgColor-accent);
+  --underlineNav-borderColor-active: var(--borderColor-accent-emphasis);
+  /* Neutrals tinted toward fuchsia, OKLCH hue 330. */
+  --avatarStack-fade-bgColor-default: #d6ccd5;
+  --avatarStack-fade-bgColor-muted: #e4dde3;
+  --bgColor-default: #fffdff;
+  --bgColor-disabled: #f4f0f4;
+  --bgColor-emphasis: #2c272b;
+  --bgColor-muted: #faf6fa;
+  --bgColor-neutral-emphasis: #695e68;
+  --bgColor-neutral-muted: #9285911f;
+  --borderColor-default: #ddd5dc;
+  --borderColor-disabled: #9285911a;
+  --borderColor-emphasis: #928591;
+  --borderColor-muted: #ddd5dcb3;
+  --borderColor-neutral-emphasis: #695e68;
+  --borderColor-translucent: #26212526;
+  --button-inactive-bgColor: #ede8ec;
+  --button-inactive-fgColor: #695e68;
+  --control-bgColor-active: #ede8ec;
+  --control-bgColor-hover: #f4f0f4;
+  --control-bgColor-rest: #faf6fa;
+  --control-fgColor-rest: #2c272b;
+  --control-transparent-bgColor-active: #92859126;
+  --control-transparent-bgColor-hover: #9285911a;
+  --control-transparent-bgColor-selected: #92859126;
+  --controlKnob-bgColor-rest: #fffdff;
+  --controlTrack-bgColor-active: #e4dde3;
+  --controlTrack-bgColor-hover: #e9e3e8;
+  --controlTrack-bgColor-rest: #ede8ec;
+  --controlTrack-fgColor-rest: #695e68;
+  --fgColor-default: #262125;
+  --fgColor-disabled: #928591;
+  --fgColor-muted: #695e68;
+  --fgColor-neutral: #695e68;
+  --overlay-backdrop-bgColor: #d6ccd566;
+  --overlay-bgColor: #fffdff;
+  --overlay-borderColor: #ddd5dc80;
+  --skeletonLoader-bgColor: #9285911a;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-color-mode][data-color-mode="auto"][data-dark-theme="light"] {
+    /* Accent, Primer pink scale. */
+    /* Control boundaries. Text fields, selects and default, danger and
+       inactive buttons draw a border of at least 3:1 against the page, the
+       muted surface and overlays (docs/primer.md 9.3). Primer's own control border
+       is lighter. This is a Markspace decision. */
+    --control-borderColor-rest: var(--control-borderColor-emphasis);
+    --button-default-borderColor-hover: var(--control-borderColor-emphasis);
+    --button-default-borderColor-active: var(--control-borderColor-emphasis);
+    --button-inactive-borderColor: var(--control-borderColor-emphasis);
+    --bgColor-accent-emphasis: #bf3989;
+    --bgColor-accent-muted: #ffeff7;
+    --borderColor-accent-emphasis: #bf3989;
+    --borderColor-accent-muted: #ff80c866;
+    --button-outline-bgColor-active: #99286e;
+    --button-outline-fgColor-disabled: #bf398980;
+    --button-outline-shadow-selected: inset 0 1px 0 0 #4d033633;
+    --buttonCounter-outline-bgColor-disabled: #bf39890d;
+    --buttonCounter-outline-bgColor-rest: #bf39891a;
+    --buttonCounter-outline-fgColor-disabled: #bf398980;
+    --buttonCounter-outline-fgColor-rest: #99286e;
+    --control-checked-bgColor-active: #99286e;
+    --control-checked-bgColor-hover: #99286e;
+    --fgColor-accent: #bf3989;
+    --reactionButton-selected-bgColor-hover: #ffd3eb;
+    --reactionButton-selected-bgColor-rest: #ffeff7;
+    --reactionButton-selected-fgColor-hover: #99286e;
+    --selectMenu-bgColor-active: #ffd3eb;
+    --selection-bgColor: #bf398933;
+    --treeViewItem-leadingVisual-iconColor-rest: #ff80c8;
+    /* Primary button, Primer pink scale. */
+    --button-primary-bgColor-active: #b73583;
+    --button-primary-bgColor-disabled: #ffb3dd;
+    --button-primary-bgColor-hover: #c13b8b;
+    --button-primary-bgColor-rest: #c94192;
+    --button-primary-borderColor-disabled: var(--button-primary-bgColor-disabled);
+    --button-primary-shadow-selected: inset 0 1px 0 0 #4d03364d;
+    /* Attention and highlight, Primer orange scale. */
+    --bgColor-attention-emphasis: #bc4c00;
+    --bgColor-attention-muted: #fff1e5;
+    --borderColor-attention-emphasis: #bc4c00;
+    --borderColor-attention-muted: #fb8f4466;
+    --fgColor-attention: #bc4c00;
+    --highlight-neutral-bgColor: #ffd8b5;
+    /* Brand uses that follow the accent. */
+    --bgColor-sponsors-emphasis: var(--bgColor-accent-emphasis);
+    --bgColor-sponsors-muted: var(--bgColor-accent-muted);
+    --borderColor-sponsors-emphasis: var(--borderColor-accent-emphasis);
+    --borderColor-sponsors-muted: var(--borderColor-accent-muted);
+    --fgColor-sponsors: var(--fgColor-accent);
+    --underlineNav-borderColor-active: var(--borderColor-accent-emphasis);
+    /* Neutrals tinted toward fuchsia, OKLCH hue 330. */
+    --avatarStack-fade-bgColor-default: #d6ccd5;
+    --avatarStack-fade-bgColor-muted: #e4dde3;
+    --bgColor-default: #fffdff;
+    --bgColor-disabled: #f4f0f4;
+    --bgColor-emphasis: #2c272b;
+    --bgColor-muted: #faf6fa;
+    --bgColor-neutral-emphasis: #695e68;
+    --bgColor-neutral-muted: #9285911f;
+    --borderColor-default: #ddd5dc;
+    --borderColor-disabled: #9285911a;
+    --borderColor-emphasis: #928591;
+    --borderColor-muted: #ddd5dcb3;
+    --borderColor-neutral-emphasis: #695e68;
+    --borderColor-translucent: #26212526;
+    --button-inactive-bgColor: #ede8ec;
+    --button-inactive-fgColor: #695e68;
+    --control-bgColor-active: #ede8ec;
+    --control-bgColor-hover: #f4f0f4;
+    --control-bgColor-rest: #faf6fa;
+    --control-fgColor-rest: #2c272b;
+    --control-transparent-bgColor-active: #92859126;
+    --control-transparent-bgColor-hover: #9285911a;
+    --control-transparent-bgColor-selected: #92859126;
+    --controlKnob-bgColor-rest: #fffdff;
+    --controlTrack-bgColor-active: #e4dde3;
+    --controlTrack-bgColor-hover: #e9e3e8;
+    --controlTrack-bgColor-rest: #ede8ec;
+    --controlTrack-fgColor-rest: #695e68;
+    --fgColor-default: #262125;
+    --fgColor-disabled: #928591;
+    --fgColor-muted: #695e68;
+    --fgColor-neutral: #695e68;
+    --overlay-backdrop-bgColor: #d6ccd566;
+    --overlay-bgColor: #fffdff;
+    --overlay-borderColor: #ddd5dc80;
+    --skeletonLoader-bgColor: #9285911a;
+  }
+}
+
+[data-color-mode="dark"][data-dark-theme="dark"],
+[data-color-mode="auto"][data-light-theme="dark"] {
+  /* Accent, Primer pink scale. */
+  /* Control boundaries. Text fields, selects and default, danger and
+     inactive buttons draw a border of at least 3:1 against the page, the
+     muted surface and overlays (docs/primer.md 9.3). Primer's own control border
+     is lighter. This is a Markspace decision. */
+  --control-borderColor-rest: var(--control-borderColor-emphasis);
+  --button-default-borderColor-hover: var(--control-borderColor-emphasis);
+  --button-default-borderColor-active: var(--control-borderColor-emphasis);
+  --button-inactive-borderColor: var(--control-borderColor-emphasis);
+  --bgColor-accent-emphasis: #bf4b8a;
+  --bgColor-accent-muted: #db61a21a;
+  --borderColor-accent-emphasis: #bf4b8a;
+  --borderColor-accent-muted: #db61a266;
+  --button-outline-bgColor-active: #7d2457;
+  --button-outline-fgColor-disabled: #f778ba80;
+  --button-outline-fgColor-hover: #f778ba;
+  --button-outline-fgColor-rest: #db61a2;
+  --buttonCounter-outline-bgColor-disabled: #bf4b8a0d;
+  --buttonCounter-outline-bgColor-hover: #42062a33;
+  --buttonCounter-outline-bgColor-rest: #42062a33;
+  --buttonCounter-outline-fgColor-disabled: #f778ba80;
+  --buttonCounter-outline-fgColor-hover: #f778ba;
+  --buttonCounter-outline-fgColor-rest: #db61a2;
+  --control-checked-bgColor-active: #db61a2;
+  --control-checked-bgColor-hover: #db61a2;
+  --fgColor-accent: #f778ba;
+  --reactionButton-selected-bgColor-rest: #db61a233;
+  --reactionButton-selected-fgColor-hover: #ff9bce;
+  --selectMenu-bgColor-active: #5e103e;
+  --selection-bgColor: #bf4b8ab3;
+  /* Primary button, Primer pink scale. */
+  --button-primary-bgColor-active: #b84684;
+  --button-primary-bgColor-disabled: #641443;
+  --button-primary-bgColor-hover: #ab3e7a;
+  --button-primary-bgColor-rest: #9e3670;
+  --button-primary-borderColor-disabled: var(--button-primary-bgColor-disabled);
+  /* Attention and highlight, Primer orange scale. */
+  --bgColor-attention-emphasis: #bd561d;
+  --bgColor-attention-muted: #db6d2826;
+  --borderColor-attention-emphasis: #bd561d;
+  --borderColor-attention-muted: #db6d2866;
+  --fgColor-attention: #f0883e;
+  --highlight-neutral-bgColor: #f0883e66;
+  /* Brand uses that follow the accent. */
+  --bgColor-sponsors-emphasis: var(--bgColor-accent-emphasis);
+  --bgColor-sponsors-muted: var(--bgColor-accent-muted);
+  --borderColor-sponsors-emphasis: var(--borderColor-accent-emphasis);
+  --borderColor-sponsors-muted: var(--borderColor-accent-muted);
+  --fgColor-sponsors: var(--fgColor-accent);
+  --underlineNav-borderColor-active: var(--borderColor-accent-emphasis);
+  /* Neutrals tinted toward fuchsia, OKLCH hue 330. */
+  --avatarStack-fade-bgColor-default: #494048;
+  --avatarStack-fade-bgColor-muted: #372d36;
+  --bgColor-default: #140f14;
+  --bgColor-disabled: #2d242c;
+  --bgColor-emphasis: #494048;
+  --bgColor-inset: #060206;
+  --bgColor-muted: #20181f;
+  --bgColor-neutral-emphasis: #726870;
+  --bgColor-neutral-muted: #72687033;
+  --borderColor-default: #494048;
+  --borderColor-disabled: #7268701a;
+  --borderColor-emphasis: #726870;
+  --borderColor-muted: #494048b3;
+  --borderColor-translucent: #fffdff26;
+  --button-inactive-bgColor: #322831;
+  --button-inactive-fgColor: #9d949c;
+  --control-bgColor-active: #372d36;
+  --control-bgColor-hover: #322831;
+  --control-bgColor-rest: #2d242c;
+  --control-borderColor-selected: #f9f3f9;
+  --control-transparent-bgColor-active: #72687040;
+  --control-transparent-bgColor-hover: #72687033;
+  --control-transparent-bgColor-selected: #72687033;
+  --controlKnob-bgColor-rest: #322831;
+  --controlTrack-bgColor-active: #3d323c;
+  --controlTrack-bgColor-hover: #372d36;
+  --controlTrack-bgColor-rest: #060206;
+  --fgColor-default: #f9f3f9;
+  --fgColor-disabled: #726870;
+  --fgColor-muted: #9d949c;
+  --fgColor-neutral: #9d949c;
+  --overlay-backdrop-bgColor: #2d242c66;
+  --overlay-bgColor: #060206;
+  --skeletonLoader-bgColor: #72687033;
+  --timelineBadge-bgColor: #2d242c;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-color-mode][data-color-mode="auto"][data-dark-theme="dark"] {
+    /* Accent, Primer pink scale. */
+    /* Control boundaries. Text fields, selects and default, danger and
+       inactive buttons draw a border of at least 3:1 against the page, the
+       muted surface and overlays (docs/primer.md 9.3). Primer's own control border
+       is lighter. This is a Markspace decision. */
+    --control-borderColor-rest: var(--control-borderColor-emphasis);
+    --button-default-borderColor-hover: var(--control-borderColor-emphasis);
+    --button-default-borderColor-active: var(--control-borderColor-emphasis);
+    --button-inactive-borderColor: var(--control-borderColor-emphasis);
+    --bgColor-accent-emphasis: #bf4b8a;
+    --bgColor-accent-muted: #db61a21a;
+    --borderColor-accent-emphasis: #bf4b8a;
+    --borderColor-accent-muted: #db61a266;
+    --button-outline-bgColor-active: #7d2457;
+    --button-outline-fgColor-disabled: #f778ba80;
+    --button-outline-fgColor-hover: #f778ba;
+    --button-outline-fgColor-rest: #db61a2;
+    --buttonCounter-outline-bgColor-disabled: #bf4b8a0d;
+    --buttonCounter-outline-bgColor-hover: #42062a33;
+    --buttonCounter-outline-bgColor-rest: #42062a33;
+    --buttonCounter-outline-fgColor-disabled: #f778ba80;
+    --buttonCounter-outline-fgColor-hover: #f778ba;
+    --buttonCounter-outline-fgColor-rest: #db61a2;
+    --control-checked-bgColor-active: #db61a2;
+    --control-checked-bgColor-hover: #db61a2;
+    --fgColor-accent: #f778ba;
+    --reactionButton-selected-bgColor-rest: #db61a233;
+    --reactionButton-selected-fgColor-hover: #ff9bce;
+    --selectMenu-bgColor-active: #5e103e;
+    --selection-bgColor: #bf4b8ab3;
+    /* Primary button, Primer pink scale. */
+    --button-primary-bgColor-active: #b84684;
+    --button-primary-bgColor-disabled: #641443;
+    --button-primary-bgColor-hover: #ab3e7a;
+    --button-primary-bgColor-rest: #9e3670;
+    --button-primary-borderColor-disabled: var(--button-primary-bgColor-disabled);
+    /* Attention and highlight, Primer orange scale. */
+    --bgColor-attention-emphasis: #bd561d;
+    --bgColor-attention-muted: #db6d2826;
+    --borderColor-attention-emphasis: #bd561d;
+    --borderColor-attention-muted: #db6d2866;
+    --fgColor-attention: #f0883e;
+    --highlight-neutral-bgColor: #f0883e66;
+    /* Brand uses that follow the accent. */
+    --bgColor-sponsors-emphasis: var(--bgColor-accent-emphasis);
+    --bgColor-sponsors-muted: var(--bgColor-accent-muted);
+    --borderColor-sponsors-emphasis: var(--borderColor-accent-emphasis);
+    --borderColor-sponsors-muted: var(--borderColor-accent-muted);
+    --fgColor-sponsors: var(--fgColor-accent);
+    --underlineNav-borderColor-active: var(--borderColor-accent-emphasis);
+    /* Neutrals tinted toward fuchsia, OKLCH hue 330. */
+    --avatarStack-fade-bgColor-default: #494048;
+    --avatarStack-fade-bgColor-muted: #372d36;
+    --bgColor-default: #140f14;
+    --bgColor-disabled: #2d242c;
+    --bgColor-emphasis: #494048;
+    --bgColor-inset: #060206;
+    --bgColor-muted: #20181f;
+    --bgColor-neutral-emphasis: #726870;
+    --bgColor-neutral-muted: #72687033;
+    --borderColor-default: #494048;
+    --borderColor-disabled: #7268701a;
+    --borderColor-emphasis: #726870;
+    --borderColor-muted: #494048b3;
+    --borderColor-translucent: #fffdff26;
+    --button-inactive-bgColor: #322831;
+    --button-inactive-fgColor: #9d949c;
+    --control-bgColor-active: #372d36;
+    --control-bgColor-hover: #322831;
+    --control-bgColor-rest: #2d242c;
+    --control-borderColor-selected: #f9f3f9;
+    --control-transparent-bgColor-active: #72687040;
+    --control-transparent-bgColor-hover: #72687033;
+    --control-transparent-bgColor-selected: #72687033;
+    --controlKnob-bgColor-rest: #322831;
+    --controlTrack-bgColor-active: #3d323c;
+    --controlTrack-bgColor-hover: #372d36;
+    --controlTrack-bgColor-rest: #060206;
+    --fgColor-default: #f9f3f9;
+    --fgColor-disabled: #726870;
+    --fgColor-muted: #9d949c;
+    --fgColor-neutral: #9d949c;
+    --overlay-backdrop-bgColor: #2d242c66;
+    --overlay-bgColor: #060206;
+    --skeletonLoader-bgColor: #72687033;
+    --timelineBadge-bgColor: #2d242c;
+  }
+}

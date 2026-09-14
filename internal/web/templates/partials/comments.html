@@ -1,0 +1,136 @@
+{{- define "comments" -}}
+{{/* The Comments panel of the server note page (docs/primer.md 5.10). Each thread
+     holds its quoted passage as plain muted text and a condensed Timeline.
+     Threads have no box, and a hairline divider separates them. Resolved
+     threads sit in a Details with a Reopen Button. Delete asks in a
+     ConfirmationDialog through data-confirm, and without scripting through
+     the confirmation step of notes.go. Resolve acts at once, and
+     app.js offers Undo. */}}
+{{ $comments := .Get "Comments" }}
+{{ $canComment := and (hasAccess .Grant "comment") (not (.Get "ReadOnly")) }}
+{{ $me := "" }}{{ with .User }}{{ $me = .ID }}{{ end }}
+{{ $resolved := 0 }}{{ $open := 0 }}
+{{ range $comments }}{{ if or (not .DeletedAt) .Children }}{{ if .Resolved }}{{ $resolved = add $resolved 1 }}{{ else }}{{ $open = add $open 1 }}{{ end }}{{ end }}{{ end }}
+<section class="comments note-rail-section" id="comments" aria-labelledby="comments-title">
+  <h2 class="note-rail-title" id="comments-title">Comments</h2>
+  {{ if $canComment }}
+  <form class="comment-form ms-composer" method="post" action="{{ noteURL .Space .Note }}" novalidate>
+    <input type="hidden" name="action" value="comment">
+    <label class="sr-only" for="comment-body">Comment on this note</label>
+    <textarea class="textarea" id="comment-body" name="body" rows="3" required placeholder="Comment on this note"></textarea>
+    <div class="ms-composer-actions"><button class="btn btn-primary btn-sm" type="submit">Comment</button></div>
+  </form>
+  {{ end }}
+  {{ if $open }}
+  <ol class="comment-list ms-threads">
+    {{ range $c := $comments }}{{ if and (or (not $c.DeletedAt) $c.Children) (not $c.Resolved) }}
+    {{ template "comment_thread" dict "Page" $ "C" $c "Me" $me "Can" $canComment }}
+    {{ end }}{{ end }}
+  </ol>
+  {{ else if not $resolved }}
+  <div class="blankslate blankslate-small blankslate-border">
+    <div class="blankslate-inner">
+      <span class="blankslate-visual" aria-hidden="true">{{ octicon "comment" 24 }}</span>
+      <h3 class="blankslate-heading">No comments yet</h3>
+      {{ if $canComment }}<p class="blankslate-description">Select text in the note and choose Comment.</p>{{ end }}
+    </div>
+  </div>
+  {{ end }}
+  {{ if $resolved }}
+  <details class="details">
+    <summary class="btn btn-invisible btn-sm details-summary"><span class="btn-visual btn-leading details-chevron" aria-hidden="true"><span class="details-closed">{{ octicon "chevron-down" 16 }}</span><span class="details-open">{{ octicon "chevron-up" 16 }}</span></span><span class="btn-label">Resolved ({{ $resolved }})</span></summary>
+    <div class="details-body">
+      <ol class="comment-list ms-threads">
+        {{ range $c := $comments }}{{ if and (or (not $c.DeletedAt) $c.Children) $c.Resolved }}
+        {{ template "comment_thread" dict "Page" $ "C" $c "Me" $me "Can" $canComment }}
+        {{ end }}{{ end }}
+      </ol>
+    </div>
+  </details>
+  {{ end }}
+</section>
+{{- end -}}
+
+{{- define "comment_thread" -}}
+{{ $p := .Page }}{{ $c := .C }}{{ $action := noteURL $p.Space $p.Note }}
+<li class="comment ms-card{{ if $c.Resolved }} is-resolved{{ end }}" id="comment-{{ $c.ID }}" data-comment-id="{{ $c.ID }}">
+  {{ with $c.Anchor }}{{ if .Exact }}
+  {{ if eq $c.AnchorState "orphaned" }}<blockquote class="ms-quote is-missing"><span class="ms-quote-caption">{{ if $c.Resolved }}Text no longer in the note{{ else }}Removed from the note{{ end }}</span><span class="ms-quote-text">{{ .Exact }}</span></blockquote>
+  {{ else }}<blockquote class="ms-quote"><span class="ms-quote-text">{{ .Exact }}</span></blockquote>{{ end }}
+  {{ end }}{{ end }}
+  <ol class="ms-thread-comments" role="list">
+    {{ template "comment_item" dict "Page" $p "C" $c "Me" $.Me "Can" $.Can "Root" true "Thread" $c }}
+    {{ range $c.Children }}{{ if not .DeletedAt }}
+    {{ template "comment_item" dict "Page" $p "C" . "Me" $.Me "Can" $.Can "Root" false "Thread" $c }}
+    {{ end }}{{ end }}
+    {{ if $c.Resolved }}
+    {{/* The resolver is named when the thread holds a comment of theirs. Resolving sets UpdatedAt, so that is the time. */}}
+    {{ $by := "" }}
+    {{ if $c.ResolvedBy }}{{ if eq $c.ResolvedBy $.Me }}{{ $by = "you" }}{{ else }}
+    {{ with $c.Author }}{{ if eq .ID $c.ResolvedBy }}{{ $by = orDefault .Name .Email }}{{ end }}{{ end }}
+    {{ range $c.Children }}{{ with .Author }}{{ if eq .ID $c.ResolvedBy }}{{ $by = orDefault .Name .Email }}{{ end }}{{ end }}{{ end }}
+    {{ end }}{{ end }}
+    <li class="ms-resolved-event"><span class="ms-marker-icon" aria-hidden="true">{{ octicon "check" 16 }}</span><span>{{ if $by }}Resolved by {{ $by }}{{ else }}Resolved{{ end }}{{ if not $c.UpdatedAt.IsZero }}, {{ relativeTime $c.UpdatedAt }}{{ end }}</span></li>
+    {{ end }}
+  </ol>
+  {{/* Resolve sits in the menu of the first comment. A resolved thread offers Reopen in its foot, never Undo. */}}
+  {{ if and $.Can $c.Resolved }}
+  <div class="ms-thread-foot">
+    <form class="ms-thread-actions" method="post" action="{{ $action }}">
+      <input type="hidden" name="action" value="comment-resolve">
+      <input type="hidden" name="commentId" value="{{ $c.ID }}">
+      <input type="hidden" name="resolved" value="false">
+      <button class="btn btn-sm" type="submit"><span class="btn-visual btn-leading" aria-hidden="true">{{ octicon "issue-reopened" 16 }}</span><span class="btn-label">Reopen</span></button>
+    </form>
+  </div>
+  {{ end }}
+  {{ if and $.Can (not $c.DeletedAt) (not $c.Resolved) }}
+  <div class="ms-thread-foot">
+    <form class="ms-composer comment-reply-form" method="post" action="{{ $action }}" novalidate>
+      <input type="hidden" name="action" value="comment">
+      <input type="hidden" name="parentId" value="{{ $c.ID }}">
+      <label class="sr-only" for="reply-{{ $c.ID }}">Reply</label>
+      <textarea class="textarea" id="reply-{{ $c.ID }}" name="body" rows="3" required></textarea>
+      <div class="ms-composer-actions"><button class="btn btn-primary btn-sm" type="submit">Reply</button></div>
+    </form>
+  </div>
+  {{ end }}
+</li>
+{{- end -}}
+
+{{- define "comment_item" -}}
+{{ $p := .Page }}{{ $c := .C }}
+{{ $name := "Someone" }}{{ with $c.Author }}{{ $name = orDefault .Name .Email }}{{ end }}
+{{ $change := and .Can (not $c.DeletedAt) (or (hasAccess $p.Grant "manage") (and .Me (eq $c.UserID .Me))) }}
+{{ $resolve := and .Can .Root (not $c.DeletedAt) (not .Thread.Resolved) }}
+<li class="ms-comment"{{ if not .Root }} id="comment-{{ $c.ID }}" data-comment-id="{{ $c.ID }}"{{ end }}>
+  <div class="ms-comment-head">
+      {{ template "avatar" dict "User" $c.Author "Size" "16" }}
+      <span class="ms-comment-author">{{ $name }}</span><span class="ms-comment-time">{{ relativeTime $c.CreatedAt }}</span>{{ if and $c.EditedAt (not $c.DeletedAt) }}<span class="ms-comment-edited">edited</span>{{ end }}
+      {{ if or $change $resolve }}
+      <div class="ms-comment-actions">
+        <button class="btn btn-invisible btn-sm btn-icon" type="button" popovertarget="comment-menu-{{ $c.ID }}" aria-label="Actions for the comment by {{ $name }}">{{ octicon "kebab-horizontal" 16 }}</button>
+        <div class="row-menu" id="comment-menu-{{ $c.ID }}" popover>
+          {{ if $resolve }}
+          <form method="post" action="{{ noteURL $p.Space $p.Note }}">
+            <input type="hidden" name="action" value="comment-resolve">
+            <input type="hidden" name="commentId" value="{{ $c.ID }}">
+            <input type="hidden" name="resolved" value="true">
+            <button class="menu-item" type="submit" data-undo-action="comment-resolve" data-undo-field-resolved="false" data-undo-label="Thread resolved">Resolve thread</button>
+          </form>
+          {{ end }}
+          {{ if $change }}
+          <form method="post" action="{{ noteURL $p.Space $p.Note }}">
+            <input type="hidden" name="action" value="comment-delete">
+            <input type="hidden" name="commentId" value="{{ $c.ID }}">
+            <noscript><input type="hidden" name="nojs" value="1"></noscript>
+            <button class="menu-item danger" type="submit" data-comment-delete="{{ $c.ID }}" data-confirm="Delete comment? The comment is removed for everyone. This cannot be undone.">Delete</button>
+          </form>
+          {{ end }}
+        </div>
+      </div>
+      {{ end }}
+  </div>
+  {{ if $c.DeletedAt }}<div class="ms-comment-body is-deleted">Comment deleted</div>{{ else }}<div class="ms-comment-body">{{ $c.Body }}</div>{{ end }}
+</li>
+{{- end -}}

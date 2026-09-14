@@ -1,0 +1,116 @@
+/* Base styles on @primer/primitives 11.10.0. The page loads the Primer
+   primitives, the light and dark themes and theme.css before this file. */
+
+/* ---------- Temporary token aliases ---------- */
+
+/* Each old Markspace token that a stylesheet still uses resolves to its
+   Primer token (docs/primer.md 2.5). The final cleanup deletes this block once
+   no rule uses these names. Safe area insets stay Markspace tokens. */
+:root {
+  --surface: var(--bgColor-default);
+  --surface-2: var(--bgColor-muted);
+  --surface-3: var(--bgColor-neutral-muted);
+  --border: var(--borderColor-muted);
+  --border-strong: var(--borderColor-default);
+  --text: var(--fgColor-default);
+  --text-muted: var(--fgColor-muted);
+  --text-subtle: var(--fgColor-muted);
+  --accent: var(--fgColor-accent);
+  --ok: var(--fgColor-success);
+  --warn: var(--fgColor-attention);
+  --focus-ring: var(--focus-outlineColor);
+  --highlight: var(--bgColor-accent-muted);
+  --highlight-strong: var(--borderColor-accent-muted);
+  --highlight-edge: var(--borderColor-accent-emphasis);
+  --shadow-sm: var(--shadow-resting-small);
+  --radius: var(--borderRadius-medium);
+  --space-2: var(--base-size-8);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+/* ---------- Colour scheme ---------- */
+
+/* The Primer theme files do not set color-scheme. Native pickers,
+   scrollbars and form controls follow it. */
+[data-color-mode="light"], [data-color-mode="auto"] { color-scheme: light; }
+[data-color-mode="dark"] { color-scheme: dark; }
+@media (prefers-color-scheme: dark) { [data-color-mode="auto"] { color-scheme: dark; } }
+
+/* ---------- Element defaults and type scale ---------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+/* No pull-to-refresh, in the browser or installed. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; height: 100%; overscroll-behavior-y: none; }
+
+/* Body text is Primer's body medium: 14px, line height 1.5, weight 400. */
+body {
+  margin: 0;
+  min-height: 100%;
+  font: var(--text-body-shorthand-medium);
+  font-family: var(--fontStack-system);
+  color: var(--fgColor-default);
+  background: var(--bgColor-default);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* h1 is title medium, h2 title small, h3 and h4 body medium in semibold.
+   Letter spacing is 0. */
+h1, h2, h3, h4 { margin: 0 0 0.6em; letter-spacing: 0; }
+h1 { font: var(--text-title-shorthand-medium); }
+h2 { font: var(--text-title-shorthand-small); }
+
+h3, h4 {
+  font-size: var(--text-body-size-medium);
+  font-weight: var(--base-text-weight-semibold);
+  line-height: var(--text-body-lineHeight-medium);
+}
+
+h3 { margin-top: 1.2em; }
+p { margin: 0 0 0.8em; }
+a { color: var(--fgColor-accent); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 2px; }
+code, kbd, pre, textarea.editor-text { font-family: var(--fontStack-monospace); }
+button { font: inherit; color: inherit; }
+
+kbd {
+  display: inline-block; padding: 0 0.4em; font-size: 0.75em; line-height: 1.6;
+  border: 1px solid var(--borderColor-default); border-bottom-width: 2px; border-radius: 4px;
+  background: var(--bgColor-default); color: var(--fgColor-muted); font-family: var(--fontStack-system);
+}
+
+img { max-width: 100%; height: auto; }
+[hidden] { display: none !important; }
+
+/* Octicons, as in Primer. Inline SVG icons in flex rows stay blocks. */
+.octicon { display: inline-block; vertical-align: text-bottom; fill: currentColor; overflow: visible; }
+svg:is(.icon, .octicon) { display: block; flex: none; }
+
+/* ---------- Focus ---------- */
+
+/* Keyboard focus draws a 2px accent outline inside the element. Pointer
+   focus draws a transparent outline, which forced colours mode shows. */
+:focus:not(:focus-visible) { outline: solid 1px transparent; }
+
+:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outlineColor);
+  outline-offset: var(--focus-outline-offset);
+  box-shadow: none;
+}
+
+@media (forced-colors: active) {
+  *:focus, *:focus-visible { outline: solid 1px transparent; }
+}
+
+/* ---------- Reduced motion ---------- */
+
+/* Transitions and animations stop. Loading spinners keep turning, as
+   Primer's loading guidance asks. */
+@media (prefers-reduced-motion: reduce) {
+  :where(*:not(.boot-spinner)), *::before, :where(*:not(.btn[aria-busy]))::after {
+    transition: none !important; animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important; scroll-behavior: auto !important;
+  }
+}

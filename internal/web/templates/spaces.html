@@ -1,0 +1,53 @@
+{{ define "title" }}Spaces{{ end }}
+{{ define "content" }}
+<div class="browse-page">
+{{ template "ui_page_header" dict "Title" "Spaces" "Description" "A space is a folder of related notes with its own members." "Border" true }}
+
+<details class="add-toggle page-add" id="new-space"{{ if .FormOpen "space" }} open{{ end }}>
+  <summary class="btn"><span class="btn-visual" aria-hidden="true">{{ octicon "plus" 16 }}</span><span class="btn-label">New space</span></summary>
+  <form method="post" action="/spaces" class="settings-form" novalidate aria-labelledby="new-space-title">
+    {{ template "ui_error_summary" dict "P" . "Form" "space" }}
+    {{ template "ui_form_message" dict "P" . "Form" "space" }}
+    <div class="settings-intro">
+      <h2 id="new-space-title">New space</h2>
+      <p>You become its owner and can invite others from its settings.</p>
+    </div>
+    <div class="field-row">
+      {{ template "ui_text_field" dict "P" . "Form" "space" "Field" "name" "Label" "Name" "Value" (.FormValue "space" "name" "") "Required" true "Autocomplete" "off" }}
+      {{ template "ui_text_field" dict "P" . "Form" "space" "Field" "icon" "Label" "Icon" "Value" (.FormValue "space" "icon" "") "Class" "field-icon" "Maxlength" "8" "Autocomplete" "off" }}
+    </div>
+    <details class="disclosure"{{ if or (.FormError "space" "slug") (.FormError "space" "description") }} open{{ end }}>
+      <summary>More options</summary>
+      <div class="disclosure-body">
+        {{ template "ui_text_field" dict "P" . "Form" "space" "Field" "slug" "Label" "Address" "Value" (.FormValue "space" "slug" "") "Caption" "Lowercase letters, digits and dashes, used in links like /s/team-notes. Left empty, it comes from the name." "Autocapitalize" "off" "Spellcheck" "false" "Autocomplete" "off" }}
+        <div class="form-control field">
+          <label class="form-label" for="space-description">Description</label>
+          <textarea id="space-description" name="description" rows="3">{{ .FormValue "space" "description" "" }}</textarea>
+        </div>
+      </div>
+    </details>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Create space</button>
+      <a class="btn" href="/spaces">Cancel</a>
+    </div>
+  </form>
+</details>
+
+{{ with .Spaces }}
+<ul class="card-grid spaces-grid" role="list" aria-labelledby="page-title">
+  {{ range . }}
+  <li>
+    <a class="card" href="{{ spaceURL . }}">
+      <span class="card-icon" aria-hidden="true">{{ with .Icon }}{{ . }}{{ else }}{{ octicon "file-directory-fill" 24 }}{{ end }}</span>
+      <span class="card-title">{{ .Name }}</span>
+      {{ with .Description }}<span class="card-description">{{ truncate 120 . }}</span>{{ end }}
+      <span class="card-foot">{{ pluralize .NoteCount "note" "notes" }}{{ with .MyRole }} &middot; {{ roleLabel . }}{{ end }}</span>
+    </a>
+  </li>
+  {{ end }}
+</ul>
+{{ else }}
+{{ template "ui_blankslate" dict "Icon" "file-directory-fill" "Title" "No spaces yet" "Description" "Create a space with New space to start writing, then invite others from its settings." "Size" "spacious" "Border" true }}
+{{ end }}
+</div>
+{{ end }}

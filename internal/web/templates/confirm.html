@@ -1,0 +1,19 @@
+{{ define "title" }}{{ with .Get "Confirm" }}{{ .Title }}{{ end }}{{ end }}
+{{ define "content" }}
+{{/* The confirmation page for a destructive action when scripting is off.
+     With scripting on, the same question shows in a ConfirmationDialog. */}}
+{{ with .Get "Confirm" }}
+<div class="confirm-page">
+  {{ template "ui_page_header" dict "Title" .Title "Border" true }}
+  <form method="post" action="{{ .Action }}" class="confirm-form" novalidate>
+    {{ with .Body }}<p class="confirm-body">{{ . }}</p>{{ end }}
+    {{ range .Fields }}<input type="hidden" name="{{ .Name }}" value="{{ .Value }}">{{ end }}
+    <input type="hidden" name="confirmed" value="1">
+    <div class="form-actions">
+      <button class="btn {{ if .Danger }}btn-danger{{ else }}btn-primary{{ end }}" type="submit"{{ if not .Danger }} autofocus{{ end }}>{{ .ConfirmLabel }}</button>
+      <a class="btn" href="{{ .CancelURL }}"{{ if .Danger }} autofocus{{ end }}>Cancel</a>
+    </div>
+  </form>
+</div>
+{{ end }}
+{{ end }}

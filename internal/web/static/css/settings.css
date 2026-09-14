@@ -1,0 +1,216 @@
+/* Settings, browse, interstitial and public pages (docs/primer.md 5.2, 5.3, 5.9,
+   6.1, 6.6 and 7). The shared components live in components.css, forms.css
+   and pages.css. This file holds the layout of these pages only.
+   Narrow viewports: (max-width: calc(48rem - 0.02px)). */
+
+/* ---------- Settings pane: parent link and NavList (5.1) ---------- */
+
+.settings-pane { display: flex; flex-direction: column; gap: var(--base-size-8); min-width: 0; padding: var(--base-size-16); }
+
+/* NavList items come from components.css. These rules set the list layout
+   of the settings pane only, so the shell NavList keeps its own sizes. */
+.settings-pane .nav-list { min-width: 0; }
+
+.settings-pane .nav-list-heading {
+  margin: 0; padding: 6px 0; font-size: var(--text-body-size-small); font-weight: var(--base-text-weight-semibold);
+  line-height: 18px; letter-spacing: 0; text-transform: none; color: var(--fgColor-muted);
+}
+
+/* The bar of the current item sits in the pane padding, so the list keeps it inside. */
+.settings-pane .nav-list-items { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+
+/* ---------- Settings pages ---------- */
+
+.settings-page, .browse-page, .confirm-page { min-width: 0; max-width: 1012px; }
+.settings-page > .settings-section:last-child { margin-bottom: 0; }
+.settings-intro h2 { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-size-8); letter-spacing: 0; text-transform: none; }
+.settings-note { margin: 0; font-size: var(--text-body-size-medium); color: var(--fgColor-muted); }
+.form-control-short { width: 100%; max-width: 12rem; }
+.form-saved, .form-actions-message .inline-message { margin: 0; }
+.form-actions-message:empty { display: none; }
+.settings-toggle { max-width: 440px; }
+
+/* A RadioGroup (5.3): a fieldset with a visible legend and stacked radios. */
+.radio-group { display: flex; flex-direction: column; gap: var(--base-size-8); min-width: 0; margin: 0; padding: 0; border: 0; }
+.radio-group > legend { float: left; width: 100%; margin: 0 0 var(--base-size-8); padding: 0; }
+.radio-group > legend + * { clear: both; }
+.radio-group-options { display: flex; flex-direction: column; gap: var(--base-size-8); }
+
+/* The one-time token notice: the token in a read-only monospace TextInput. */
+.new-token-box { margin-top: var(--base-size-8); background-color: var(--bgColor-default); }
+.new-token-box > .text-input-control { font-family: var(--fontStack-monospace); }
+
+/* ---------- DataTables on settings pages (5.2) ---------- */
+
+.settings-table { min-width: 0; }
+.settings-table .cell-title { font-size: var(--text-body-size-medium); }
+.settings-table .col-actions .btn { white-space: nowrap; }
+.settings-table .inline-form { display: flex; justify-content: flex-end; }
+.only-narrow-cell { display: none; }
+
+@media (max-width: calc(48rem - 0.02px)) {
+  .col-hide-narrow { display: none; }
+  .only-narrow-cell { display: block; }
+}
+
+/* ---------- Danger box (5.2) ---------- */
+
+.danger-box { min-width: 0; background-color: var(--bgColor-default); border: var(--borderWidth-thin) solid var(--borderColor-danger-emphasis); border-radius: var(--borderRadius-medium); }
+.danger-box-header { padding: var(--base-size-16); background-color: var(--bgColor-muted); border-bottom: var(--borderWidth-thin) solid var(--borderColor-danger-emphasis); border-radius: var(--borderRadius-medium) var(--borderRadius-medium) 0 0; }
+.danger-box-header h2 { margin: 0; font: var(--text-title-shorthand-small); color: var(--fgColor-danger); }
+.danger-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--base-size-8) var(--base-size-16); padding: var(--base-size-16); }
+.danger-row-text { flex: 1 1 16rem; min-width: 0; }
+.danger-row-title { margin: 0; font-size: var(--text-body-size-medium); font-weight: var(--base-text-weight-semibold); }
+.danger-row-description { margin: var(--base-size-4) 0 0; font-size: var(--text-body-size-medium); color: var(--fgColor-muted); }
+
+/* ---------- Drop area (5.3) ---------- */
+
+.import-drop { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--base-size-8); min-height: 96px; text-align: center; }
+.import-drop .dropzone-label { font-size: var(--text-body-size-medium); color: var(--fgColor-muted); overflow-wrap: anywhere; }
+.import-drop { position: relative; }
+/* The file input stays visible, so focus lands on a control people can see.
+   Its button takes the small Button style (docs/primer.md 5.4). */
+.import-file-input { max-width: 100%; font-size: var(--text-body-size-medium); color: var(--fgColor-muted); }
+.import-file-input::file-selector-button {
+  height: var(--control-small-size); margin-inline-end: var(--base-size-8); padding: 0 var(--control-small-paddingInline-condensed, 8px);
+  font: inherit; font-size: var(--text-body-size-small); font-weight: var(--base-text-weight-medium); color: var(--button-default-fgColor-rest);
+  background-color: var(--button-default-bgColor-rest); border: var(--borderWidth-thin) solid var(--button-default-borderColor-rest);
+  border-radius: var(--borderRadius-medium); cursor: pointer;
+}
+.import-file-input:focus-visible { outline: 2px solid var(--focus-outlineColor); outline-offset: 2px; border-radius: var(--borderRadius-medium); }
+
+@media (hover: hover) {
+  .import-file-input::file-selector-button:hover { background-color: var(--button-default-bgColor-hover); }
+}
+
+/* ---------- Browse pages ---------- */
+
+.browse-section { margin-top: var(--base-size-24); }
+.browse-page .section-heading { margin-bottom: var(--base-size-8); }
+.page-add { margin-bottom: var(--base-size-24); }
+.page-add > form { padding: var(--base-size-16); border: var(--borderWidth-thin) solid var(--borderColor-default); border-radius: var(--borderRadius-medium); }
+
+.spaces-grid { padding: 0; list-style: none; }
+.spaces-grid > li { display: flex; min-width: 0; }
+.spaces-grid .card { flex: 1 1 auto; min-width: 0; }
+.card-description { font-size: var(--text-body-size-medium); color: var(--fgColor-muted); overflow-wrap: anywhere; }
+
+.space-home { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--base-size-24); align-items: start; }
+.space-home-side { display: flex; flex-direction: column; gap: var(--base-size-24); min-width: 0; }
+
+@media (min-width: 63.25rem) {
+  .space-home { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+}
+
+.rows-condensed .note-row { padding: var(--base-size-8) var(--base-size-16); }
+.note-row-trailing { position: relative; z-index: 1; display: flex; flex: none; align-items: center; gap: var(--base-size-8); }
+.note-row-title.is-muted { color: var(--fgColor-muted); font-weight: var(--base-text-weight-normal); }
+.note-row-description { display: block; font-size: var(--text-body-size-small); line-height: 18px; color: var(--fgColor-muted); }
+.note-row-chevron { display: flex; flex: none; color: var(--fgColor-muted); }
+.note-row-body > .note-row-title { line-height: 20px; }
+.settings-index { margin-bottom: 0; }
+
+.token-list { display: flex; flex-wrap: wrap; gap: var(--base-size-8); margin: 0; padding: 0; list-style: none; }
+.token-count { margin-inline-start: var(--base-size-4); font-weight: var(--base-text-weight-normal); color: var(--fgColor-muted); }
+
+@media (max-width: calc(48rem - 0.02px)) {
+  .token-list .token { position: relative; }
+  .token-list .token::before { content: ""; position: absolute; top: 50%; left: 0; width: 100%; min-height: 44px; transform: translateY(-50%); }
+  .token-list { gap: var(--base-size-8) var(--base-size-8); row-gap: 24px; }
+}
+
+/* Rows on browse, settings and public pages start at the top, so the icon
+   centres on the first text line of a row with several lines. Trailing
+   controls stay centred on the row (docs/primer.md 5.2 Boxes and rows). */
+:is(.browse-page, .settings-page, .public-page) .note-row { align-items: flex-start; }
+:is(.browse-page, .settings-page, .public-page) :is(.note-row-trailing, .note-row-chevron, .note-row-actions) { align-self: center; }
+:is(.browse-page, .settings-page, .public-page) .note-row-icon { display: flex; align-items: center; justify-content: center; height: 20px; }
+:is(.browse-page, .settings-page, .public-page) .note-row-title { line-height: 20px; }
+
+/* Row text wraps instead of truncating, so the full path and excerpt stay
+   readable without a tooltip (docs/primer.md 5.9 Truncate). */
+:is(.browse-page, .public-page) :is(.note-row-title, .note-row-meta) { overflow: visible; white-space: normal; overflow-wrap: anywhere; }
+:is(.browse-page, .public-page) .note-row-snippet { display: block; overflow: visible; -webkit-line-clamp: none; overflow-wrap: anywhere; }
+
+/* The trash rows: a title that is not a link, Restore and a row menu. */
+.trash-rows .note-row { flex-wrap: wrap; }
+.trash-rows .note-row-body { flex: 1 1 10rem; }
+
+/* ---------- Search ---------- */
+
+.search-page-form { display: flex; flex-direction: column; gap: var(--stack-gap-normal); margin-bottom: var(--base-size-8); }
+.search-filters-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--stack-gap-normal); align-items: end; }
+.search-submit .btn { width: 100%; }
+
+@media (min-width: 48rem) {
+  .search-filters-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }
+  .search-submit .btn { width: auto; }
+}
+
+.search-modes .tabs { margin-bottom: var(--base-size-16); padding-inline: 0; list-style: none; }
+.search-modes .tabs > li { display: flex; }
+.search-snippet mark { color: inherit; background-color: var(--bgColor-attention-muted); border-radius: 2px; }
+
+/* ---------- Interstitial pages (5.2) ---------- */
+
+.interstitial .page-header { display: block; margin-bottom: var(--base-size-24); }
+.interstitial .page-header-description { display: block; }
+.interstitial .stack > .banner { margin: 0; }
+.interstitial > .banner { margin: 0 0 var(--base-size-16); }
+.auth-foot { color: var(--fgColor-muted); }
+
+/* Error and offline pages: a spacious Blankslate centred in the content. */
+.interstitial-blankslate { display: flex; justify-content: center; min-width: 0; }
+.interstitial-blankslate .blankslate { width: 100%; max-width: 640px; }
+
+/* The role menu of a member row: a heading and radio items with a check. */
+.row-menu .menu-label { padding: 6px var(--base-size-8); font-size: var(--text-body-size-small); font-weight: var(--base-text-weight-semibold); text-align: start; color: var(--fgColor-muted); }
+.row-menu .menu-item[role="menuitemradio"] { display: flex; align-items: center; gap: var(--base-size-8); }
+.menu-item-check { display: flex; flex: none; width: 16px; color: var(--fgColor-default); }
+
+/* ---------- Public pages (5.2) ---------- */
+
+/* A large PageHeader keeps its leading visual on the first title line, so a
+   wrapped title keeps the icon beside that line. pages.css sizes the line. */
+.public-page .page-header-large { align-items: start; }
+.public-page .page-header-large .page-header-leading-visual { align-items: center; height: var(--page-header-title-line); }
+/* Task list checkboxes are disabled, so they take no taps. */
+.public-page .md-body input[type="checkbox"]:disabled { pointer-events: none; }
+
+.plain-main:has(> .public-page) { max-width: 1280px; }
+.public-page { min-width: 0; }
+.public-page .page-header { margin-bottom: var(--base-size-24); }
+.public-page .md-body, .public-page .toc, .public-page .comments { max-width: var(--ms-measure, 72ch); }
+.public-viewer { margin-bottom: var(--base-size-24); }
+.public-viewer img, .public-viewer video { display: block; max-width: 100%; height: auto; border: var(--borderWidth-thin) solid var(--borderColor-default); border-radius: var(--borderRadius-medium); }
+.public-viewer audio { width: 100%; max-width: 32rem; }
+.public-foot { margin-top: var(--base-size-32); padding-top: var(--base-size-16); font-size: var(--text-body-size-small); color: var(--fgColor-muted); border-top: var(--borderWidth-thin) solid var(--borderColor-muted); }
+
+/* ---------- Confirmation page ---------- */
+
+.confirm-form { display: flex; flex-direction: column; gap: var(--stack-gap-normal); max-width: 440px; }
+.confirm-body { margin: 0; font-size: var(--text-body-size-medium); }
+
+/* ---------- Coarse pointers and narrow viewports: 44px targets (9.2) ---------- */
+
+@media (max-width: calc(48rem - 0.02px)), (pointer: coarse) {
+  /* A link inside a caption grows to 44px without moving the text. */
+  :is(.settings-page, .usage-page, .admin-page) .form-caption a { display: inline-block; margin-block: -14px; padding-block: 14px; }
+  /* Error summary links stack as 44px rows. */
+  .form-error-summary .banner-error-list a { display: inline-block; padding-block: 12px; }
+}
+
+
+@media (max-width: calc(48rem - 0.02px)) {
+  :is(.settings-page, .browse-page, .confirm-page, .interstitial, .public-page, .interstitial-blankslate) :is(.btn, .page-header-parent, .blankslate a, .auth-foot a, .tab, .toggle-switch-track) { position: relative; }
+  :is(.settings-page, .browse-page, .confirm-page, .interstitial, .public-page, .interstitial-blankslate) :is(.btn, .blankslate-action > a, .auth-foot a, .page-header-parent, .search-modes .tab, .toggle-switch-track)::before {
+    content: ""; position: absolute; top: 50%; left: 50%; min-width: 44px; min-height: 44px; width: 100%; transform: translate(-50%, -50%);
+  }
+  /* Text fields, selects and disclosure summaries grow to the 44px target. */
+  :is(.settings-page, .browse-page, .interstitial, .public-page) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not(.text-input-control), select:not(.text-input-control), .text-input) { min-height: 44px; }
+  :is(.settings-page, .browse-page) input[type="color"] { height: 44px; }
+  :is(.settings-page, .browse-page) :is(.disclosure, .add-toggle) > summary { height: auto; min-height: 44px; }
+  .public-page .toc a { display: flex; align-items: center; min-height: 44px; }
+  .form-actions .btn, .danger-row .btn { height: var(--control-large-size); padding-inline: var(--control-large-paddingInline-spacious, 16px); }
+  .interstitial .btn-block { height: var(--control-large-size); }
+}

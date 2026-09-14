@@ -1,0 +1,20 @@
+{{ define "title" }}Sign in{{ end }}
+{{ define "content" }}
+<div class="auth-card interstitial">
+  <a class="auth-brand" href="/">{{ .InstanceName }}</a>
+  <div class="page-header">
+    <div class="page-header-title-area"><h1 class="page-header-title">Sign in</h1></div>
+    <p class="page-header-description">Once you sign in, this device keeps a copy of your notes so they open offline.</p>
+  </div>
+  <form method="post" action="/login" class="stack" novalidate>
+    {{ template "ui_form_message" dict "P" . "Form" "login" }}
+    <input type="hidden" name="next" value="{{ .Get "Next" }}">
+    {{ template "ui_text_field" dict "P" . "Form" "login" "Field" "email" "Label" "Email address" "Type" "email" "Value" (.FormValue "login" "email" "") "Required" true "HideRequired" true "Autofocus" (not (.FormOpen "login")) "Autocomplete" "username" "Inputmode" "email" "Autocapitalize" "off" "Spellcheck" "false" }}
+    {{ template "ui_text_field" dict "P" . "Form" "login" "Field" "password" "Label" "Password" "Type" "password" "Required" true "HideRequired" true "Autocomplete" "current-password" }}
+    <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+  </form>
+  {{ if or (not .Settings) .Settings.AllowSignup }}
+  <p class="auth-foot">No account yet? <a href="/signup">Create one</a></p>
+  {{ end }}
+</div>
+{{ end }}

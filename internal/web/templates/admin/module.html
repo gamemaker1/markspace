@@ -1,0 +1,13 @@
+{{/* A module page inside the administration SplitPageLayout (docs/primer.md 5.2).
+     RenderModulePage uses it when the module asks for the admin navigation.
+     The module body renders its own PageHeader. */}}
+{{ define "title" }}{{ with .Get "Module" }}{{ .Title }}{{ end }}{{ end }}
+{{ define "sidebar" }}{{ template "admin_sidebar" . }}{{ end }}
+{{ define "content" }}
+<div class="admin-page">
+{{ with .Get "Module" }}{{ .Body }}{{ end }}
+</div>
+{{ end }}
+{{ define "scripts" }}<script type="module" src="/static/js/admin.js"></script>
+{{ with .Get "Module" }}{{ range .Scripts }}<script type="module" src="{{ . }}"></script>
+{{ end }}{{ end }}{{ end }}
