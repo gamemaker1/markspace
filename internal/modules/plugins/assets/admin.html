@@ -1,0 +1,321 @@
+{{- define "settings_field" -}}
+{{/* dot is a dict with F, a fieldView, and P, the id prefix of the form. A
+     FormControl per field (docs/primer.md 5.3). */}}
+{{ $f := .F }}{{ $id := printf "%s-%s" .P $f.Name }}
+{{ if $f.Check }}
+<input type="hidden" name="present.{{ $f.Name }}" value="1">
+<div class="form-control form-control-horizontal plugin-setting">
+  <input type="checkbox" id="{{ $id }}" name="setting.{{ $f.Name }}" value="1"{{ if $f.Checked }} checked{{ end }}{{ if $f.Hint }} aria-describedby="{{ $id }}-hint"{{ end }}>
+  <div class="form-control-horizontal-text">
+    <label class="form-label" for="{{ $id }}">{{ $f.Label }}</label>
+    {{ if $f.Hint }}<p class="form-caption" id="{{ $id }}-hint">{{ $f.Hint }}</p>{{ end }}
+  </div>
+</div>
+{{ else }}
+<div class="field plugin-setting">
+  <label class="field-label" for="{{ $id }}">{{ $f.Label }}{{ if $f.Required }}<span class="field-required" aria-hidden="true">*</span>{{ end }}</label>
+  {{ if $f.Textarea }}<textarea id="{{ $id }}" name="setting.{{ $f.Name }}" rows="3"{{ if $f.Required }} required{{ end }}{{ if $f.Hint }} aria-describedby="{{ $id }}-hint"{{ end }}>{{ $f.Value }}</textarea>
+  {{ else if $f.Select }}<select id="{{ $id }}" name="setting.{{ $f.Name }}"{{ if $f.Required }} required{{ end }}{{ if $f.Hint }} aria-describedby="{{ $id }}-hint"{{ end }}>{{ range $f.Options }}<option value="{{ .Value }}"{{ if .Selected }} selected{{ end }}>{{ .Label }}</option>{{ end }}</select>
+  {{ else }}<input type="{{ $f.InputType }}" id="{{ $id }}" name="setting.{{ $f.Name }}" value="{{ $f.Value }}"{{ if $f.Required }} required{{ end }}{{ if eq $f.InputType "number" }} step="any" inputmode="decimal"{{ end }} autocomplete="off"{{ if $f.Hint }} aria-describedby="{{ $id }}-hint"{{ end }}>
+  {{ end }}
+  {{ if $f.Hint }}<p class="field-hint" id="{{ $id }}-hint">{{ $f.Hint }}</p>{{ end }}
+</div>
+{{ end }}
+{{- end -}}
+
+{{- define "space_grants" -}}
+{{/* dot is a dict with G, a list of spaceGrant, and P, the id prefix. */}}
+<fieldset class="plugin-grants">
+  <legend>Spaces</legend>
+  <p class="field-hint plugin-fieldset-caption">The plugin reaches only the spaces you choose, with at most editor access.</p>
+  {{ range .G }}
+  <div class="field plugin-grant">
+    <label class="field-label" for="{{ $.P }}-grant-{{ .ID }}">{{ .Name }}</label>
+    <select id="{{ $.P }}-grant-{{ .ID }}" name="grant.{{ .ID }}">{{ range .Roles }}<option value="{{ .Value }}"{{ if .Selected }} selected{{ end }}>{{ .Label }}</option>{{ end }}</select>
+  </div>
+  {{ else }}
+  <p class="field-hint">There are no spaces yet.</p>
+  {{ end }}
+</fieldset>
+{{- end -}}
+
+{{- define "dialog_error" -}}
+{{/* A failure inside a Dialog source. admin.js shows it as a critical Banner
+     under the Dialog header. Without the script it shows in place. */}}
+{{ with . }}<section class="banner banner-critical plugin-dialog-error" aria-label="Critical" data-dialog-error><div class="banner-icon" aria-hidden="true">{{ octicon "stop" 16 }}</div><div class="banner-container"><div class="banner-content"><h2 class="banner-title">{{ . }}</h2></div></div></section>{{ end }}
+{{- end -}}
+
+{{- define "manifest_review" -}}
+{{/* dot is a summaryView. */}}
+<div class="plugin-review">
+  <h3 class="plugin-review-heading">Permissions</h3>
+  {{ with .Perms }}
+  <ul class="plugin-permissions">
+    {{ range . }}<li><code>{{ .ID }}</code><span>{{ .Description }}</span></li>{{ end }}
+  </ul>
+  {{ else }}<p class="plugin-review-none">The plugin asks for no permissions.</p>{{ end }}
+  <dl class="info-list plugin-review-list">
+    <div class="info-row"><dt>Events</dt><dd>{{ range $i, $e := .Events }}{{ if $i }}, {{ end }}<code>{{ $e }}</code>{{ else }}None{{ end }}</dd></div>
+    <div class="info-row"><dt>Jobs</dt><dd>{{ range $i, $j := .Jobs }}{{ if $i }}, {{ end }}{{ or $j.Title $j.ID }}{{ else }}None{{ end }}</dd></div>
+    <div class="info-row"><dt>Schedules</dt><dd>{{ range $i, $s := .Schedules }}{{ if $i }}, {{ end }}{{ $s.ID }} every {{ $s.Extra }}{{ else }}None{{ end }}</dd></div>
+    <div class="info-row"><dt>Commands</dt><dd>{{ range $i, $c := .Commands }}{{ if $i }}, {{ end }}{{ or $c.Title $c.ID }}{{ else }}None{{ end }}</dd></div>
+    <div class="info-row"><dt>Panels</dt><dd>{{ range $i, $c := .Panels }}{{ if $i }}, {{ end }}{{ or $c.Title $c.ID }}{{ else }}None{{ end }}</dd></div>
+    <div class="info-row"><dt>Importers</dt><dd>{{ range $i, $c := .Importers }}{{ if $i }}, {{ end }}{{ or $c.Title $c.ID }}{{ else }}None{{ end }}</dd></div>
+    <div class="info-row"><dt>Secrets</dt><dd>{{ range $i, $s := .Secrets }}{{ if $i }}, {{ end }}{{ or $s.Label $s.Name }}{{ else }}None{{ end }}</dd></div>
+  </dl>
+</div>
+{{- end -}}
+
+{{- define "copy_field" -}}
+{{/* dot is a dict with ID, Label and Value. A read-only monospace TextInput
+     with a copy IconButton. app.js copies data-copy. */}}
+<div class="field plugin-credential">
+  <label class="field-label" for="{{ .ID }}">{{ .Label }}</label>
+  <div class="text-input text-input-block has-trailing-action">
+    <input class="text-input-control is-monospace" id="{{ .ID }}" type="text" readonly value="{{ .Value }}" spellcheck="false" autocomplete="off">
+    <button class="btn btn-icon btn-invisible text-input-action" type="button" data-copy="{{ .Value }}" aria-label="Copy {{ .Label }}"><span class="btn-visual" aria-hidden="true">{{ octicon "copy" 16 }}</span></button>
+  </div>
+</div>
+{{- end -}}
+
+<div class="plugins-page" data-plugins-page>
+  <div class="page-header" data-border="true">
+    <div class="page-header-context"><a class="page-header-parent" href="/admin">{{ octicon "arrow-left" 16 }}<span>Administration</span></a></div>
+    <div class="page-header-title-area"><h1 class="page-header-title" tabindex="-1">Plugins</h1></div>
+    <div class="page-header-actions"><a class="btn btn-primary" href="/admin/plugins?add=1#add-plugin" data-dialog-open="add-plugin">Add plugin</a></div>
+    <p class="page-header-description">A plugin runs as its own service and works in the spaces you grant it.</p>
+  </div>
+
+  {{ with .Problem }}<section class="banner banner-critical" aria-label="Critical" tabindex="-1" data-plugin-banner><div class="banner-icon" aria-hidden="true">{{ octicon "stop" 16 }}</div><div class="banner-container"><div class="banner-content"><h2 class="banner-title">{{ . }}</h2></div></div></section>{{ end }}
+  {{ with .Notice }}<section class="banner banner-success" aria-label="Success" data-plugin-banner><div class="banner-icon" aria-hidden="true">{{ octicon "check-circle" 16 }}</div><div class="banner-container"><div class="banner-content"><h2 class="banner-title">{{ . }}</h2></div></div><div class="banner-dismiss-cell"><button class="btn btn-icon btn-invisible btn-sm banner-dismiss" type="button" aria-label="Dismiss banner" data-banner-dismiss><span class="btn-visual" aria-hidden="true">{{ octicon "x" 16 }}</span></button></div></section>{{ end }}
+  {{ with .Announce }}<p class="sr-only" data-saved-message>{{ . }}</p>{{ end }}
+
+  <section class="admin-section plugin-list" aria-labelledby="plugins-title">
+    <div class="data-table-header">
+      <div class="data-table-titles">
+        <h2 class="data-table-title" id="plugins-title">Installed plugins <span class="counter-label" aria-hidden="true">{{ len .Plugins }}</span><span class="sr-only">({{ len .Plugins }})</span></h2>
+      </div>
+    </div>
+    {{ if .Plugins }}
+    <div class="table-scroll" role="region" tabindex="0" aria-label="Plugins table">
+      <table class="data-table plugin-table" aria-labelledby="plugins-title">
+        <thead>
+          <tr>
+            <th scope="col">Plugin</th>
+            <th scope="col">Status</th>
+            <th scope="col" class="hide-narrow">Spaces</th>
+            <th scope="col" class="col-num">Queued</th>
+            <th scope="col" class="col-num hide-narrow">AI this month</th>
+            <th scope="col" class="col-actions"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range .Plugins }}
+          {{ $p := . }}
+          <tr id="plugin-{{ .ID }}" data-plugin-row="{{ .ID }}">
+            <th scope="row">
+              <span class="plugin-name">{{ .Name }}</span>
+              <span class="plugin-sub">{{ .Version }} &middot; {{ breakable .BaseURL }}</span>
+              {{ with .LastError }}<span class="inline-message inline-message-critical plugin-row-message" data-size="small"><span class="inline-message-icon" aria-hidden="true">{{ octicon "alert-fill" 16 }}</span><span class="inline-message-text">{{ . }}</span></span>{{ end }}
+              {{ if eq .Status "needs_approval" }}
+              <span class="plugin-pending">
+                <span class="inline-message inline-message-warning plugin-row-message" data-size="small"><span class="inline-message-icon" aria-hidden="true">{{ octicon "alert-fill" 16 }}</span><span class="inline-message-text">{{ if .PendingPerms }}The new manifest also asks for {{ range $i, $x := .PendingPerms }}{{ if $i }}, {{ end }}<code>{{ $x.ID }}</code>{{ end }}.{{ else }}A new manifest waits for approval.{{ end }}</span></span>
+                <form method="post" action="/admin/plugins" class="inline-form"><input type="hidden" name="id" value="{{ .ID }}"><button class="btn btn-sm" type="submit" name="action" value="approve">Approve {{ .Name }}</button></form>
+              </span>
+              {{ end }}
+            </th>
+            <td class="col-nowrap"><span class="{{ .StatusClass }}">{{ .StatusLabel }}</span></td>
+            <td class="hide-narrow">{{ range $i, $g := .GrantList }}{{ if $i }}, {{ end }}{{ $g.Name }} ({{ $g.Role }}){{ end }}</td>
+            <td class="col-num">{{ .QueuedDeliveries }}</td>
+            <td class="col-num hide-narrow">{{ .Usage }}</td>
+            <td class="col-actions">
+              {{ if not .Uninstalled }}
+              <button class="icon-btn row-menu-btn" type="button" popovertarget="plugin-menu-{{ .ID }}" aria-label="Actions: {{ .Name }}">{{ octicon "kebab-horizontal" 16 }}</button>
+              <div class="row-menu" id="plugin-menu-{{ .ID }}" popover>
+                <a class="menu-item" href="/admin/plugins?open={{ .ID }}&amp;panel=settings#plugin-settings-{{ .ID }}" data-dialog-open="plugin-settings-{{ .ID }}">Settings</a>
+                {{ if .Approved.Secrets }}<a class="menu-item" href="/admin/plugins?open={{ .ID }}&amp;panel=secrets#plugin-secrets-{{ .ID }}" data-dialog-open="plugin-secrets-{{ .ID }}">Secrets</a>{{ end }}
+                {{ if .CanResume }}
+                <form method="post" action="/admin/plugins"><input type="hidden" name="id" value="{{ .ID }}"><button class="menu-item" type="submit" name="action" value="resume">Resume</button></form>
+                {{ else if .CanPause }}
+                <form method="post" action="/admin/plugins"><input type="hidden" name="id" value="{{ .ID }}"><button class="menu-item" type="submit" name="action" value="pause">Pause</button></form>
+                {{ end }}
+                <form method="post" action="/admin/plugins"><input type="hidden" name="id" value="{{ .ID }}"><button class="menu-item" type="submit" name="action" value="check">Check for manifest changes</button></form>
+                <a class="menu-item" href="{{ .JobsURL }}">View jobs</a>
+                {{ range .PageLinks }}<a class="menu-item" href="{{ .URL }}">{{ .Title }}</a>{{ end }}
+                <hr class="menu-sep">
+                <form method="post" action="/admin/plugins"><input type="hidden" name="id" value="{{ .ID }}"><button class="menu-item danger" type="submit" name="action" value="uninstall-ask" data-plugin-uninstall="plugin-uninstall-{{ .ID }}">Uninstall</button></form>
+              </div>
+              {{ end }}
+            </td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+    {{ else }}
+    <div class="blankslate blankslate-medium blankslate-border">
+      <div class="blankslate-inner">
+        <span class="blankslate-visual" aria-hidden="true">{{ octicon "apps" 24 }}</span>
+        <h3 class="blankslate-heading">No plugins installed</h3>
+        <p class="blankslate-description">Add a plugin by the address Markspace reaches it at.</p>
+        <div class="blankslate-action"><a class="btn btn-primary" href="/admin/plugins?add=1#add-plugin" data-dialog-open="add-plugin">Add plugin</a></div>
+      </div>
+    </div>
+    {{ end }}
+  </section>
+
+  {{ range .Plugins }}
+  {{ $p := . }}
+  {{ if not .Uninstalled }}
+  {{ $sp := printf "ps-%s" .ID }}
+  <div class="dialog-source" id="plugin-settings-{{ .ID }}" data-dialog-title="Settings of {{ .Name }}" data-dialog-width="large"{{ if eq .OpenPanel "settings" }} data-dialog-autoopen{{ else }} hidden{{ end }}>
+    <h2 class="dialog-source-heading">Settings of {{ .Name }}</h2>
+    {{ if eq .OpenPanel "settings" }}{{ template "dialog_error" .PanelProblem }}{{ end }}
+    <form method="post" action="/admin/plugins" class="plugin-settings-form" id="plugin-settings-form-{{ .ID }}" data-validate data-unsaved novalidate>
+      <input type="hidden" name="id" value="{{ .ID }}">
+      {{ template "space_grants" (dict "G" .SpaceGrants "P" $sp) }}
+      {{ range .Fields }}{{ template "settings_field" (dict "F" . "P" $sp) }}{{ end }}
+      <div class="dialog-source-footer">
+        <a class="btn" href="/admin/plugins#plugin-{{ .ID }}" data-dialog-cancel>Cancel</a>
+        <button class="btn btn-primary" type="submit" name="action" value="settings">Save</button>
+      </div>
+    </form>
+  </div>
+  {{ if .Approved.Secrets }}
+  {{ $ss := printf "pk-%s" .ID }}
+  <div class="dialog-source" id="plugin-secrets-{{ .ID }}" data-dialog-title="Secrets of {{ .Name }}" data-dialog-subtitle="Leave a field empty to keep the stored value." data-dialog-width="large"{{ if eq .OpenPanel "secrets" }} data-dialog-autoopen{{ else }} hidden{{ end }}>
+    <h2 class="dialog-source-heading">Secrets of {{ .Name }}</h2>
+    {{ if eq .OpenPanel "secrets" }}{{ template "dialog_error" .PanelProblem }}{{ end }}
+    <form method="post" action="/admin/plugins" class="plugin-secrets-form" id="plugin-secrets-form-{{ .ID }}" data-unsaved novalidate>
+      <input type="hidden" name="id" value="{{ .ID }}">
+      {{ range $p.Approved.Secrets }}
+      {{ $set := false }}{{ $name := .Name }}{{ range $p.Secrets }}{{ if and (eq .Name $name) .Set }}{{ $set = true }}{{ end }}{{ end }}
+      <div class="field plugin-secret">
+        <label class="field-label" for="{{ $ss }}-{{ .Name }}">{{ or .Label .Name }}</label>
+        <input id="{{ $ss }}-{{ .Name }}" type="password" name="secret.{{ .Name }}" autocomplete="off" aria-describedby="{{ $ss }}-{{ .Name }}-hint">
+        <p class="field-hint" id="{{ $ss }}-{{ .Name }}-hint">{{ if $set }}A value is stored.{{ else }}No value is stored.{{ end }}</p>
+      </div>
+      {{ end }}
+      <div class="dialog-source-footer">
+        <a class="btn" href="/admin/plugins#plugin-{{ .ID }}" data-dialog-cancel>Cancel</a>
+        <button class="btn btn-primary" type="submit" name="action" value="secrets">Save</button>
+      </div>
+    </form>
+  </div>
+  {{ end }}
+  <div class="dialog-source plugin-uninstall" id="plugin-uninstall-{{ .ID }}" data-dialog-title="Uninstall {{ .Name }}?" data-dialog-width="medium" data-confirmation{{ if eq .OpenPanel "uninstall" }} data-dialog-autoopen{{ else }} hidden{{ end }}>
+    <h2 class="dialog-source-heading">Uninstall {{ .Name }}?</h2>
+    {{ if eq .OpenPanel "uninstall" }}{{ template "dialog_error" .PanelProblem }}{{ end }}
+    <form method="post" action="/admin/plugins" id="plugin-uninstall-form-{{ .ID }}">
+      <input type="hidden" name="id" value="{{ .ID }}">
+      <p class="plugin-confirm-body">{{ .Name }} stops receiving events and loses its access to every space. You cannot undo this.</p>
+      <fieldset class="plugin-data-choice">
+        <legend>Its data</legend>
+        <div class="form-control form-control-horizontal">
+          <input type="radio" id="pu-{{ .ID }}-keep" name="data" value="keep" checked>
+          <label class="form-label" for="pu-{{ .ID }}-keep">Keep its data</label>
+        </div>
+        <div class="form-control form-control-horizontal">
+          <input type="radio" id="pu-{{ .ID }}-delete" name="data" value="delete">
+          <label class="form-label" for="pu-{{ .ID }}-delete">Delete its data</label>
+        </div>
+      </fieldset>
+      <div class="dialog-source-footer">
+        <a class="btn" href="/admin/plugins#plugin-{{ .ID }}" data-dialog-cancel>Cancel</a>
+        <button class="btn btn-danger" type="submit" name="action" value="uninstall">Uninstall</button>
+      </div>
+    </form>
+  </div>
+  {{ end }}
+  {{ end }}
+
+  {{ with .Add }}
+  <div class="dialog-source plugin-add" id="add-plugin" data-dialog-title="{{ if and (ge .Step 2) .Summary }}{{ .StepTitle }}: {{ .Summary.Name }}{{ else }}Add plugin{{ end }}" data-dialog-subtitle="Step {{ .Step }} of 4" data-dialog-width="{{ if eq .Step 1 }}large{{ else }}xlarge{{ end }}" data-add-step="{{ .Step }}"{{ if .Open }} data-dialog-autoopen{{ else }} hidden{{ end }}>
+    <h2 class="dialog-source-heading">{{ .StepTitle }}, step {{ .Step }} of 4</h2>
+    {{ if ne .Step 1 }}{{ template "dialog_error" .Problem }}{{ end }}
+    <form method="post" action="/admin/plugins#add-plugin" class="plugin-add-form" id="add-plugin-form" data-validate novalidate>
+      <input type="hidden" name="sha256" value="{{ .SHA256 }}">
+      {{ if eq .Step 1 }}
+      <div class="field{{ if .Problem }} has-error{{ end }}">
+        <label class="field-label" for="add-url">Base URL<span class="field-required" aria-hidden="true">*</span></label>
+        <input id="add-url" type="url" name="baseUrl" value="{{ .BaseURL }}" required autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="add-url-hint{{ if .Problem }} add-url-error{{ end }}"{{ if .Problem }} aria-invalid="true"{{ end }}>
+        <p class="field-hint" id="add-url-hint">The address Markspace reaches the plugin at. It may be a private address, such as http://word-count:8090.</p>
+        {{ with .Problem }}<p class="field-error form-validation" id="add-url-error"><span class="form-validation-icon" aria-hidden="true">{{ octicon "alert-fill" 16 }}</span><span class="form-validation-text">{{ . }}</span></p>{{ end }}
+      </div>
+      <div class="dialog-source-footer">
+        <a class="btn" href="/admin/plugins" data-dialog-cancel>Cancel</a>
+        <button class="btn btn-primary" type="submit" name="action" value="preview">Continue</button>
+      </div>
+      {{ else }}
+      <input type="hidden" name="baseUrl" value="{{ .BaseURL }}">
+      {{ with .Summary }}
+      <div class="plugin-manifest-head">
+        <p class="plugin-manifest-name"><strong>{{ .Name }} {{ .Version }}</strong></p>
+        {{ with .Description }}<p class="plugin-manifest-desc">{{ . }}</p>{{ end }}
+        <p class="plugin-manifest-meta">{{ $.Add.BaseURL }} &middot; id <code>{{ .ID }}</code>{{ with .Homepage }} &middot; <a href="{{ . }}" rel="noopener noreferrer" target="_blank">Homepage</a>{{ end }}</p>
+      </div>
+      {{ end }}
+      {{ if .Exists }}<div class="inline-message inline-message-warning"><span class="inline-message-icon" aria-hidden="true">{{ octicon "alert" 16 }}</span><span class="inline-message-text">A plugin with this id is installed. Uninstall it before installing it again.</span></div>{{ end }}
+      {{ if eq .Step 2 }}
+      {{ template "manifest_review" .Summary }}
+      <div class="dialog-source-footer">
+        <button class="btn" type="submit" name="action" value="back" formnovalidate>Back</button>
+        <button class="btn btn-primary" type="submit" name="action" value="continue">Continue</button>
+      </div>
+      {{ else if eq .Step 3 }}
+      {{ template "space_grants" (dict "G" .Spaces "P" "add") }}
+      {{ if .Secrets }}
+      <fieldset class="plugin-secrets">
+        <legend>Secrets</legend>
+        {{ range .Secrets }}
+        <div class="field plugin-secret">
+          <label class="field-label" for="add-secret-{{ .Name }}">{{ .Label }}</label>
+          <input id="add-secret-{{ .Name }}" type="password" name="secret.{{ .Name }}" value="{{ .Value }}" autocomplete="off">
+        </div>
+        {{ end }}
+      </fieldset>
+      {{ end }}
+      {{ with .Summary }}{{ if .HasFields }}
+      <fieldset class="plugin-settings">
+        <legend>Settings</legend>
+        {{ range .Fields }}{{ template "settings_field" (dict "F" . "P" "add") }}{{ end }}
+      </fieldset>
+      {{ end }}{{ end }}
+      <div class="dialog-source-footer">
+        <button class="btn" type="submit" name="action" value="review" formnovalidate>Back</button>
+        <button class="btn btn-primary" type="submit" name="action" value="confirm">Continue</button>
+      </div>
+      {{ else }}
+      {{ range .Carry }}<input type="hidden" name="{{ .Name }}" value="{{ .Value }}">{{ end }}
+      <dl class="info-list plugin-review-list">
+        <div class="info-row"><dt>Permissions</dt><dd>{{ with .Summary }}{{ range $i, $x := .Perms }}{{ if $i }}, {{ end }}<code>{{ $x.ID }}</code>{{ else }}None{{ end }}{{ end }}</dd></div>
+        <div class="info-row"><dt>Spaces</dt><dd>{{ range $i, $g := .ChosenGrants }}{{ if $i }}, {{ end }}{{ $g.Name }} ({{ $g.Role }}){{ else }}None{{ end }}</dd></div>
+        {{ range .Secrets }}<div class="info-row"><dt>{{ .Label }}</dt><dd>{{ if .Value }}Provided{{ else }}Not provided{{ end }}</dd></div>{{ end }}
+        {{ with .Summary }}{{ range .Fields }}<div class="info-row"><dt>{{ .Label }}</dt><dd>{{ .Display }}</dd></div>{{ end }}{{ end }}
+      </dl>
+      <p class="plugin-confirm-body">Installing gives the plugin these permissions and sends it its credentials.</p>
+      <div class="dialog-source-footer">
+        <button class="btn" type="submit" name="action" value="choices" formnovalidate>Back</button>
+        <button class="btn btn-primary" type="submit" name="action" value="install">Install</button>
+      </div>
+      {{ end }}
+      {{ end }}
+    </form>
+  </div>
+  {{ end }}
+
+  {{ with .Result }}
+  <div class="dialog-source plugin-credentials" id="plugin-credentials" data-dialog-title="Copy your plugin credentials" data-dialog-subtitle="They are shown only once." data-dialog-width="large" data-dialog-autoopen>
+    <h2 class="dialog-source-heading">Copy your plugin credentials</h2>
+    <form method="get" action="/admin/plugins">
+      <p class="plugin-confirm-body">Markspace could not deliver the credentials to {{ .Name }}{{ with .InstallError }} ({{ . }}){{ end }}. Set these environment variables for the plugin and restart it.</p>
+      {{ template "copy_field" (dict "ID" "cred-url" "Label" "MARKSPACE_URL" "Value" .MarkspaceURL) }}
+      {{ template "copy_field" (dict "ID" "cred-token" "Label" "MARKSPACE_TOKEN" "Value" .Token) }}
+      {{ template "copy_field" (dict "ID" "cred-secret" "Label" "MARKSPACE_SIGNING_SECRET" "Value" .SigningSecret) }}
+      <div class="dialog-source-footer">
+        <a class="btn btn-primary" href="/admin/plugins">Done</a>
+      </div>
+    </form>
+  </div>
+  {{ end }}
+</div>

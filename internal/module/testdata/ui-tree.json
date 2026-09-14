@@ -1,0 +1,386 @@
+{
+  "description": "Server-side declarative UI cases for ValidateUI in internal/module. test/vectors/protocol.json holds the cases shared with the SDKs, and internal/module runs those too. This file covers input only a server sees (bytes that are not JSON, repeated keys, and URLs the server refuses beyond the shared rules) and repeats the limit cases with JSON pointers. A case has tree (a JSON value), raw (the exact input text) or generate (a generator and a size). error is null for a valid tree, or the code with its JSON path and JSON pointer.",
+  "generators": {
+    "wide": "{type: stack, children: n copies of {type: text, value: \"x\"}}",
+    "wideTable": "{type: table, columns: [{key: \"a\", label: \"A\"}], rows: n copies of {a: 1}}",
+    "wideButtons": "{type: stack, children: n copies of {type: button, label: \"b\", action: {id: \"a\"}}}",
+    "deep": "n nested stacks. The innermost has children []",
+    "deepPayload": "{type: button, label: \"b\", action: {id: \"a\", payload: p}}, where p is n nested objects {a: ...} and the innermost is {}",
+    "bigText": "{type: text, value: n copies of \"a\"}. The compact size is n + 26 bytes",
+    "bigTextIndented": "bigText encoded with two-space indentation"
+  },
+  "cases": [
+    {
+      "name": "tree with payloads, extra row keys and null field values",
+      "tree": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "button",
+            "label": "Run <now> & later",
+            "action": {
+              "id": "run",
+              "payload": {
+                "ids": [
+                  1,
+                  2.5,
+                  "x",
+                  null,
+                  true,
+                  {
+                    "k": []
+                  }
+                ],
+                "nested": {
+                  "deep": {}
+                }
+              }
+            }
+          },
+          {
+            "type": "table",
+            "columns": [
+              {
+                "key": "name",
+                "label": "Name"
+              }
+            ],
+            "rows": [
+              {
+                "name": "a",
+                "id": "n1"
+              },
+              {}
+            ],
+            "rowActions": [
+              {
+                "type": "button",
+                "label": "Open",
+                "action": {
+                  "id": "open"
+                }
+              }
+            ]
+          },
+          {
+            "type": "form",
+            "id": "settings",
+            "fields": [
+              {
+                "type": "select",
+                "name": "mode",
+                "options": []
+              },
+              {
+                "type": "space",
+                "name": "space",
+                "value": null
+              }
+            ],
+            "action": {
+              "id": "save"
+            }
+          },
+          {
+            "type": "list",
+            "items": [
+              {
+                "title": "Page",
+                "badge": {
+                  "type": "badge",
+                  "label": "new"
+                },
+                "actions": [
+                  {
+                    "type": "button",
+                    "label": "Open",
+                    "action": {
+                      "id": "open",
+                      "payload": {}
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "empty",
+            "title": "Nothing",
+            "action": {
+              "type": "button",
+              "label": "Add",
+              "action": {
+                "id": "add"
+              }
+            }
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "name": "truncated JSON",
+      "raw": "{\"type\":",
+      "error": {
+        "code": "invalid_json",
+        "path": "$",
+        "pointer": ""
+      }
+    },
+    {
+      "name": "number out of range",
+      "raw": "{\"type\":\"progress\",\"value\":1e400}",
+      "error": {
+        "code": "invalid_json",
+        "path": "$",
+        "pointer": ""
+      }
+    },
+    {
+      "name": "two JSON values",
+      "raw": "{\"type\":\"stack\",\"children\":[]} {}",
+      "error": {
+        "code": "invalid_json",
+        "path": "$",
+        "pointer": ""
+      }
+    },
+    {
+      "name": "repeated key",
+      "raw": "{\"type\":\"text\",\"value\":\"a\",\"value\":\"b\"}",
+      "error": {
+        "code": "duplicate_key",
+        "path": "$.value",
+        "pointer": "/value"
+      }
+    },
+    {
+      "name": "repeated key in payload",
+      "raw": "{\"type\":\"button\",\"label\":\"b\",\"action\":{\"id\":\"a\",\"payload\":{\"x\":1,\"x\":2}}}",
+      "error": {
+        "code": "duplicate_key",
+        "path": "$.action.payload.x",
+        "pointer": "/action/payload/x"
+      }
+    },
+    {
+      "name": "pointer escapes slash and tilde",
+      "tree": {
+        "type": "text",
+        "value": "a",
+        "a/b~c": 1
+      },
+      "error": {
+        "code": "unknown_field",
+        "path": "$.a/b~c",
+        "pointer": "/a~1b~0c"
+      }
+    },
+    {
+      "name": "link url with user information",
+      "tree": {
+        "type": "link",
+        "label": "x",
+        "to": {
+          "url": "https://user:pw@example.com/"
+        }
+      },
+      "error": {
+        "code": "invalid_url",
+        "path": "$.to.url",
+        "pointer": "/to/url"
+      }
+    },
+    {
+      "name": "link url with backslash",
+      "tree": {
+        "type": "link",
+        "label": "x",
+        "to": {
+          "url": "https://example.com\\@evil.example"
+        }
+      },
+      "error": {
+        "code": "invalid_url",
+        "path": "$.to.url",
+        "pointer": "/to/url"
+      }
+    },
+    {
+      "name": "link url without slashes",
+      "tree": {
+        "type": "link",
+        "label": "x",
+        "to": {
+          "url": "http:example.com"
+        }
+      },
+      "error": {
+        "code": "invalid_url",
+        "path": "$.to.url",
+        "pointer": "/to/url"
+      }
+    },
+    {
+      "name": "row value array",
+      "tree": {
+        "type": "table",
+        "columns": [],
+        "rows": [
+          {
+            "a": [
+              1
+            ]
+          }
+        ]
+      },
+      "error": {
+        "code": "invalid_field",
+        "path": "$.rows[0].a",
+        "pointer": "/rows/0/a"
+      }
+    },
+    {
+      "name": "badge in a list item checked before actions",
+      "tree": {
+        "type": "list",
+        "items": [
+          {
+            "title": "a",
+            "badge": {
+              "type": "badge"
+            },
+            "actions": [
+              {
+                "type": "text"
+              }
+            ]
+          }
+        ]
+      },
+      "error": {
+        "code": "missing_field",
+        "path": "$.items[0].badge.label",
+        "pointer": "/items/0/badge/label"
+      }
+    },
+    {
+      "name": "2000 objects with actions",
+      "generate": {
+        "kind": "wideButtons",
+        "n": 999
+      },
+      "error": null
+    },
+    {
+      "name": "actions count as nodes",
+      "generate": {
+        "kind": "wideButtons",
+        "n": 1000
+      },
+      "error": {
+        "code": "too_many_nodes",
+        "path": "$.children[999].action",
+        "pointer": "/children/999/action"
+      }
+    },
+    {
+      "name": "columns count as nodes",
+      "generate": {
+        "kind": "wideTable",
+        "n": 1998
+      },
+      "error": null
+    },
+    {
+      "name": "a column pushes rows over the limit",
+      "generate": {
+        "kind": "wideTable",
+        "n": 1999
+      },
+      "error": {
+        "code": "too_many_nodes",
+        "path": "$.rows[1998]",
+        "pointer": "/rows/1998"
+      }
+    },
+    {
+      "name": "payload at depth 32",
+      "generate": {
+        "kind": "deepPayload",
+        "n": 30
+      },
+      "error": null
+    },
+    {
+      "name": "payload objects count toward depth",
+      "generate": {
+        "kind": "deepPayload",
+        "n": 31
+      },
+      "error": {
+        "code": "too_deep",
+        "path": "$.action.payload.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a",
+        "pointer": "/action/payload/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a"
+      }
+    },
+    {
+      "name": "depth 33",
+      "generate": {
+        "kind": "deep",
+        "n": 33
+      },
+      "error": {
+        "code": "too_deep",
+        "path": "$.children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0]",
+        "pointer": "/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0"
+      }
+    },
+    {
+      "name": "whitespace does not count toward size",
+      "generate": {
+        "kind": "bigTextIndented",
+        "n": 1048550
+      },
+      "error": null
+    },
+    {
+      "name": "one byte over 1 MiB",
+      "generate": {
+        "kind": "bigText",
+        "n": 1048551
+      },
+      "error": {
+        "code": "too_large",
+        "path": "$",
+        "pointer": ""
+      }
+    },
+    {
+      "name": "limits pass runs before repeated keys",
+      "raw": "{\"type\":\"stack\",\"children\":[],\"children\":[]}",
+      "error": {
+        "code": "duplicate_key",
+        "path": "$.children",
+        "pointer": "/children"
+      }
+    },
+    {
+      "name": "list item badge with type badge",
+      "tree": {
+        "type": "list",
+        "items": [
+          {
+            "title": "a",
+            "badge": {
+              "type": "badge",
+              "label": "new",
+              "tone": "good"
+            }
+          }
+        ]
+      },
+      "error": null
+    }
+  ]
+}

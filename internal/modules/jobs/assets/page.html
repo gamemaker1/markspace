@@ -1,0 +1,108 @@
+{{- define "job_hidden" -}}
+<input type="hidden" name="id" value="{{ .ID }}"><input type="hidden" name="view" value="{{ .View }}">{{ with .Module }}<input type="hidden" name="module" value="{{ . }}">{{ end }}{{ with .Kind }}<input type="hidden" name="kind" value="{{ . }}">{{ end }}
+{{- end -}}
+
+{{- define "spinner" -}}<span class="spinner spinner-small" aria-hidden="true"><svg class="spinner-svg" viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-opacity="0.25" stroke-width="2" vector-effect="non-scaling-stroke"></circle><path d="M15 8a7.002 7.002 0 00-7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg></span>{{- end -}}
+
+{{- define "job_log" -}}
+{{/* dot is a list of log entries. */}}
+{{ if . }}<ol class="job-log-list">{{ range . }}<li class="job-log-line"><time class="job-log-time" datetime="{{ .At.Format "2006-01-02T15:04:05Z07:00" }}">{{ .At.Format "15:04:05" }}</time><span class="job-log-level" data-level="{{ .Level }}">{{ .Level }}</span><span class="job-log-message">{{ .Message }}</span></li>{{ end }}</ol>
+{{ else }}<p class="job-log-empty">The log is empty.</p>{{ end }}
+{{- end -}}
+
+<div class="jobs-page" data-jobs-page data-view="{{ .View }}" data-query="{{ .Query }}">
+  <div class="page-header" data-border="true">
+    {{ if .Admin }}<div class="page-header-context"><a class="page-header-parent" href="/admin">{{ octicon "arrow-left" 16 }}<span>Administration</span></a></div>{{ end }}
+    <div class="page-header-title-area"><h1 class="page-header-title" tabindex="-1">Jobs</h1></div>
+    <p class="page-header-description">{{ if .Everyone }}Background jobs of everyone on this instance.{{ else }}Background jobs you started.{{ end }}{{ with .Filter }} Showing {{ . }}. <a href="/jobs?view={{ $.View }}">Show every job</a>{{ end }}</p>
+  </div>
+
+  <div class="jobs-banners" data-job-banner-host>
+    {{ with .Problem }}<section class="banner banner-critical" aria-label="Critical" data-job-problem tabindex="-1"><div class="banner-icon" aria-hidden="true">{{ octicon "stop" 16 }}</div><div class="banner-container"><div class="banner-content"><h2 class="banner-title">{{ . }}</h2></div></div></section>{{ end }}
+  </div>
+  {{ with .Notice }}<p class="sr-only" data-job-notice>{{ . }}</p>{{ end }}
+
+  <nav class="tabs jobs-views" aria-label="Job views">
+    {{ range .Views }}<a class="tab" href="{{ .URL }}"{{ if .Current }} aria-current="page"{{ end }}>{{ .Label }}</a>
+    {{ end }}
+  </nav>
+
+  {{ $title := "Active jobs" }}{{ if eq .View "finished" }}{{ $title = "Finished jobs" }}{{ else if eq .View "all" }}{{ $title = "All jobs" }}{{ end }}
+  <section class="admin-section jobs-section" aria-labelledby="jobs-title">
+    <div class="data-table-header">
+      <div class="data-table-titles">
+        <h2 class="data-table-title" id="jobs-title"><span>{{ $title }}</span><span class="counter-label" aria-hidden="true" data-job-count>{{ len .Rows }}</span><span class="sr-only" data-job-count-text>({{ len .Rows }})</span></h2>
+      </div>
+    </div>
+    <div class="table-scroll" role="region" tabindex="0" aria-label="Jobs table" data-job-table{{ if not .Rows }} hidden{{ end }}>
+      <table class="data-table jobs-table" aria-labelledby="jobs-title">
+        <thead>
+          <tr><th scope="col">Job</th><th scope="col">Status</th><th scope="col" class="hide-narrow">Progress</th><th scope="col" class="col-num hide-narrow">Attempts</th><th scope="col" class="hide-narrow">Created</th><th scope="col" class="col-actions"><span class="sr-only">Actions</span></th></tr>
+        </thead>
+        <tbody data-job-list>
+          {{ range .Rows }}
+          {{ $h := dict "ID" .ID "View" $.View "Module" $.Module "Kind" $.Kind }}
+          <tr id="job-{{ .ID }}" data-job-id="{{ .ID }}" data-status="{{ .Status }}" data-title="{{ .Label }}" data-kind="{{ .Kind }}" data-progress="{{ .DisplayProgress }}" data-total="{{ .DisplayTotal }}" data-log-url="{{ .LogURL }}"{{ if .PauseRequested }} data-pause-requested{{ end }}>
+            <th scope="row">
+              <span class="cell-main">
+                <span class="cell-title job-title">{{ .Label }}</span>
+                <span class="cell-sub">{{ breakable .Kind }}</span>
+                <span class="cell-sub job-message" data-job-message{{ if not .Message }} hidden{{ end }}>{{ .Message }}</span>
+                <span class="cell-sub job-progress-inline" data-job-progress-inline>{{ if .HasTotal }}{{ .DisplayProgress }} of {{ .DisplayTotal }}{{ end }}</span>
+              </span>
+            </th>
+            <td class="col-nowrap" data-job-status><span class="ui-label ui-label-{{ .Tone }}">{{ .StatusLabel }}</span></td>
+            <td class="hide-narrow" data-job-progress>
+              {{ if .HasTotal }}<div class="job-progress"><span class="progress-bar progress-bar-default" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ .Percent }}" aria-valuetext="{{ .DisplayProgress }} of {{ .DisplayTotal }}" aria-label="Progress of {{ .Label }}" data-color="{{ .BarColor }}"><span class="progress-bar-item" style="width: {{ .Percent }}%"></span></span><span class="job-progress-text">{{ .DisplayProgress }} of {{ .DisplayTotal }}</span></div>
+              {{ else if eq .Status "running" }}<div class="job-progress">{{ template "spinner" }}<span class="job-progress-text">Running</span></div>{{ end }}
+            </td>
+            <td class="col-num hide-narrow">{{ if .Attempts }}{{ .Attempts }} of {{ .MaxAttempts }}{{ end }}</td>
+            <td class="col-nowrap hide-narrow">{{ relTime .CreatedAt }}</td>
+            <td class="col-actions" data-job-actions>
+              {{ if eq .Actions 1 }}
+              <a class="btn btn-sm" href="{{ .LogURL }}">View log</a>
+              {{ else }}
+              <button class="icon-btn row-menu-btn" type="button" popovertarget="job-menu-{{ .ID }}" aria-label="Actions: {{ .Label }}">{{ octicon "kebab-horizontal" 16 }}</button>
+              <div class="row-menu" id="job-menu-{{ .ID }}" popover>
+                {{ if .CanPause }}<form method="post" action="/jobs">{{ template "job_hidden" $h }}<button class="menu-item" type="submit" name="action" value="pause">Pause</button></form>{{ end }}
+                {{ if .CanResume }}<form method="post" action="/jobs">{{ template "job_hidden" $h }}<button class="menu-item" type="submit" name="action" value="resume">Resume</button></form>{{ end }}
+                <a class="menu-item" href="{{ .LogURL }}">View log</a>
+                {{ if .CanCancel }}
+                <hr class="menu-sep">
+                <form method="post" action="/jobs">{{ template "job_hidden" $h }}<button class="menu-item danger" type="submit" name="action" value="cancel" data-confirm="Cancel {{ .Label }}?" data-confirm-detail="The job stops and cannot be resumed.">Cancel job</button></form>
+                {{ end }}
+              </div>
+              {{ end }}
+            </td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+    <div class="blankslate blankslate-medium blankslate-border" data-job-empty{{ if .Rows }} hidden{{ end }}>
+      <div class="blankslate-inner">
+        <span class="blankslate-visual" aria-hidden="true">{{ octicon "tasklist" 24 }}</span>
+        {{ if eq .View "finished" }}
+        <h3 class="blankslate-heading">No finished jobs</h3>
+        <p class="blankslate-description">Finished jobs stay here for 30 days.</p>
+        {{ else if eq .View "all" }}
+        <h3 class="blankslate-heading">No jobs</h3>
+        <p class="blankslate-description">Imports, plugins and other background work show up here.</p>
+        {{ else }}
+        <h3 class="blankslate-heading">No jobs are running or waiting</h3>
+        <p class="blankslate-description">Imports, plugins and other background work show up here while they run.</p>
+        {{ end }}
+      </div>
+    </div>
+  </section>
+
+  {{ with .Open }}
+  <section class="admin-section job-log-section" id="job-log" aria-labelledby="job-log-title">
+    <div class="section-heading">
+      <h2 class="section-heading-title" id="job-log-title">Log of {{ .Label }}</h2>
+      <div class="section-heading-actions"><a class="btn btn-sm" href="/jobs?view={{ $.View }}{{ with $.Query }}&amp;{{ . }}{{ end }}">Close log</a></div>
+    </div>
+    {{ template "job_log" $.Log }}
+  </section>
+  {{ end }}
+</div>
