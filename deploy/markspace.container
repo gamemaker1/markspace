@@ -1,0 +1,54 @@
+# /deploy/markspace.container
+# Quadlet unit that runs the Markspace server.
+#
+# Copy markspace.container, markspace.volume and markspace.network to
+# ~/.config/containers/systemd/, then run:
+#   systemctl --user daemon-reload
+#   systemctl --user start markspace
+# Manage the instance with the command-line tool inside the container:
+#   podman exec markspace markspace user add -email you@example.com -admin
+
+[Unit]
+Description=Markspace note server
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+Image=ghcr.io/gamemaker1/markspace:latest
+ContainerName=markspace
+# podman auto-update pulls a newer image and restarts the unit
+AutoUpdate=registry
+Exec=serve
+Network=markspace.network
+# a reverse proxy on the host terminates TLS and forwards to this port
+PublishPort=127.0.0.1:8080:8080
+Volume=markspace.volume:/data:Z
+# baseUrl is the public address used in share and invite links
+#Environment=MARKSPACE_BASE_URL=https://notes.example.com
+# set both when a TLS reverse proxy sits in front
+#Environment=MARKSPACE_SECURE_COOKIES=true
+#Environment=MARKSPACE_TRUST_PROXY=true
+#Environment=MARKSPACE_ALLOW_SIGNUP=false
+# plugins on the markspace network reach the server at this address
+#Environment=MARKSPACE_PLUGINS_URL=http://markspace:8080
+# keep the configuration file on the host instead of in the volume
+#Volume=%h/.config/markspace:/etc/markspace:ro,Z
+#Environment=MARKSPACE_CONFIG=/etc/markspace/markspace.yaml
+ReadOnly=true
+Tmpfs=/tmp
+NoNewPrivileges=true
+DropCapability=all
+HealthCmd=markspace health
+HealthInterval=30s
+HealthTimeout=5s
+HealthRetries=3
+HealthStartPeriod=30s
+
+[Service]
+Restart=always
+# the first start pulls the image
+TimeoutStartSec=300
+TimeoutStopSec=30
+
+[Install]
+WantedBy=default.target

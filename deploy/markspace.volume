@@ -1,0 +1,5 @@
+# /deploy/markspace.volume
+# Quadlet volume that holds the notes, files and database of Markspace.
+
+[Volume]
+VolumeName=markspace

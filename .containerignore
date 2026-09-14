@@ -1,0 +1,17 @@
+# /.containerignore
+# Keeps local data, tests and caches out of the image build context.
+
+.git
+.github
+data
+demo
+docs
+test
+tools
+markspace
+markspace.yaml
+*.db*
+**/node_modules
+**/__pycache__
+internal/web/vendor
+plugins/wiki/test

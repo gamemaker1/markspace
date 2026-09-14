@@ -1,0 +1,5 @@
+# /deploy/wiki.volume
+# Quadlet volume that holds the state of the bookmark wiki plugin.
+
+[Volume]
+VolumeName=markspace-wiki

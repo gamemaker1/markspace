@@ -1,0 +1,14 @@
+# /deploy/markspace.network
+# Quadlet network shared by the Markspace server and its plugin containers.
+#
+# Markspace reaches a plugin by its container name, such as
+# http://bookmark-wiki:8090, and a plugin reaches Markspace at
+# http://markspace:8080. The network is not internal, because the bookmark
+# wiki plugin fetches web pages and calls the Karakeep and Linkding APIs.
+
+[Unit]
+Description=Network for Markspace and its plugins
+
+[Network]
+NetworkName=markspace
+DNS=true

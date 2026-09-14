@@ -1,0 +1,44 @@
+# /deploy/wiki.container
+# Quadlet unit that runs the bookmark wiki plugin.
+#
+# Copy wiki.container and wiki.volume to ~/.config/containers/systemd/ next to
+# the Markspace units, then run systemctl --user daemon-reload and
+# systemctl --user start wiki. In Markspace, add the plugin on /admin/plugins
+# with the base URL http://bookmark-wiki:8090.
+
+[Unit]
+Description=Markspace bookmark wiki plugin
+Wants=network-online.target
+After=network-online.target markspace.service
+
+[Container]
+Image=ghcr.io/gamemaker1/markspace-wiki:latest
+ContainerName=bookmark-wiki
+AutoUpdate=registry
+Network=markspace.network
+Volume=wiki.volume:/data:Z
+Environment=PLUGIN_DATA=/data
+ReadOnly=true
+Tmpfs=/tmp
+NoNewPrivileges=true
+DropCapability=all
+HealthCmd=python3 -m markspace.health
+HealthInterval=30s
+HealthTimeout=5s
+HealthRetries=3
+# When the install call cannot reach the plugin, the admin page shows the
+# token and the signing secret once. Store them as Podman secrets and
+# uncomment these lines.
+#   printf %s 'http://markspace:8080' | podman secret create wiki-url -
+#   printf %s 'mspl_...' | podman secret create wiki-token -
+#   printf %s 'base64...' | podman secret create wiki-signing-secret -
+#Secret=wiki-url,type=env,target=MARKSPACE_URL
+#Secret=wiki-token,type=env,target=MARKSPACE_TOKEN
+#Secret=wiki-signing-secret,type=env,target=MARKSPACE_SIGNING_SECRET
+
+[Service]
+Restart=always
+TimeoutStartSec=300
+
+[Install]
+WantedBy=default.target
