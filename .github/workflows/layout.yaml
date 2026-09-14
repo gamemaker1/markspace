@@ -1,0 +1,49 @@
+# /.github/workflows/layout.yaml
+# GitHub actions workflow to run the layout audit and the browser flows on
+# demand and once a week.
+
+name: Layout
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  layout:
+    name: Layout audit and flows
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v7
+      - name: Use the Go version from go.mod
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - name: Use Node LTS
+        uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+      - name: Install playwright, chromium, sqlite3 and ffmpeg
+        run: |
+          npm install --prefix test/browser
+          npx --prefix test/browser playwright-core install --with-deps chromium
+          sudo apt-get install -y sqlite3 ffmpeg
+      - name: Run the layout audit
+        run: make layout
+      - name: Run the browser flows
+        if: always()
+        run: make flows
+      - name: Upload the report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: layout-report
+          path: |
+            test/browser/report.md
+            test/browser/report.json
+          if-no-files-found: ignore
