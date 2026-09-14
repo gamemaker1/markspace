@@ -1,0 +1,41 @@
+{
+  "title": "The Illustrated Transformer",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "Jay Alammar explains the Transformer with step-by-step illustrations. The encoder and the decoder of the Transformer are stacks of identical layers.",
+  "key_points": [
+    {
+      "claim": "Jay Alammar explains the Transformer with step-by-step illustrations",
+      "quote": "Jay Alammar explains the Transformer with step-by-step illustrations."
+    },
+    {
+      "claim": "The encoder and the decoder of the Transformer are stacks of identical layers",
+      "quote": "The encoder and the decoder of the Transformer are stacks of identical layers."
+    },
+    {
+      "claim": "Self-attention lets the model look at other words in the input while it encodes one word",
+      "quote": "Self-attention lets the model look at other words in the input while it encodes one word."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Transformer",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Attention mechanism",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Jay Alammar",
+      "kind": "person",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "transformers"
+  ]
+}

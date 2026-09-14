@@ -1,0 +1,43 @@
+{
+  "title": "Working with Errors in Go 1.13",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "Go 1.13 added support for wrapping errors. The fmt.Errorf function wraps an error with the %w verb.",
+  "key_points": [
+    {
+      "claim": "Go 1.13 added support for wrapping errors",
+      "quote": "Go 1.13 added support for wrapping errors."
+    },
+    {
+      "claim": "The fmt.Errorf function wraps an error with the %w verb",
+      "quote": "The fmt.Errorf function wraps an error with the %w verb."
+    },
+    {
+      "claim": "errors.Is and errors.As inspect the chain of wrapped errors",
+      "quote": "errors.Is and errors.As inspect the chain of wrapped errors."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Go",
+      "kind": "tool",
+      "aliases": [
+        "Golang"
+      ]
+    },
+    {
+      "name": "Error wrapping",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Google",
+      "kind": "organisation",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "go"
+  ]
+}

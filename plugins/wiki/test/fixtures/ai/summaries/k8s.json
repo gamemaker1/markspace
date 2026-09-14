@@ -1,0 +1,41 @@
+{
+  "title": "Kubernetes overview",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "Kubernetes is a portable, extensible, open source platform for managing containerized workloads. The name Kubernetes originates from Greek, meaning helmsman or pilot.",
+  "key_points": [
+    {
+      "claim": "Kubernetes is a portable, extensible, open source platform for managing containerized workloads",
+      "quote": "Kubernetes is a portable, extensible, open source platform for managing containerized workloads."
+    },
+    {
+      "claim": "The name Kubernetes originates from Greek, meaning helmsman or pilot",
+      "quote": "The name Kubernetes originates from Greek, meaning helmsman or pilot."
+    },
+    {
+      "claim": "Google open-sourced the Kubernetes project in 2014",
+      "quote": "Google open-sourced the Kubernetes project in 2014."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Kubernetes",
+      "kind": "project",
+      "aliases": []
+    },
+    {
+      "name": "Google",
+      "kind": "organisation",
+      "aliases": []
+    },
+    {
+      "name": "etcd",
+      "kind": "tool",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "kubernetes"
+  ]
+}

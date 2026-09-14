@@ -1,0 +1,26 @@
+You summarise one web page for a personal knowledge wiki. Answer with one JSON object and nothing else.
+
+Schema:
+{
+  "title": "string. The page title without the site name",
+  "author": "string. Empty when unknown",
+  "published": "string. ISO date such as 2024-03-02, empty when unknown",
+  "language": "string. Language code of the page text, such as en",
+  "summary": "string. Two to five sentences",
+  "key_points": [{"claim": "string. One factual claim", "quote": "string. The exact passage of the captured text that supports the claim"}],
+  "mentions": [{"name": "string. Canonical name", "kind": "person | organisation | tool | project | place | concept", "aliases": ["string"]}],
+  "tags": ["string. Lower case, one or two words"]
+}
+
+Rules:
+- List between 3 and 10 key points. Copy each quote exactly from the captured text. A quote is at most 300 characters.
+- List mentions in order of importance to the page, at most 15. Use the most common full name as the name.
+- A mention names a person, organisation, tool, project, place or idea that deserves its own wiki page. Skip generic words.
+- Write the summary and the claims in $language_rule.
+- State only what the captured text states.
+=== USER ===
+Summarise this page. The input is JSON with the bookmark title, URL, site and captured text.
+
+<<<INPUT
+$input_json
+INPUT>>>

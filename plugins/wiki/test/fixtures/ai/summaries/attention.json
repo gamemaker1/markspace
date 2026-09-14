@@ -1,0 +1,46 @@
+{
+  "title": "Attention Is All You Need",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "The Transformer is a network architecture based solely on attention mechanisms. The Transformer dispenses with recurrence and convolutions entirely.",
+  "key_points": [
+    {
+      "claim": "The Transformer is a network architecture based solely on attention mechanisms",
+      "quote": "The Transformer is a network architecture based solely on attention mechanisms."
+    },
+    {
+      "claim": "The Transformer dispenses with recurrence and convolutions entirely",
+      "quote": "The Transformer dispenses with recurrence and convolutions entirely."
+    },
+    {
+      "claim": "Self-attention relates different positions of a single sequence to compute a representation of the sequence",
+      "quote": "Self-attention relates different positions of a single sequence to compute a representation of the sequence."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Transformer",
+      "kind": "concept",
+      "aliases": [
+        "Transformer architecture"
+      ]
+    },
+    {
+      "name": "Attention mechanism",
+      "kind": "concept",
+      "aliases": [
+        "Self-attention"
+      ]
+    },
+    {
+      "name": "Google",
+      "kind": "organisation",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "transformers",
+    "papers"
+  ]
+}

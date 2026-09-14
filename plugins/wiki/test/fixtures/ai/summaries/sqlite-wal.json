@@ -1,0 +1,46 @@
+{
+  "title": "Write-Ahead Logging",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "SQLite implements atomic commit and rollback with either a rollback journal or a write-ahead log. In WAL mode, changes are appended to a separate WAL file instead of overwriting the database file.",
+  "key_points": [
+    {
+      "claim": "SQLite implements atomic commit and rollback with either a rollback journal or a write-ahead log",
+      "quote": "SQLite implements atomic commit and rollback with either a rollback journal or a write-ahead log."
+    },
+    {
+      "claim": "In WAL mode, changes are appended to a separate WAL file instead of overwriting the database file",
+      "quote": "In WAL mode, changes are appended to a separate WAL file instead of overwriting the database file."
+    },
+    {
+      "claim": "Readers do not block writers and a writer does not block readers, because readers keep using the original pages",
+      "quote": "Readers do not block writers and a writer does not block readers, because readers keep using the original pages."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "SQLite",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Write-ahead logging",
+      "kind": "concept",
+      "aliases": [
+        "WAL"
+      ]
+    },
+    {
+      "name": "Checkpointing",
+      "kind": "concept",
+      "aliases": [
+        "Checkpoint"
+      ]
+    }
+  ],
+  "tags": [
+    "sqlite",
+    "storage"
+  ]
+}

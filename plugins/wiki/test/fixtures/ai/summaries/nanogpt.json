@@ -1,0 +1,42 @@
+{
+  "title": "nanoGPT",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "nanoGPT is the simplest, fastest repository for training and finetuning medium-sized GPTs. Andrej Karpathy wrote nanoGPT as a rewrite of minGPT.",
+  "key_points": [
+    {
+      "claim": "nanoGPT is the simplest, fastest repository for training and finetuning medium-sized GPTs",
+      "quote": "nanoGPT is the simplest, fastest repository for training and finetuning medium-sized GPTs."
+    },
+    {
+      "claim": "Andrej Karpathy wrote nanoGPT as a rewrite of minGPT",
+      "quote": "Andrej Karpathy wrote nanoGPT as a rewrite of minGPT."
+    },
+    {
+      "claim": "The model code is a plain Transformer of about 300 lines",
+      "quote": "The model code is a plain Transformer of about 300 lines."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "nanoGPT",
+      "kind": "project",
+      "aliases": []
+    },
+    {
+      "name": "Andrej Karpathy",
+      "kind": "person",
+      "aliases": []
+    },
+    {
+      "name": "Transformer",
+      "kind": "concept",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "llm",
+    "code"
+  ]
+}

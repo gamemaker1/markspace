@@ -1,0 +1,51 @@
+{
+  "title": "B-tree vs LSM tree",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "B-trees update pages in place and are the default index in most relational databases. LSM trees write sequentially and usually accept more writes per second than B-trees.",
+  "key_points": [
+    {
+      "claim": "B-trees update pages in place and are the default index in most relational databases",
+      "quote": "B-trees update pages in place and are the default index in most relational databases."
+    },
+    {
+      "claim": "LSM trees write sequentially and usually accept more writes per second than B-trees",
+      "quote": "LSM trees write sequentially and usually accept more writes per second than B-trees."
+    },
+    {
+      "claim": "B-trees tend to serve reads with less work because each key lives in one place",
+      "quote": "B-trees tend to serve reads with less work because each key lives in one place."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "B-tree vs LSM tree",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "B-tree",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "LSM tree",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "PostgreSQL",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "SQLite",
+      "kind": "tool",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "storage"
+  ]
+}

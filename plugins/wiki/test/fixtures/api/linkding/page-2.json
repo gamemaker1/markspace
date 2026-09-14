@@ -1,0 +1,25 @@
+{
+  "count": 3,
+  "next": null,
+  "previous": "https://links.example.com/api/bookmarks/?limit=100&offset=0",
+  "results": [
+    {
+      "id": 7,
+      "url": "https://paxos.example.org/made-simple",
+      "title": "Paxos Made Simple",
+      "description": "Lamport, 2001.",
+      "notes": "",
+      "web_archive_snapshot_url": "",
+      "favicon_url": null,
+      "preview_image_url": null,
+      "is_archived": false,
+      "unread": false,
+      "shared": false,
+      "tag_names": [],
+      "date_added": "2026-08-15T10:00:00.000000Z",
+      "date_modified": "2026-08-15T10:00:00.000000Z",
+      "website_title": null,
+      "website_description": null
+    }
+  ]
+}

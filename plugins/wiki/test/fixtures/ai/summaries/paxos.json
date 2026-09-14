@@ -1,0 +1,42 @@
+{
+  "title": "Paxos Made Simple",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "The Paxos algorithm, when presented in plain English, is very simple. Paxos lets a set of processes choose a single value even when messages are lost.",
+  "key_points": [
+    {
+      "claim": "The Paxos algorithm, when presented in plain English, is very simple",
+      "quote": "The Paxos algorithm, when presented in plain English, is very simple."
+    },
+    {
+      "claim": "Paxos lets a set of processes choose a single value even when messages are lost",
+      "quote": "Paxos lets a set of processes choose a single value even when messages are lost."
+    },
+    {
+      "claim": "Leslie Lamport first described Paxos in a paper about a fictional parliament",
+      "quote": "Leslie Lamport first described Paxos in a paper about a fictional parliament."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Paxos",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Leslie Lamport",
+      "kind": "person",
+      "aliases": []
+    },
+    {
+      "name": "Consensus",
+      "kind": "concept",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "consensus",
+    "papers"
+  ]
+}

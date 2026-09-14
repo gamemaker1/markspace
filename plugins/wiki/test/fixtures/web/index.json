@@ -1,0 +1,521 @@
+{
+  "pages": [
+    {
+      "id": "sqlite-wal",
+      "url": "https://www.sqlite.org/wal.html",
+      "title": "Write-Ahead Logging",
+      "status": 200,
+      "file": "pages/sqlite-wal.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/sqlite-wal.json",
+      "bookmark": {
+        "title": "Write-Ahead Logging",
+        "folder": "Databases/SQLite",
+        "added": 1709374440,
+        "tags": [
+          "sqlite",
+          "storage"
+        ]
+      }
+    },
+    {
+      "id": "pg-wal",
+      "url": "https://www.postgresql.org/docs/current/wal-intro.html",
+      "title": "Reliability and the Write-Ahead Log",
+      "status": 200,
+      "file": "pages/pg-wal.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/pg-wal.json",
+      "bookmark": {
+        "title": "Reliability and the Write-Ahead Log",
+        "folder": "Databases/PostgreSQL",
+        "added": 1709374500,
+        "tags": [
+          "postgresql",
+          "storage"
+        ]
+      }
+    },
+    {
+      "id": "sqlite-when",
+      "url": "https://www.sqlite.org/whentouse.html",
+      "title": "Appropriate Uses For SQLite",
+      "status": 200,
+      "file": "pages/sqlite-when.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/sqlite-when.json",
+      "bookmark": {
+        "title": "Appropriate Uses For SQLite",
+        "folder": "Databases/SQLite",
+        "added": 1709374600,
+        "tags": [
+          "sqlite"
+        ]
+      }
+    },
+    {
+      "id": "lsm-trees",
+      "url": "https://blog.example-db.dev/lsm-trees",
+      "title": "Log-structured merge trees explained",
+      "status": 200,
+      "file": "pages/lsm-trees.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/lsm-trees.json",
+      "bookmark": {
+        "title": "Log-structured merge trees explained",
+        "folder": "Databases/Internals",
+        "added": 1709375000,
+        "tags": [
+          "storage"
+        ]
+      }
+    },
+    {
+      "id": "rocksdb",
+      "url": "https://rocksdb.org/docs/getting-started.html",
+      "title": "RocksDB overview",
+      "status": 200,
+      "file": "pages/rocksdb.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/rocksdb.json",
+      "bookmark": {
+        "title": "RocksDB overview",
+        "folder": "Databases/Internals",
+        "added": 1709375100,
+        "tags": [
+          "storage"
+        ]
+      }
+    },
+    {
+      "id": "btree-vs-lsm",
+      "url": "https://blog.example-db.dev/btree-vs-lsm",
+      "title": "B-tree vs LSM tree",
+      "status": 200,
+      "file": "pages/btree-vs-lsm.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/btree-vs-lsm.json",
+      "bookmark": {
+        "title": "B-tree vs LSM tree",
+        "folder": "Databases/Internals",
+        "added": 1709375200,
+        "tags": [
+          "storage"
+        ]
+      }
+    },
+    {
+      "id": "raft-site",
+      "url": "https://raft.github.io/",
+      "title": "The Raft Consensus Algorithm",
+      "status": 200,
+      "file": "pages/raft-site.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/raft-site.json",
+      "bookmark": {
+        "title": "The Raft Consensus Algorithm",
+        "folder": "Distributed systems",
+        "added": 1709376000,
+        "tags": [
+          "consensus"
+        ]
+      }
+    },
+    {
+      "id": "raft-pdf",
+      "url": "https://raft.github.io/raft.pdf",
+      "title": "In Search of an Understandable Consensus Algorithm",
+      "status": 200,
+      "file": "pages/raft.pdf",
+      "contentType": "application/pdf",
+      "summary": "ai/summaries/raft-pdf.json",
+      "bookmark": {
+        "title": "In Search of an Understandable Consensus Algorithm",
+        "folder": "Distributed systems/Papers",
+        "added": 1709376100,
+        "tags": [
+          "consensus",
+          "papers"
+        ]
+      }
+    },
+    {
+      "id": "paxos",
+      "url": "https://lamport.azurewebsites.net/pubs/paxos-simple.html",
+      "title": "Paxos Made Simple",
+      "status": 200,
+      "file": "pages/paxos.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/paxos.json",
+      "bookmark": {
+        "title": "Paxos Made Simple",
+        "folder": "Distributed systems/Papers",
+        "added": 1709376200,
+        "tags": [
+          "consensus",
+          "papers"
+        ]
+      }
+    },
+    {
+      "id": "etcd-why",
+      "url": "https://etcd.io/docs/v3.5/learning/why/",
+      "title": "Why etcd",
+      "status": 200,
+      "file": "pages/etcd-why.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/etcd-why.json",
+      "bookmark": {
+        "title": "Why etcd",
+        "folder": "Distributed systems",
+        "added": 1709376300,
+        "tags": [
+          "etcd"
+        ]
+      }
+    },
+    {
+      "id": "k8s",
+      "url": "https://kubernetes.io/docs/concepts/overview/",
+      "title": "Kubernetes overview",
+      "status": 200,
+      "file": "pages/k8s.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/k8s.json",
+      "bookmark": {
+        "title": "Kubernetes overview",
+        "folder": "Infrastructure",
+        "added": 1709376400,
+        "tags": [
+          "kubernetes"
+        ]
+      }
+    },
+    {
+      "id": "jepsen-etcd",
+      "url": "https://jepsen.io/analyses/etcd-3.4.3",
+      "title": "Jepsen: etcd 3.4.3",
+      "status": 200,
+      "file": "pages/jepsen-etcd.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/jepsen-etcd.json",
+      "bookmark": {
+        "title": "Jepsen: etcd 3.4.3",
+        "folder": "Distributed systems",
+        "added": 1709376500,
+        "tags": [
+          "testing"
+        ]
+      }
+    },
+    {
+      "id": "attention",
+      "url": "https://arxiv.org/abs/1706.03762",
+      "title": "Attention Is All You Need",
+      "status": 200,
+      "file": "pages/attention.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/attention.json",
+      "bookmark": {
+        "title": "Attention Is All You Need",
+        "folder": "Machine learning/Papers",
+        "added": 1709377000,
+        "tags": [
+          "transformers",
+          "papers"
+        ]
+      }
+    },
+    {
+      "id": "illustrated",
+      "url": "https://jalammar.github.io/illustrated-transformer/",
+      "title": "The Illustrated Transformer",
+      "status": 200,
+      "file": "pages/illustrated.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/illustrated.json",
+      "bookmark": {
+        "title": "The Illustrated Transformer",
+        "folder": "Machine learning",
+        "added": 1709377100,
+        "tags": [
+          "transformers"
+        ]
+      }
+    },
+    {
+      "id": "llm-wiki",
+      "url": "https://gist.github.com/karpathy/llm-wiki",
+      "title": "LLM Wiki",
+      "status": 200,
+      "file": "pages/llm-wiki.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/llm-wiki.json",
+      "bookmark": {
+        "title": "LLM Wiki",
+        "folder": "Machine learning/Knowledge",
+        "added": 1709377200,
+        "tags": [
+          "llm",
+          "wiki"
+        ]
+      }
+    },
+    {
+      "id": "rag",
+      "url": "https://www.example-ai.org/rag",
+      "title": "What is retrieval-augmented generation",
+      "status": 200,
+      "file": "pages/rag.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/rag.json",
+      "bookmark": {
+        "title": "What is retrieval-augmented generation",
+        "folder": "Machine learning/Knowledge",
+        "added": 1709377300,
+        "tags": [
+          "llm"
+        ]
+      }
+    },
+    {
+      "id": "nanogpt",
+      "url": "https://github.com/karpathy/nanoGPT",
+      "title": "nanoGPT",
+      "status": 200,
+      "file": "pages/nanogpt.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/nanogpt.json",
+      "bookmark": {
+        "title": "nanoGPT",
+        "folder": "Machine learning",
+        "added": 1709377400,
+        "tags": [
+          "llm",
+          "code"
+        ]
+      }
+    },
+    {
+      "id": "embeddings",
+      "url": "https://www.example-ai.org/embeddings",
+      "title": "A practical guide to embeddings",
+      "status": 200,
+      "file": "pages/embeddings.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/embeddings.json",
+      "bookmark": {
+        "title": "A practical guide to embeddings",
+        "folder": "Machine learning/Knowledge",
+        "added": 1709377500,
+        "tags": [
+          "llm"
+        ]
+      }
+    },
+    {
+      "id": "go-errors",
+      "url": "https://go.dev/blog/go1.13-errors",
+      "title": "Working with Errors in Go 1.13",
+      "status": 200,
+      "file": "pages/go-errors.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/go-errors.json",
+      "bookmark": {
+        "title": "Working with Errors in Go 1.13",
+        "folder": "Programming",
+        "added": 1709378000,
+        "tags": [
+          "go"
+        ]
+      }
+    },
+    {
+      "id": "asyncio",
+      "url": "https://docs.python.org/3/library/asyncio.html",
+      "title": "asyncio: Asynchronous I/O",
+      "status": 200,
+      "file": "pages/asyncio.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/asyncio.json",
+      "bookmark": {
+        "title": "asyncio: Asynchronous I/O",
+        "folder": "Programming",
+        "added": 1709378100,
+        "tags": [
+          "python"
+        ]
+      }
+    },
+    {
+      "id": "quadlet",
+      "url": "https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html",
+      "title": "podman-systemd.unit",
+      "status": 200,
+      "file": "pages/quadlet.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/quadlet.json",
+      "bookmark": {
+        "title": "podman-systemd.unit",
+        "folder": "Infrastructure/Podman",
+        "added": 1709378200,
+        "tags": [
+          "podman"
+        ]
+      }
+    },
+    {
+      "id": "systemd-unit",
+      "url": "https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html",
+      "title": "systemd.unit",
+      "status": 200,
+      "file": "pages/systemd-unit.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/systemd-unit.json",
+      "bookmark": {
+        "title": "systemd.unit",
+        "folder": "Infrastructure",
+        "added": 1709378300,
+        "tags": [
+          "systemd"
+        ]
+      }
+    },
+    {
+      "id": "htmx",
+      "url": "https://htmx.org/essays/hypermedia-driven-applications/",
+      "title": "Hypermedia-Driven Applications",
+      "status": 200,
+      "file": "pages/htmx.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/htmx.json",
+      "bookmark": {
+        "title": "Hypermedia-Driven Applications",
+        "folder": "Web",
+        "added": 1709379000,
+        "tags": [
+          "web"
+        ]
+      }
+    },
+    {
+      "id": "obsidian",
+      "url": "https://help.obsidian.md/links",
+      "title": "Internal links",
+      "status": 200,
+      "file": "pages/obsidian.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/obsidian.json",
+      "bookmark": {
+        "title": "Internal links",
+        "folder": "Notes",
+        "added": 1709379100,
+        "tags": [
+          "notes"
+        ]
+      }
+    },
+    {
+      "id": "zettelkasten",
+      "url": "https://zettelkasten.de/introduction/",
+      "title": "Introduction to the Zettelkasten Method",
+      "status": 200,
+      "file": "pages/zettelkasten.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/zettelkasten.json",
+      "bookmark": {
+        "title": "Introduction to the Zettelkasten Method",
+        "folder": "Notes",
+        "added": 1709379200,
+        "tags": [
+          "notes"
+        ]
+      }
+    },
+    {
+      "id": "memex",
+      "url": "https://www.theatlantic.com/magazine/archive/1945/07/as-we-may-think/303881/",
+      "title": "As We May Think",
+      "status": 200,
+      "file": "pages/memex.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/memex.json",
+      "bookmark": {
+        "title": "As We May Think",
+        "folder": "Notes",
+        "added": 1709379300,
+        "tags": [
+          "history"
+        ]
+      }
+    },
+    {
+      "id": "dead",
+      "url": "https://old-blog.example.net/posts/gone",
+      "title": "An old post about CRDTs",
+      "status": 404,
+      "bookmark": {
+        "title": "An old post about CRDTs",
+        "folder": "Distributed systems",
+        "added": 1709380000,
+        "tags": [
+          "crdt"
+        ]
+      }
+    },
+    {
+      "id": "raft-talk",
+      "url": "http://go.example/raft-talk",
+      "title": "Raft talk",
+      "status": 301,
+      "redirect": "https://www.infoq.com/presentations/raft/",
+      "bookmark": {
+        "title": "Raft talk",
+        "folder": "Distributed systems",
+        "added": 1709380100,
+        "tags": [
+          "consensus",
+          "talks"
+        ]
+      }
+    },
+    {
+      "id": "raft-talk-target",
+      "url": "https://www.infoq.com/presentations/raft/",
+      "title": "Raft: the understandable distributed protocol",
+      "status": 200,
+      "file": "pages/raft-talk-target.html",
+      "contentType": "text/html; charset=utf-8",
+      "summary": "ai/summaries/raft-talk-target.json"
+    },
+    {
+      "id": "blocked",
+      "url": "https://paywalled.example.com/article/why-crdts",
+      "title": "Why CRDTs matter",
+      "status": 403,
+      "bookmark": {
+        "title": "Why CRDTs matter",
+        "folder": "Distributed systems",
+        "added": 1709380200,
+        "tags": [
+          "crdt"
+        ]
+      }
+    },
+    {
+      "id": "robots",
+      "url": "https://norobots.example.org/private/notes",
+      "title": "Private notes",
+      "status": 200,
+      "file": "pages/robots.html",
+      "contentType": "text/html; charset=utf-8",
+      "robotsDisallowed": true,
+      "bookmark": {
+        "title": "Private notes",
+        "folder": "Notes",
+        "added": 1709380300,
+        "tags": []
+      }
+    }
+  ]
+}

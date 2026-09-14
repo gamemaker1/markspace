@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bookmark-wiki"
+version = "0.1.0"
+description = "Markspace plugin that reads bookmarks, summarises them and maintains a linked wiki"
+readme = "readme.md"
+requires-python = ">=3.12"
+# The plugin uses the Python standard library and markspace from sdk/python.
+# The Containerfile copies the SDK next to the package, so no dependency is declared here.
+dependencies = []
+license = { text = "ISC" }
+
+[project.scripts]
+bookmark-wiki = "wiki.__main__:main"
+
+[tool.setuptools]
+package-dir = { "" = "source" }
+
+[tool.setuptools.packages.find]
+where = ["source"]
+
+[tool.setuptools.package-data]
+wiki = ["prompts/*.txt"]

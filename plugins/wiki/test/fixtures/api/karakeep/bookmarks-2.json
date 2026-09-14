@@ -1,0 +1,28 @@
+{
+  "bookmarks": [
+    {
+      "id": "b1",
+      "createdAt": "2026-08-20T09:00:00.000Z",
+      "modifiedAt": "2026-08-20T09:00:00.000Z",
+      "title": "When to use SQLite",
+      "archived": true,
+      "favourited": false,
+      "taggingStatus": "success",
+      "note": "Read before the cache decision.",
+      "summary": null,
+      "tags": [{"id": "t1", "name": "sqlite", "attachedBy": "human"}],
+      "content": {
+        "type": "link",
+        "url": "https://sqlite.org/whentouse.html?utm_campaign=karakeep",
+        "title": "Appropriate Uses For SQLite",
+        "description": null,
+        "imageUrl": null,
+        "favicon": null,
+        "htmlContent": null,
+        "crawledAt": "2026-08-20T09:01:00.000Z"
+      },
+      "assets": []
+    }
+  ],
+  "nextCursor": null
+}

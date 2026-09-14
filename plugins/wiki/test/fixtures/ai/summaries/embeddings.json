@@ -1,0 +1,41 @@
+{
+  "title": "A practical guide to embeddings",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "An embedding maps a piece of text to a vector of numbers. Texts with similar meaning get vectors that are close together.",
+  "key_points": [
+    {
+      "claim": "An embedding maps a piece of text to a vector of numbers",
+      "quote": "An embedding maps a piece of text to a vector of numbers."
+    },
+    {
+      "claim": "Texts with similar meaning get vectors that are close together",
+      "quote": "Texts with similar meaning get vectors that are close together."
+    },
+    {
+      "claim": "Vector databases store embeddings and answer nearest-neighbour queries",
+      "quote": "Vector databases store embeddings and answer nearest-neighbour queries."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Embeddings",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Vector database",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Retrieval-augmented generation",
+      "kind": "concept",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "llm"
+  ]
+}

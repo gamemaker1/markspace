@@ -1,0 +1,43 @@
+{
+  "title": "Hypermedia-Driven Applications",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "A hypermedia-driven application uses hypermedia exchanges as its main interaction mechanism. htmx extends HTML so that any element can issue an HTTP request and swap in the response.",
+  "key_points": [
+    {
+      "claim": "A hypermedia-driven application uses hypermedia exchanges as its main interaction mechanism",
+      "quote": "A hypermedia-driven application uses hypermedia exchanges as its main interaction mechanism."
+    },
+    {
+      "claim": "htmx extends HTML so that any element can issue an HTTP request and swap in the response",
+      "quote": "htmx extends HTML so that any element can issue an HTTP request and swap in the response."
+    },
+    {
+      "claim": "The server returns HTML fragments instead of JSON",
+      "quote": "The server returns HTML fragments instead of JSON."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "htmx",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Hypermedia",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Single-page application",
+      "kind": "concept",
+      "aliases": [
+        "SPA"
+      ]
+    }
+  ],
+  "tags": [
+    "web"
+  ]
+}

@@ -1,0 +1,8 @@
+# Reading queue exported from a phone
+https://www.sqlite.org/wal.html
+https://WWW.SQLITE.ORG/wal.html?utm_source=newsletter
+
+https://raft.github.io/ The Raft site
+not-a-url
+# https://commented.example.com/
+   https://kubernetes.io/docs/concepts/overview/

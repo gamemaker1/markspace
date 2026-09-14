@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>B-tree vs LSM tree</title>
+<link rel="canonical" href="https://blog.example-db.dev/btree-vs-lsm">
+<style>body { font-family: serif; }</style>
+</head>
+<body>
+<nav><a href="/">Home</a> <a href="/about">About</a></nav>
+<article>
+<h1>B-tree vs LSM tree</h1>
+<p>B-trees update pages in place and are the default index in most relational databases.</p>
+<p>LSM trees write sequentially and usually accept more writes per second than B-trees.</p>
+<p>B-trees tend to serve reads with less work because each key lives in one place.</p>
+<p>PostgreSQL and SQLite both store tables and indexes in B-trees.</p>
+</article>
+<footer>Fixture page for the bookmark wiki tests.</footer>
+<script>window.analytics = "not captured";</script>
+</body>
+</html>

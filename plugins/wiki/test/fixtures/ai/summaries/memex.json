@@ -1,0 +1,46 @@
+{
+  "title": "As We May Think",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "Vannevar Bush imagined the memex, a desk that stores a person's books, records and letters. The memex would let its user build trails of linked items.",
+  "key_points": [
+    {
+      "claim": "Vannevar Bush imagined the memex, a desk that stores a person's books, records and letters",
+      "quote": "Vannevar Bush imagined the memex, a desk that stores a person's books, records and letters."
+    },
+    {
+      "claim": "The memex would let its user build trails of linked items",
+      "quote": "The memex would let its user build trails of linked items."
+    },
+    {
+      "claim": "Associative trails anticipated the links of hypermedia systems",
+      "quote": "Associative trails anticipated the links of hypermedia systems."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Memex",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Vannevar Bush",
+      "kind": "person",
+      "aliases": []
+    },
+    {
+      "name": "Hypermedia",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "The Atlantic",
+      "kind": "organisation",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "history"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "title": "Jepsen: etcd 3.4.3",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "Jepsen tested etcd 3.4.3 for safety under network partitions and process crashes. The key-value operations of etcd appeared to be strictly serializable in these tests.",
+  "key_points": [
+    {
+      "claim": "Jepsen tested etcd 3.4.3 for safety under network partitions and process crashes",
+      "quote": "Jepsen tested etcd 3.4.3 for safety under network partitions and process crashes."
+    },
+    {
+      "claim": "The key-value operations of etcd appeared to be strictly serializable in these tests",
+      "quote": "The key-value operations of etcd appeared to be strictly serializable in these tests."
+    },
+    {
+      "claim": "The analysis found that etcd locks are not safe for mutual exclusion",
+      "quote": "The analysis found that etcd locks are not safe for mutual exclusion."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Jepsen",
+      "kind": "project",
+      "aliases": []
+    },
+    {
+      "name": "etcd",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Consensus",
+      "kind": "concept",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "testing"
+  ]
+}

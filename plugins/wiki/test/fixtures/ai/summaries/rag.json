@@ -1,0 +1,45 @@
+{
+  "title": "What is retrieval-augmented generation",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "Retrieval-augmented generation adds retrieved documents to the prompt of a language model. Documents are split into chunks and indexed with embeddings.",
+  "key_points": [
+    {
+      "claim": "Retrieval-augmented generation adds retrieved documents to the prompt of a language model",
+      "quote": "Retrieval-augmented generation adds retrieved documents to the prompt of a language model."
+    },
+    {
+      "claim": "Documents are split into chunks and indexed with embeddings",
+      "quote": "Documents are split into chunks and indexed with embeddings."
+    },
+    {
+      "claim": "At query time the closest chunks by vector similarity go into the prompt",
+      "quote": "At query time the closest chunks by vector similarity go into the prompt."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Retrieval-augmented generation",
+      "kind": "concept",
+      "aliases": [
+        "RAG"
+      ]
+    },
+    {
+      "name": "Embeddings",
+      "kind": "concept",
+      "aliases": [
+        "Embedding"
+      ]
+    },
+    {
+      "name": "Transformer",
+      "kind": "concept",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "llm"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "title": "Internal links",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "Obsidian links notes with wikilinks written as two pairs of square brackets. A wikilink to a note that does not exist creates the note when you open it.",
+  "key_points": [
+    {
+      "claim": "Obsidian links notes with wikilinks written as two pairs of square brackets",
+      "quote": "Obsidian links notes with wikilinks written as two pairs of square brackets."
+    },
+    {
+      "claim": "A wikilink to a note that does not exist creates the note when you open it",
+      "quote": "A wikilink to a note that does not exist creates the note when you open it."
+    },
+    {
+      "claim": "Links update automatically when a note is renamed",
+      "quote": "Links update automatically when a note is renamed."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Obsidian",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Wikilink",
+      "kind": "concept",
+      "aliases": [
+        "Wiki link"
+      ]
+    },
+    {
+      "name": "Backlinks",
+      "kind": "concept",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "notes"
+  ]
+}

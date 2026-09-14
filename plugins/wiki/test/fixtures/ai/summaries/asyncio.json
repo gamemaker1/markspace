@@ -1,0 +1,41 @@
+{
+  "title": "asyncio: Asynchronous I/O",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "asyncio is a library to write concurrent code using the async and await syntax. asyncio is used as a foundation for Python frameworks that provide network and web servers.",
+  "key_points": [
+    {
+      "claim": "asyncio is a library to write concurrent code using the async and await syntax",
+      "quote": "asyncio is a library to write concurrent code using the async and await syntax."
+    },
+    {
+      "claim": "asyncio is used as a foundation for Python frameworks that provide network and web servers",
+      "quote": "asyncio is used as a foundation for Python frameworks that provide network and web servers."
+    },
+    {
+      "claim": "The event loop runs asynchronous tasks and callbacks and performs network IO operations",
+      "quote": "The event loop runs asynchronous tasks and callbacks and performs network IO operations."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "asyncio",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Python",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Event loop",
+      "kind": "concept",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "python"
+  ]
+}

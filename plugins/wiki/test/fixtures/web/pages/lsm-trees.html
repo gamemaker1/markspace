@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Log-structured merge trees explained</title>
+<link rel="canonical" href="https://blog.example-db.dev/lsm-trees">
+<style>body { font-family: serif; }</style>
+</head>
+<body>
+<nav><a href="/">Home</a> <a href="/about">About</a></nav>
+<article>
+<h1>Log-structured merge trees explained</h1>
+<p>A log-structured merge tree buffers writes in memory and flushes them to sorted files on disk.</p>
+<p>Every write is first recorded in a write-ahead log so that the memory buffer survives a crash.</p>
+<p>Background compaction merges sorted files and discards overwritten values.</p>
+<p>RocksDB and LevelDB are widely used storage engines built on LSM trees.</p>
+</article>
+<footer>Fixture page for the bookmark wiki tests.</footer>
+<script>window.analytics = "not captured";</script>
+</body>
+</html>

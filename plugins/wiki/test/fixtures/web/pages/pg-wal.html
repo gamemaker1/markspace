@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reliability and the Write-Ahead Log</title>
+<link rel="canonical" href="https://www.postgresql.org/docs/current/wal-intro.html">
+<style>body { font-family: serif; }</style>
+</head>
+<body>
+<nav><a href="/">Home</a> <a href="/about">About</a></nav>
+<article>
+<h1>Reliability and the Write-Ahead Log</h1>
+<p>Write-ahead logging is a standard method for ensuring data integrity in PostgreSQL.</p>
+<p>Changes to data files are written only after those changes have been logged to permanent storage.</p>
+<p>After a crash, PostgreSQL recovers the database by replaying the log records.</p>
+<p>Because data pages need not be flushed on every commit, WAL reduces the number of disk writes.</p>
+<p>Checkpoints mark points in the log where all data files have been updated.</p>
+</article>
+<footer>Fixture page for the bookmark wiki tests.</footer>
+<script>window.analytics = "not captured";</script>
+</body>
+</html>

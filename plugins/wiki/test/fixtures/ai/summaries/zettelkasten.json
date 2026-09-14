@@ -1,0 +1,41 @@
+{
+  "title": "Introduction to the Zettelkasten Method",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "A Zettelkasten is a personal tool for thinking and writing with linked notes. The sociologist Niklas Luhmann kept a Zettelkasten of about 90,000 index cards.",
+  "key_points": [
+    {
+      "claim": "A Zettelkasten is a personal tool for thinking and writing with linked notes",
+      "quote": "A Zettelkasten is a personal tool for thinking and writing with linked notes."
+    },
+    {
+      "claim": "The sociologist Niklas Luhmann kept a Zettelkasten of about 90,000 index cards",
+      "quote": "The sociologist Niklas Luhmann kept a Zettelkasten of about 90,000 index cards."
+    },
+    {
+      "claim": "Each note holds one idea and links to related notes",
+      "quote": "Each note holds one idea and links to related notes."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Zettelkasten",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Niklas Luhmann",
+      "kind": "person",
+      "aliases": []
+    },
+    {
+      "name": "Wikilink",
+      "kind": "concept",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "notes"
+  ]
+}

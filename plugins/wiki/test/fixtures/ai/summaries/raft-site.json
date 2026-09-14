@@ -1,0 +1,50 @@
+{
+  "title": "The Raft Consensus Algorithm",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "Raft is a consensus algorithm that is designed to be easy to understand. Raft elects a leader, and the leader replicates log entries to the other servers.",
+  "key_points": [
+    {
+      "claim": "Raft is a consensus algorithm that is designed to be easy to understand",
+      "quote": "Raft is a consensus algorithm that is designed to be easy to understand."
+    },
+    {
+      "claim": "Raft elects a leader, and the leader replicates log entries to the other servers",
+      "quote": "Raft elects a leader, and the leader replicates log entries to the other servers."
+    },
+    {
+      "claim": "Consensus means that a cluster of servers agrees on the same sequence of values even when some servers fail",
+      "quote": "Consensus means that a cluster of servers agrees on the same sequence of values even when some servers fail."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Raft",
+      "kind": "concept",
+      "aliases": [
+        "Raft algorithm"
+      ]
+    },
+    {
+      "name": "Consensus",
+      "kind": "concept",
+      "aliases": [
+        "Distributed consensus"
+      ]
+    },
+    {
+      "name": "Diego Ongaro",
+      "kind": "person",
+      "aliases": []
+    },
+    {
+      "name": "Stanford University",
+      "kind": "organisation",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "consensus"
+  ]
+}

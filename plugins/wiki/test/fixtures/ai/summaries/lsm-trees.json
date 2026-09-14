@@ -1,0 +1,48 @@
+{
+  "title": "Log-structured merge trees explained",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "A log-structured merge tree buffers writes in memory and flushes them to sorted files on disk. Every write is first recorded in a write-ahead log so that the memory buffer survives a crash.",
+  "key_points": [
+    {
+      "claim": "A log-structured merge tree buffers writes in memory and flushes them to sorted files on disk",
+      "quote": "A log-structured merge tree buffers writes in memory and flushes them to sorted files on disk."
+    },
+    {
+      "claim": "Every write is first recorded in a write-ahead log so that the memory buffer survives a crash",
+      "quote": "Every write is first recorded in a write-ahead log so that the memory buffer survives a crash."
+    },
+    {
+      "claim": "Background compaction merges sorted files and discards overwritten values",
+      "quote": "Background compaction merges sorted files and discards overwritten values."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "LSM tree",
+      "kind": "concept",
+      "aliases": [
+        "Log-structured merge tree"
+      ]
+    },
+    {
+      "name": "RocksDB",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Write-ahead logging",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "LevelDB",
+      "kind": "tool",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "storage"
+  ]
+}

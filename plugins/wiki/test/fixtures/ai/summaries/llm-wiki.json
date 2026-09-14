@@ -1,0 +1,46 @@
+{
+  "title": "LLM Wiki",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "Andrej Karpathy describes a wiki that a language model maintains from raw sources. Raw sources are kept unchanged, and the model writes and updates the wiki pages.",
+  "key_points": [
+    {
+      "claim": "Andrej Karpathy describes a wiki that a language model maintains from raw sources",
+      "quote": "Andrej Karpathy describes a wiki that a language model maintains from raw sources."
+    },
+    {
+      "claim": "Raw sources are kept unchanged, and the model writes and updates the wiki pages",
+      "quote": "Raw sources are kept unchanged, and the model writes and updates the wiki pages."
+    },
+    {
+      "claim": "A schema page tells the model which conventions the wiki follows",
+      "quote": "A schema page tells the model which conventions the wiki follows."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "LLM wiki",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Andrej Karpathy",
+      "kind": "person",
+      "aliases": [
+        "Karpathy"
+      ]
+    },
+    {
+      "name": "Retrieval-augmented generation",
+      "kind": "concept",
+      "aliases": [
+        "RAG"
+      ]
+    }
+  ],
+  "tags": [
+    "llm",
+    "wiki"
+  ]
+}

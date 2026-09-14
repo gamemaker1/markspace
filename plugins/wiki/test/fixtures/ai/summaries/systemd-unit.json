@@ -1,0 +1,41 @@
+{
+  "title": "systemd.unit",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "A unit file encodes information about a service, a socket, a device or a mount point. systemd reads unit files from several directories, with /etc taking precedence over /usr.",
+  "key_points": [
+    {
+      "claim": "A unit file encodes information about a service, a socket, a device or a mount point",
+      "quote": "A unit file encodes information about a service, a socket, a device or a mount point."
+    },
+    {
+      "claim": "systemd reads unit files from several directories, with /etc taking precedence over /usr",
+      "quote": "systemd reads unit files from several directories, with /etc taking precedence over /usr."
+    },
+    {
+      "claim": "Dependencies between units are expressed with Wants, Requires and After",
+      "quote": "Dependencies between units are expressed with Wants, Requires and After."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "systemd",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Unit file",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Quadlet",
+      "kind": "tool",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "systemd"
+  ]
+}

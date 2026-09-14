@@ -1,0 +1,43 @@
+{
+  "count": 3,
+  "next": "https://links.example.com/api/bookmarks/?limit=100&offset=2",
+  "previous": null,
+  "results": [
+    {
+      "id": 12,
+      "url": "https://raft.github.io/",
+      "title": "",
+      "description": "",
+      "notes": "",
+      "web_archive_snapshot_url": "",
+      "favicon_url": null,
+      "preview_image_url": null,
+      "is_archived": false,
+      "unread": false,
+      "shared": false,
+      "tag_names": ["consensus", "raft"],
+      "date_added": "2026-09-08T10:00:00.000000Z",
+      "date_modified": "2026-09-08T10:00:00.000000Z",
+      "website_title": "The Raft Consensus Algorithm",
+      "website_description": "Raft is a consensus algorithm that is designed to be easy to understand."
+    },
+    {
+      "id": 11,
+      "url": "https://etcd.io/docs/v3.5/learning/why/?ref=hn",
+      "title": "Why etcd",
+      "description": "",
+      "notes": "",
+      "web_archive_snapshot_url": "",
+      "favicon_url": null,
+      "preview_image_url": null,
+      "is_archived": false,
+      "unread": true,
+      "shared": false,
+      "tag_names": ["etcd"],
+      "date_added": "2026-09-04T10:00:00.000000Z",
+      "date_modified": "2026-09-04T10:00:00.000000Z",
+      "website_title": "Why etcd | etcd",
+      "website_description": null
+    }
+  ]
+}

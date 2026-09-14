@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Jepsen: etcd 3.4.3</title>
+<link rel="canonical" href="https://jepsen.io/analyses/etcd-3.4.3">
+<style>body { font-family: serif; }</style>
+</head>
+<body>
+<nav><a href="/">Home</a> <a href="/about">About</a></nav>
+<article>
+<h1>Jepsen: etcd 3.4.3</h1>
+<p>Jepsen tested etcd 3.4.3 for safety under network partitions and process crashes.</p>
+<p>The key-value operations of etcd appeared to be strictly serializable in these tests.</p>
+<p>The analysis found that etcd locks are not safe for mutual exclusion.</p>
+<p>The tests exercised the consensus layer during leader elections.</p>
+</article>
+<footer>Fixture page for the bookmark wiki tests.</footer>
+<script>window.analytics = "not captured";</script>
+</body>
+</html>

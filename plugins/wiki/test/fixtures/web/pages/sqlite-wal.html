@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Write-Ahead Logging</title>
+<link rel="canonical" href="https://www.sqlite.org/wal.html">
+<style>body { font-family: serif; }</style>
+</head>
+<body>
+<nav><a href="/">Home</a> <a href="/about">About</a></nav>
+<article>
+<h1>Write-Ahead Logging</h1>
+<p>SQLite implements atomic commit and rollback with either a rollback journal or a write-ahead log.</p>
+<p>In WAL mode, changes are appended to a separate WAL file instead of overwriting the database file.</p>
+<p>Readers do not block writers and a writer does not block readers, because readers keep using the original pages.</p>
+<p>A checkpoint moves the transactions in the WAL file back into the original database file.</p>
+<p>By default SQLite runs a checkpoint automatically when the WAL file reaches 1000 pages.</p>
+</article>
+<footer>Fixture page for the bookmark wiki tests.</footer>
+<script>window.analytics = "not captured";</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+Your previous answer could not be used. Fix every problem listed and answer again with one JSON object that follows the schema below and nothing else.
+
+Schema:
+$schema
+
+Keep everything in the previous answer that had no problem.
+=== USER ===
+Problems:
+$problems
+
+Previous answer:
+<<<PREVIOUS
+$previous
+PREVIOUS>>>
+
+Original request:
+$original

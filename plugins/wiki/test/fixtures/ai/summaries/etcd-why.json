@@ -1,0 +1,43 @@
+{
+  "title": "Why etcd",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "etcd is a strongly consistent, distributed key-value store. etcd uses the Raft consensus algorithm to replicate data across a cluster.",
+  "key_points": [
+    {
+      "claim": "etcd is a strongly consistent, distributed key-value store",
+      "quote": "etcd is a strongly consistent, distributed key-value store."
+    },
+    {
+      "claim": "etcd uses the Raft consensus algorithm to replicate data across a cluster",
+      "quote": "etcd uses the Raft consensus algorithm to replicate data across a cluster."
+    },
+    {
+      "claim": "Kubernetes stores all of its cluster state in etcd",
+      "quote": "Kubernetes stores all of its cluster state in etcd."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "etcd",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Raft",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Kubernetes",
+      "kind": "project",
+      "aliases": [
+        "K8s"
+      ]
+    }
+  ],
+  "tags": [
+    "etcd"
+  ]
+}

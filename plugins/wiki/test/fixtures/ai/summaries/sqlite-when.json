@@ -1,0 +1,41 @@
+{
+  "title": "Appropriate Uses For SQLite",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "SQLite is not directly comparable to client and server databases such as PostgreSQL. SQLite works well as the on-disk file format for desktop and mobile applications.",
+  "key_points": [
+    {
+      "claim": "SQLite is not directly comparable to client and server databases such as PostgreSQL",
+      "quote": "SQLite is not directly comparable to client and server databases such as PostgreSQL."
+    },
+    {
+      "claim": "SQLite works well as the on-disk file format for desktop and mobile applications",
+      "quote": "SQLite works well as the on-disk file format for desktop and mobile applications."
+    },
+    {
+      "claim": "An embedded database runs inside the application process and needs no separate server",
+      "quote": "An embedded database runs inside the application process and needs no separate server."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "SQLite",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Embedded database",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "PostgreSQL",
+      "kind": "tool",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "sqlite"
+  ]
+}

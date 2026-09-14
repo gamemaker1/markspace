@@ -1,0 +1,46 @@
+{
+  "title": "Reliability and the Write-Ahead Log",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "Write-ahead logging is a standard method for ensuring data integrity in PostgreSQL. Changes to data files are written only after those changes have been logged to permanent storage.",
+  "key_points": [
+    {
+      "claim": "Write-ahead logging is a standard method for ensuring data integrity in PostgreSQL",
+      "quote": "Write-ahead logging is a standard method for ensuring data integrity in PostgreSQL."
+    },
+    {
+      "claim": "Changes to data files are written only after those changes have been logged to permanent storage",
+      "quote": "Changes to data files are written only after those changes have been logged to permanent storage."
+    },
+    {
+      "claim": "After a crash, PostgreSQL recovers the database by replaying the log records",
+      "quote": "After a crash, PostgreSQL recovers the database by replaying the log records."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "PostgreSQL",
+      "kind": "tool",
+      "aliases": [
+        "Postgres"
+      ]
+    },
+    {
+      "name": "Write-ahead logging",
+      "kind": "concept",
+      "aliases": [
+        "WAL"
+      ]
+    },
+    {
+      "name": "Checkpointing",
+      "kind": "concept",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "postgresql",
+    "storage"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "title": "RocksDB overview",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "RocksDB is an embeddable persistent key-value store for fast storage. RocksDB was started at Facebook as a fork of LevelDB.",
+  "key_points": [
+    {
+      "claim": "RocksDB is an embeddable persistent key-value store for fast storage",
+      "quote": "RocksDB is an embeddable persistent key-value store for fast storage."
+    },
+    {
+      "claim": "RocksDB was started at Facebook as a fork of LevelDB",
+      "quote": "RocksDB was started at Facebook as a fork of LevelDB."
+    },
+    {
+      "claim": "Its storage engine is an LSM tree tuned for flash drives",
+      "quote": "Its storage engine is an LSM tree tuned for flash drives."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "RocksDB",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Meta",
+      "kind": "organisation",
+      "aliases": [
+        "Facebook"
+      ]
+    },
+    {
+      "name": "LSM tree",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "LevelDB",
+      "kind": "tool",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "storage"
+  ]
+}

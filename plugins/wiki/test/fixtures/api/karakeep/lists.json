@@ -1,0 +1,6 @@
+{
+  "lists": [
+    {"id": "l1", "name": "Databases", "icon": "🗄️", "parentId": null},
+    {"id": "l2", "name": "Read later", "icon": "📚", "parentId": null}
+  ]
+}

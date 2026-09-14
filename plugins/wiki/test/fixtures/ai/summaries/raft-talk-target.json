@@ -1,0 +1,44 @@
+{
+  "title": "Raft: the understandable distributed protocol",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "Ben Johnson walks through Raft with an interactive visualization. A Raft cluster tolerates the failure of a minority of its servers.",
+  "key_points": [
+    {
+      "claim": "Ben Johnson walks through Raft with an interactive visualization",
+      "quote": "Ben Johnson walks through Raft with an interactive visualization."
+    },
+    {
+      "claim": "A Raft cluster tolerates the failure of a minority of its servers",
+      "quote": "A Raft cluster tolerates the failure of a minority of its servers."
+    },
+    {
+      "claim": "Leader election uses randomized timeouts to avoid split votes",
+      "quote": "Leader election uses randomized timeouts to avoid split votes."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Raft",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "etcd",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Consul",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Consensus",
+      "kind": "concept",
+      "aliases": []
+    }
+  ],
+  "tags": []
+}

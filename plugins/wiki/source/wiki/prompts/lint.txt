@@ -1,0 +1,19 @@
+You check one wiki page for claims that its sources disagree on. Answer with one JSON object and nothing else.
+
+Schema:
+{
+  "contested": false,
+  "disagreements": [{"claim": "string. The claim in question", "positions": [{"source": "string. Source note title", "says": "string. What that source states"}]}],
+  "section": "string. The full markdown of a ## Disagreements section with a citation for every position, or empty when the sources agree"
+}
+
+Rules:
+- A disagreement needs at least two sources that state incompatible things. Different emphasis is not a disagreement.
+- Cite sources as ([[source title]]) using only titles from the input.
+- Set contested to true only when disagreements is not empty.
+=== USER ===
+Check this page. The input is JSON with the page title, the page body and the summary and key points of each source it cites.
+
+<<<INPUT
+$input_json
+INPUT>>>

@@ -1,0 +1,47 @@
+{
+  "title": "In Search of an Understandable Consensus Algorithm",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "Raft is a consensus algorithm for managing a replicated log. Raft produces a result equivalent to multi-Paxos and is as efficient as Paxos.",
+  "key_points": [
+    {
+      "claim": "Raft is a consensus algorithm for managing a replicated log",
+      "quote": "Raft is a consensus algorithm for managing a replicated log."
+    },
+    {
+      "claim": "Raft produces a result equivalent to multi-Paxos and is as efficient as Paxos",
+      "quote": "Raft produces a result equivalent to multi-Paxos and is as efficient as Paxos."
+    },
+    {
+      "claim": "A user study showed that Raft is easier for students to learn than Paxos",
+      "quote": "A user study showed that Raft is easier for students to learn than Paxos."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Raft",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Paxos",
+      "kind": "concept",
+      "aliases": []
+    },
+    {
+      "name": "Diego Ongaro",
+      "kind": "person",
+      "aliases": []
+    },
+    {
+      "name": "Consensus",
+      "kind": "concept",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "consensus",
+    "papers"
+  ]
+}

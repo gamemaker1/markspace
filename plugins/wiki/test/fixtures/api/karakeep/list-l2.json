@@ -1,0 +1,7 @@
+{
+  "bookmarks": [
+    {"id": "b4", "createdAt": "2026-09-10T08:00:00.000Z", "title": "WAL in SQLite", "tags": [], "content": {"type": "link", "url": "https://www.sqlite.org/wal.html"}},
+    {"id": "b3", "createdAt": "2026-09-06T09:00:00.000Z", "title": null, "tags": [], "content": {"type": "link", "url": "https://www.postgresql.org/docs/current/wal-intro.html"}}
+  ],
+  "nextCursor": null
+}

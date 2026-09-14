@@ -1,0 +1,68 @@
+{
+  "bookmarks": [
+    {
+      "id": "b4",
+      "createdAt": "2026-09-10T08:00:00.000Z",
+      "modifiedAt": "2026-09-10T08:05:00.000Z",
+      "title": "WAL in SQLite",
+      "archived": false,
+      "favourited": true,
+      "taggingStatus": "success",
+      "note": null,
+      "summary": null,
+      "tags": [
+        {"id": "t1", "name": "sqlite", "attachedBy": "human"},
+        {"id": "t2", "name": "storage", "attachedBy": "ai"}
+      ],
+      "content": {
+        "type": "link",
+        "url": "https://www.sqlite.org/wal.html",
+        "title": "Write-Ahead Logging",
+        "description": "SQLite write-ahead log documentation.",
+        "imageUrl": null,
+        "favicon": "https://www.sqlite.org/favicon.ico",
+        "htmlContent": null,
+        "crawledAt": "2026-09-10T08:01:00.000Z"
+      },
+      "assets": []
+    },
+    {
+      "id": "b3",
+      "createdAt": "2026-09-06T09:00:00.000Z",
+      "modifiedAt": "2026-09-06T09:00:00.000Z",
+      "title": null,
+      "archived": false,
+      "favourited": false,
+      "taggingStatus": "success",
+      "note": null,
+      "summary": null,
+      "tags": [{"id": "t3", "name": "postgresql", "attachedBy": "human"}],
+      "content": {
+        "type": "link",
+        "url": "https://www.postgresql.org/docs/current/wal-intro.html",
+        "title": "PostgreSQL: Documentation: 30.3. Write-Ahead Logging (WAL)",
+        "description": null,
+        "imageUrl": null,
+        "favicon": null,
+        "htmlContent": null,
+        "crawledAt": "2026-09-06T09:01:00.000Z"
+      },
+      "assets": []
+    },
+    {
+      "id": "b2",
+      "createdAt": "2026-09-01T12:00:00.000Z",
+      "modifiedAt": "2026-09-01T12:00:00.000Z",
+      "title": "Shopping list",
+      "archived": false,
+      "favourited": false,
+      "taggingStatus": "success",
+      "note": null,
+      "summary": null,
+      "tags": [],
+      "content": {"type": "text", "text": "Milk, bread and a new keyboard."},
+      "assets": []
+    }
+  ],
+  "nextCursor": "cursor-page-2"
+}

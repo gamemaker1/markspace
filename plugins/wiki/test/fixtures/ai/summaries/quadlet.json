@@ -1,0 +1,41 @@
+{
+  "title": "podman-systemd.unit",
+  "author": "",
+  "published": "",
+  "language": "en",
+  "summary": "Quadlet generates systemd services from container unit files. Podman reads files such as name.container and name.network from the systemd search paths.",
+  "key_points": [
+    {
+      "claim": "Quadlet generates systemd services from container unit files",
+      "quote": "Quadlet generates systemd services from container unit files."
+    },
+    {
+      "claim": "Podman reads files such as name.container and name.network from the systemd search paths",
+      "quote": "Podman reads files such as name.container and name.network from the systemd search paths."
+    },
+    {
+      "claim": "A container unit describes the image, volumes, networks and health checks of one container",
+      "quote": "A container unit describes the image, volumes, networks and health checks of one container."
+    }
+  ],
+  "mentions": [
+    {
+      "name": "Quadlet",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "Podman",
+      "kind": "tool",
+      "aliases": []
+    },
+    {
+      "name": "systemd",
+      "kind": "tool",
+      "aliases": []
+    }
+  ],
+  "tags": [
+    "podman"
+  ]
+}
