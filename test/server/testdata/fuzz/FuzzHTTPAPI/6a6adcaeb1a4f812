@@ -1,0 +1,8 @@
+go test fuzz v1
+byte('\u0099')
+byte('\x00')
+byte('\x00')
+byte('\x00')
+string("")
+[]byte("{\"url\":\"http://217.0.0.1:1/x\",\"respectRobots\":true}")
+byte('\x03')

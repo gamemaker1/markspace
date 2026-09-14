@@ -1,0 +1,82 @@
+{
+  "_comment": "Allowed exceptions. Each entry names a CSS selector matched against the finding's element, the check number (or * for every check), an optional rule, and the reason. Only exceptions that docs/primer.md documents explicitly belong here.",
+  "entries": [
+    {
+      "selector": ".skip-link",
+      "check": 2,
+      "reason": "docs/primer.md 5.1 Layout, row Skip links: the links sit off screen and become visible on focus, so they are not meant to be scrolled into view."
+    },
+    {
+      "selector": ".md-body a, .markdown-body a, .cm-content a, .answer-body a, .ms-comment-body a, .comment-body a",
+      "check": 6,
+      "rule": "tap-target-under-44",
+      "reason": "docs/primer.md 5.0 Rules, row Target size, and 9.2 Target size adopt WCAG 2.5.8, whose inline exception covers links inside running text. docs/primer.md 5.0 row Links treats links in running text and rendered markdown separately from UI links."
+    },
+    {
+      "selector": ".tree-view-label, .tree-view-item-content *, .nav-list-item *, .item-card *, .breadcrumbs li *, nav[aria-label='Breadcrumbs'] *",
+      "check": 5,
+      "rule": "ellipsis-without-full-text",
+      "reason": "docs/primer.md 5.9 Truncate: tree rows, NavList items, file cards and breadcrumb items truncate, and the full text is reachable in the item's PageHeader or file view."
+    },
+    {
+      "selector": ".app-header-context-text",
+      "check": 5,
+      "rule": "ellipsis-without-full-text",
+      "reason": "docs/primer.md 5.1 App header, row Context region: on narrow viewports only the space name shows, truncated. The full name shows in the sidebar space switcher."
+    },
+    {
+      "selector": ".rail-dialog .dialog-body",
+      "check": 4,
+      "rule": "padding",
+      "reason": "docs/primer.md 5.1 Rail pane, row Narrow viewports: the UnderlinePanels strip sits directly under the Dialog header as its subheader, so the body has no padding of its own."
+    },
+    {
+      "selector": ".switcher-dialog .dialog-body",
+      "check": 4,
+      "rule": "padding",
+      "reason": "docs/primer.md 5.6 Dialog, row Body: ActionList and search fields inside may bleed into the padding. The quick switcher body holds only the filter and the listbox (5.5 Mapping, row Quick switcher)."
+    },
+    {
+      "selector": ".app-header-avatar",
+      "check": 7,
+      "rule": "control-contrast",
+      "reason": "docs/primer.md 5.7 Account and Avatar sync badge: the Avatar 32px sits inside a 44px button with no border. The Avatar fill is the visible boundary, and its initials are aria-hidden text inside a role=img Avatar, not a button label."
+    },
+    {
+      "selector": ".history-dialog .dialog-body",
+      "check": 4,
+      "rule": "padding",
+      "reason": "docs/primer.md 5.10 Version history, row Layout: the full-screen Dialog body is a split of a 320px version list pane and the diff view, each with its own padding, so the body has none of its own."
+    },
+    {
+      "selector": ".page-header-parent",
+      "check": 1,
+      "rule": "duplicate-action",
+      "reason": "docs/primer.md 5.1 App header, row Context region: on narrow viewports the space name shows as a link. docs/primer.md 5.2 PageHeader, row Context area: narrow viewports show the parent link. For an item at the space root both link to the space."
+    },
+    {
+      "selector": ".ms-editor .ms-title",
+      "check": 7,
+      "rule": "control-contrast",
+      "reason": "docs/primer.md 5.10 Notes in live preview and reading view, row Title field: PageHeader title type with no border. On focus a 2px --borderColor-accent-emphasis bottom border replaces the outline."
+    },
+    {
+      "selector": ".pagination-item",
+      "check": 7,
+      "rule": "control-contrast",
+      "reason": "docs/primer.md 5.2 Pagination (server pages): page links and Previous and Next are borderless text controls with a fill only on the current page and on hover, as in Primer's Pagination."
+    },
+    {
+      "selector": ".fv-pdf-thumb",
+      "check": 7,
+      "rule": "control-contrast",
+      "reason": "docs/primer.md 5.10 File view, row PDF thumbnails: each thumbnail is the page image itself, with a selected ring only on the current page. The canvas is its visible boundary."
+    },
+    {
+      "selector": ".ms-find .ms-find-source",
+      "check": 7,
+      "rule": "control-contrast",
+      "reason": "docs/primer.md 5.10 Find bar, row Reading: \"Switch to Source to replace\" is a Button link small. docs/primer.md 5.4 Buttons, row Variants: the link variant has no background, border or padding, and its text in --fgColor-link is the visible control. Check 7 contrast-below-aa still measures that text."
+    }
+  ]
+}

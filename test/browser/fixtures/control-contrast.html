@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="7:control-contrast, 7:control-contrast">
+<title>Fixture: controls the colour of their surface</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .blankslate { padding: 32px; text-align: center; background: #f6f8fa; border-radius: 6px; }
+  /* The defect: the Edit button has the fill of the surface and no border. */
+  .blankslate .btn { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; color: #1f2328; background: #f6f8fa; border: 1px solid transparent; border-radius: 6px; text-decoration: none; }
+  label { display: block; margin-top: 16px; }
+  /* The defect: the field border is 1.4:1 against the page. */
+  input { height: 40px; padding: 0 12px; font: inherit; border: 1px solid #d1d9e0; border-radius: 6px; }
+  input:focus-visible { outline: 2px solid #bf3989; }
+</style>
+</head>
+<body>
+<main>
+  <div class="blankslate"><p>This page is empty.</p><a class="btn" href="/fixtures/clean.html">Edit</a></div>
+  <label for="name">Name</label>
+  <input id="name" type="text">
+  <p><button type="button">Save</button></p>
+</main>
+</body>
+</html>

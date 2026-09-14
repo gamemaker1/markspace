@@ -1,0 +1,20 @@
+{
+  "name": "markspace-browser-tests",
+  "private": true,
+  "type": "module",
+  "description": "Browser layout audit for Markspace. Run with make layout from the repository root.",
+  "scripts": {
+    "layout": "cd ../.. && make layout",
+    "fixtures": "node fixtures.mjs"
+  },
+  "auditNotes": {
+    "playwright-core": "lib/pw.mjs loads playwright-core from PLAYWRIGHT_CORE, then test/browser/node_modules, then any ~/.npm/_npx/<hash>/node_modules with version 1.63.x. Install it with: npm install --prefix test/browser playwright-core@1.63.0",
+    "chromium": "The newest chromium-NNNN build in ~/.cache/ms-playwright, or in PLAYWRIGHT_BROWSERS_PATH.",
+    "fake AI server": "fakeai.py in this directory, standard library only. FAKEAI_SERVER may name another script that takes the port as its last argument.",
+    "python": "python3 runs the fake AI server and the Word count example plugin from sdk/example.",
+    "sqlite3 and ffmpeg": "Optional. sqlite3 adds 30 days of AI usage rows and paused and failed jobs. ffmpeg makes the seed video."
+  },
+  "devDependencies": {
+    "playwright-core": "1.63.0"
+  }
+}

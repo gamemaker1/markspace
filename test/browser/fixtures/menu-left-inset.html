@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="4:overlay-text-inset-left">
+<title>Fixture: menu with a large left inset</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  [role=menu] { position: absolute; top: 16px; left: 16px; min-width: 192px; margin: 0; padding: 8px; list-style: none; background: #ffffff; border: 1px solid #d1d9e0; border-radius: 12px; }
+  /* The defect: items without a leading visual start their text 32px in, the limit is 16px. */
+  [role=menuitem] { padding: 6px 8px 6px 24px; border-radius: 6px; }
+</style>
+</head>
+<body>
+<ul role="menu" aria-label="Editor menu">
+  <li role="menuitem" tabindex="-1">Rename</li>
+  <li role="menuitem" tabindex="-1">Move to</li>
+  <li role="menuitem" tabindex="-1">Copy link</li>
+</ul>
+</body>
+</html>

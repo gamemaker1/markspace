@@ -1,0 +1,500 @@
+{
+  "_comment": "Expected Primer values for check 3 (alignment) and check 4 (spacing). Every entry has a ref naming the docs/primer.md section and table row it comes from. padding is [top, right, bottom, left] in px, null skips a side. when limits an entry to a viewport width in px. Tolerance is 1 px for spacing and 2 px for alignment.",
+  "padding": [
+    {
+      "selector": ".dialog-header",
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "ref": "docs/primer.md 5.6 Dialog, row Header: Padding 8px"
+    },
+    {
+      "selector": ".dialog-title-block",
+      "padding": [
+        6,
+        8,
+        6,
+        8
+      ],
+      "ref": "docs/primer.md 5.6 Dialog, row Header: Title block padding 6px 8px"
+    },
+    {
+      "selector": ".dialog-body",
+      "padding": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "ref": "docs/primer.md 5.6 Dialog, row Body: Padding 16px"
+    },
+    {
+      "selector": ".dialog-footer",
+      "padding": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "ref": "docs/primer.md 5.6 Dialog, row Footer: Padding 16px"
+    },
+    {
+      "selector": ".overlay-body[data-padding='normal']",
+      "padding": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "ref": "docs/primer.md 3.3 Spacing, row --overlay-padding-*: normal 16px"
+    },
+    {
+      "selector": ".overlay-body[data-padding='condensed']",
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "ref": "docs/primer.md 3.3 Spacing, row --overlay-padding-*: condensed 8px"
+    },
+    {
+      "selector": ".action-list, [role=menu] > ul, .select-panel-list",
+      "padding": [
+        8,
+        0,
+        8,
+        0
+      ],
+      "ref": "docs/primer.md 5.5 ActionList, row List: padding-block 8px"
+    },
+    {
+      "selector": ".action-list-item, .menu-item",
+      "padding": [
+        6,
+        8,
+        6,
+        8
+      ],
+      "when": {
+        "minWidth": 768
+      },
+      "ref": "docs/primer.md 5.5 ActionList, row Item: padding-block 6px, padding-inline 8px"
+    },
+    {
+      "selector": ".action-list-item, .menu-item",
+      "padding": [
+        10,
+        8,
+        10,
+        8
+      ],
+      "when": {
+        "maxWidth": 767
+      },
+      "ref": "docs/primer.md 5.5 ActionList, row Item on narrow viewports: large size, 10px block padding (row Item: The large size uses 10px block padding)"
+    },
+    {
+      "selector": ".action-list-heading, .menu-label",
+      "padding": [
+        6,
+        16,
+        6,
+        16
+      ],
+      "ref": "docs/primer.md 5.5 ActionList, row Group heading: padding 6px block and 16px inline"
+    },
+    {
+      "selector": ".banner:not([data-layout='compact'])",
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "ref": "docs/primer.md 5.7 Banner, row Layout: padding 8px"
+    },
+    {
+      "selector": ".banner[data-layout='compact']",
+      "padding": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "ref": "docs/primer.md 5.7 Banner, row Layout: Compact layout padding 4px"
+    },
+    {
+      "selector": ".banner-icon",
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "ref": "docs/primer.md 5.7 Banner, row Icon cell: Padding 8px"
+    },
+    {
+      "selector": ".banner-dismiss-cell",
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "ref": "docs/primer.md 5.7 Banner, row Dismiss: Padding 8px"
+    },
+    {
+      "selector": ".tooltip",
+      "padding": [
+        4,
+        8,
+        4,
+        8
+      ],
+      "ref": "docs/primer.md 5.6 Tooltip, row Box: Padding 4px 8px"
+    },
+    {
+      "selector": ".select-panel-header",
+      "padding": [
+        8,
+        8,
+        0,
+        8
+      ],
+      "ref": "docs/primer.md 5.5 SelectPanel, row Header: Padding 8px 8px 0"
+    },
+    {
+      "selector": ".select-panel-footer",
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "ref": "docs/primer.md 5.5 SelectPanel, row Footer: 8px padding"
+    },
+    {
+      "selector": ".underline-panels-tablist",
+      "padding": [
+        8,
+        16,
+        0,
+        16
+      ],
+      "ref": "docs/primer.md 5.1 Rail tabs, row Strip: padding 8px top and 16px inline"
+    },
+    {
+      "selector": ".underline-panels-tab",
+      "padding": [
+        6,
+        8,
+        6,
+        8
+      ],
+      "ref": "docs/primer.md 5.1 Rail tabs, row Tab: padding 6px block and 8px inline"
+    },
+    {
+      "selector": ".underline-panels-panel",
+      "padding": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "when": {
+        "maxWidth": 1011
+      },
+      "ref": "docs/primer.md 5.1 Rail pane, row Component: padding=normal, and 3.3 row Content and pane padding: 16px below 1012px"
+    },
+    {
+      "selector": ".underline-panels-panel",
+      "padding": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "when": {
+        "minWidth": 1012
+      },
+      "ref": "docs/primer.md 5.1 Rail pane, row Component: padding=normal, and 3.3 row Content and pane padding: 24px from 1012px"
+    },
+    {
+      "selector": ".box-header",
+      "padding": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "ref": "docs/primer.md 5.2 Boxes and rows, row Box header: Padding 16px"
+    },
+    {
+      "selector": ".box-body",
+      "padding": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "ref": "docs/primer.md 5.2 Boxes and rows, row Box body: Padding 16px"
+    },
+    {
+      "selector": ".box-footer",
+      "padding": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "ref": "docs/primer.md 5.2 Boxes and rows, row Footer: Padding 16px"
+    },
+    {
+      "selector": ".cm-tooltip-autocomplete > ul",
+      "padding": [
+        8,
+        0,
+        8,
+        0
+      ],
+      "ref": "docs/primer.md 5.10 Slash menu and link completion, row List: ActionList with the inset list padding (5.5 List: padding-block 8px)"
+    },
+    {
+      "selector": ".cm-tooltip-autocomplete > ul > li",
+      "padding": [
+        6,
+        8,
+        6,
+        8
+      ],
+      "when": {
+        "minWidth": 768
+      },
+      "ref": "docs/primer.md 5.10 Slash menu, row Items: 32px (5.5 Item: padding 6px 8px)"
+    },
+    {
+      "selector": ".cm-tooltip-autocomplete > ul > li",
+      "padding": [
+        10,
+        8,
+        10,
+        8
+      ],
+      "when": {
+        "maxWidth": 767
+      },
+      "ref": "docs/primer.md 5.10 Slash menu, row Items: 40px on narrow viewports (5.5 Item: large size 10px block padding)"
+    },
+    {
+      "selector": ".ask-bar",
+      "padding": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "ref": "docs/primer.md 5.10 Ask bar, row Surface: padding 8px"
+    },
+    {
+      "selector": ".cm-ms-bubble",
+      "padding": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "ref": "docs/primer.md 5.10 Selection toolbar (desktop), row Surface: padding 4px"
+    }
+  ],
+  "insets": [
+    {
+      "selector": "[role=menu], .anchored-overlay, .select-panel, .cm-tooltip-autocomplete, [role=listbox]:not(.cm-tooltip-autocomplete > ul)",
+      "not": "dialog [role=listbox], .tree-view [role=menu]",
+      "left": {
+        "withLeading": 40,
+        "without": 16
+      },
+      "top": 14,
+      "topNarrow": 54,
+      "ref": "docs/primer.md 5.5 ActionList: list padding-block 8px, item margin-inline 8px, item padding 6px 8px, leading visual 16px, gap 8px. Narrow ActionMenu overlay padding-top 36px. Text inset is at most 8 + 8 + 16 + 8 = 40px with a leading visual, 16px without"
+    },
+    {
+      "selector": "dialog[open].dialog, dialog[open].modal",
+      "left": {
+        "withLeading": 40,
+        "without": 16
+      },
+      "top": 14,
+      "ref": "docs/primer.md 5.6 Dialog, row Header: padding 8px, title block padding 6px 8px. Title text inset 16px left and 14px top"
+    },
+    {
+      "selector": ".tooltip",
+      "left": {
+        "withLeading": 8,
+        "without": 8
+      },
+      "top": 4,
+      "ref": "docs/primer.md 5.6 Tooltip, row Box: Padding 4px 8px"
+    }
+  ],
+  "alignment": {
+    "_comment": "Containers for check 3. mode toolbar compares the centres of the controls in one row. Other entries compare the leading visual, the first text line and the trailing actions.",
+    "containers": [
+      {
+        "selector": "[data-ui-banner], section.banner",
+        "ref": "docs/primer.md 5.7 Banner, rows Layout, Icon cell, Actions"
+      },
+      {
+        "selector": ".undo-row",
+        "ref": "docs/primer.md 5.7 Mapping, row Undo: InlineMessage and Button invisible small in one row"
+      },
+      {
+        "selector": ".action-list-item, .menu-item, [role=menu] [role^=menuitem], [role=listbox] [role=option]",
+        "trailingVisuals": true,
+        "ref": "docs/primer.md 5.5 ActionList, rows Leading visual, Trailing visual"
+      },
+      {
+        "selector": ".cm-tooltip-autocomplete li",
+        "ref": "docs/primer.md 5.10 Slash menu, row Items"
+      },
+      {
+        "selector": ".nav-list-item, .tree-view-item-content, .server-tree .tree-row",
+        "ref": "docs/primer.md 5.1 NavList and TreeView rows"
+      },
+      {
+        "selector": ".list-row, .note-row, .ms-person, .upload-row, .box-row",
+        "ref": "docs/primer.md 5.2 Boxes and rows, row Row layout"
+      },
+      {
+        "selector": "table tr",
+        "ref": "docs/primer.md 5.2 DataTable, rows Cells and Row actions"
+      },
+      {
+        "selector": ".page-header",
+        "text": "h1",
+        "trailing": ".page-header-actions button, .page-header-actions a, [class*='page-header-actions'] button, [class*='page-header-actions'] a",
+        "ref": "docs/primer.md 5.2 PageHeader, row Actions: centred on the title's first line"
+      },
+      {
+        "selector": ".dialog-header",
+        "text": ".dialog-title, h1",
+        "ref": "docs/primer.md 5.6 Dialog, rows Header and Close button"
+      },
+      {
+        "selector": "[role=toolbar], .ms-editor-bar, .fv-toolbar, .banner-actions, .dialog-footer",
+        "mode": "toolbar",
+        "ref": "docs/primer.md 5.10 Editor bar row Size: 32px control row. 5.6 Dialog row Footer"
+      }
+    ]
+  },
+  "duplicateActions": {
+    "ignore": ".skip-link",
+    "ref": "docs/primer.md 5.0 Rules, row Accessible names: unique on the page. 5.1 App header, row New page: the header shows New page only when the PageHeader has none. The user reported New page twice on the space page on 2026-09-13"
+  },
+  "controlContrast": {
+    "min": 3,
+    "controls": "button, [role=button], a.btn, input[type=button], input[type=submit], summary.btn",
+    "fields": "input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]):not([type=button]):not([type=submit]), textarea, select",
+    "exempt": "[role=tab], [role=menuitem], [role=menuitemradio], [role=menuitemcheckbox], [role=option], [role=treeitem], [role=switch], .nav-list-item, .tree-view-item-content, .action-list-item, .menu-item, .underline-panels-tab, .segmented-control, .breadcrumbs, .toggle-switch, .cm-editor, .ms-version-row, .skip-link, .image-editor canvas, th .data-table-sort, .data-table-sort, .ms-title, .token, .cm-ms-media-more, .tree-view-toggle, .history-point",
+    "invisible": ".btn-invisible, .btn-link, .btn-quiet, .icon-btn, .ms-icon-btn, .fv-tool, .row-menu-btn, .tree-more, .ms-card-icon, .ms-c-icon, .cm-ms-code-copy, .ms-kbar-btn, .sidenav-action, .comment-float-btn, .cm-ms-bubble-btn, .undo-btn, .status-action, .toast-action, .token-remove, button.ms-quote",
+    "invisibleTextContexts": ".banner, .undo-row, .inline-message, [role=toolbar], .ms-kbar, .cm-ms-bubble, .comment-float, .dialog-header, .select-panel-header, .text-input, .details > summary, details > summary, .change-header, .ask-bar, .app-header-uploads, .sidebar-section-actions, .space-switcher, .sidenav, .upload-row, .ms-comment-actions, .list-row-trail, .box-row, .pagination, .search-result, .ask-footer, .ai-thread-composer, .ms-form-actions, .edit-in-place-form, .ms-threads",
+    "ref": "docs/primer.md 9.3 Contrast, rows Input borders against their background (3:1) and Icons in IconButtons (3:1). 5.4 Buttons, row Variants: default and danger have a border, invisible has none and appears only in the places 5.4 Mapping, 5.7 Banner, 5.10 and 5.1 name. The user reported an Edit button the colour of the background on 2026-09-13. Exempt: the editor title input is the note title (5.10 Notes in live preview), Tokens follow 5.8 Token. 6.1 Saving: inline editing puts Button small invisible Cancel beside Save. 5.1 TreeView row Chevron"
+  },
+  "oldTokens": {
+    "tokens": [
+      "--surface",
+      "--surface-2",
+      "--surface-3",
+      "--border",
+      "--border-strong",
+      "--text",
+      "--text-muted",
+      "--text-subtle",
+      "--accent",
+      "--ok",
+      "--warn",
+      "--focus-ring",
+      "--highlight",
+      "--highlight-strong",
+      "--highlight-edge",
+      "--shadow-sm",
+      "--comment-fg-color"
+    ],
+    "ref": "docs/primer.md 2.5 Mapping of Markspace tokens: the temporary alias block at the top of base.css goes away once no rule uses these names. Every colour comes from a Primer token"
+  },
+  "indentation": {
+    "columns": ".sidebar, dialog.nav-drawer, .settings-nav, .admin-nav, .sidebar-pane",
+    "lists": "[role=tree], ul.server-tree, .nav-list > ul, ul.nav-list, .action-list",
+    "ref": "docs/primer.md 5.1 Sidebar, row Padding: NavList and TreeView rows extend 8px into the padding, so their text lines up with the padding edge. TreeView, row Indent: a spacer of (level - 1) x 8px, so level 1 has none. The user reported indented tree pages on 2026-09-13"
+  },
+  "metadata": {
+    "rows": ".ms-comment, .ms-version, .ms-version-row, .timeline-item, .list-row, .box-row, .note-row, .search-result, .trash-row, .upload-row, .ms-thread-head, .ms-person",
+    "meta": "time, relative-time, [datetime], [class*='-time'], [class*='-date'], [class*='-meta'], [class*='-author'], [class*='-byline'], [class*='-when'], [class*='-email']",
+    "primary": "[class*='-body'], [class*='-title'], [class*='-name'], h2, h3, h4, a[href]",
+    "ref": "docs/primer.md 5.10 Comments panel, row Comment item: RelativeTime in 12px --fgColor-muted. 5.10 Version history, row List. 5.10 Share panel, row People: email in 12px --fgColor-muted. 5.2 PageHeader, row Description: 14px --fgColor-muted. The user asked on 2026-09-13 for comment and history metadata to be small and muted"
+  },
+  "consistency": {
+    "components": [
+      ".btn",
+      ".banner",
+      ".box",
+      ".box-row",
+      ".box-header",
+      ".list-row",
+      ".action-list-item",
+      ".nav-list-item",
+      ".tree-view-item-content",
+      ".underline-panels-tab",
+      ".dialog-body",
+      ".dialog-header",
+      ".dialog-footer",
+      ".page-header",
+      ".blankslate",
+      ".form-control",
+      ".text-input",
+      ".label",
+      ".counter-label",
+      ".item-card",
+      ".ms-thread",
+      ".ms-comment",
+      ".ms-version-row",
+      ".undo-row",
+      ".token",
+      ".select-panel",
+      ".timeline-item",
+      ".file-table td",
+      ".data-table td"
+    ],
+    "ref": "docs/primer.md 3.3 Spacing and sizing, and 5.4 Sizes: one component in one size and variant has one padding and gap. Repeated components of one type in one region share them within 1px"
+  },
+  "overlays": {
+    "selector": "dialog[open], [popover], [role=dialog], [role=alertdialog], [role=menu], .anchored-overlay, .cm-tooltip-autocomplete",
+    "menus": "[role=menu], .anchored-overlay",
+    "autocomplete": ".cm-tooltip-autocomplete",
+    "ignore": ".tooltip, [role=tooltip], .cm-tooltip-hover, .cm-ms-bubble",
+    "close": "button[aria-label='Close'], .dialog-close, button[aria-label^='Close '], [data-close]",
+    "cancel": "button",
+    "menuCloseBelow": 768,
+    "ref": "docs/primer.md 5.6 Dialog, rows Close button (required, never hidden), Closing (Escape, the close button) and Return focus (to the trigger, never body). 5.5 ActionMenu behaviour, row Closing, and ActionMenu overlay, row Narrow viewports: a Close IconButton below 768px"
+  },
+  "clicks": {
+    "skipNames": "delete|remove|trash|revoke|sign out|log out|logout|restore|resolve|discard|reset|deactivate|disable|enable|leave|empty|uninstall|install|archive|accept|reject|pause|resume|retry|cancel job|sync now|save|publish|send|reply|submit|create|invite|upload|regenerate|rotate|approve|copy link|move here|copy here|rename|download|print|log in|sign in|sign up|update|apply|add|import|export|generate|run|stop|start|done|close|dismiss|undo|new|star|unstar|pin|unpin|copy|share link|watch|follow|theme|light|dark|auto",
+    "skip": "form[method=post] [type=submit], .cm-editor, .image-editor, [role=switch], input[type=radio], input[type=checkbox], input[type=file]",
+    "perList": 2,
+    "maxTargets": 40,
+    "budgetMs": 90000,
+    "settleMs": 450,
+    "background": "/api/(events|sync)|/sw\\.js|/healthz|/thumbs/|/static/|/api/presence",
+    "ref": "Clicks once did nothing on the admin page with the sidebar hidden. Every control takes a click at its centre and does something: navigation, a DOM change, a focus move, a network request or a menu"
+  },
+  "menuEdges": {
+    "lists": "[role=menu], .action-list, .select-panel-list",
+    "items": "[role^=menuitem], .action-list-item, [role=option]",
+    "skipText": ".action-list-description, .action-list-trailing, kbd, .keybinding-hint, .counter-label, .sr-only",
+    "ref": "docs/primer.md 5.5 ActionMenu behaviour, row Icons: all items in a menu have leading icons, or none do. 5.1 NavList, row Leading visual: either every item in a list has one, or none does"
+  }
+}

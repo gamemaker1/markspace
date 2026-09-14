@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="8:unexplained-indent">
+<title>Fixture: tree pages indented past the NavList</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .sidebar { width: 280px; padding: 16px; border-right: 1px solid #d1d9e0; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  .nav-list-item, .tree-view-item-content { display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 6px 8px; color: #1f2328; text-decoration: none; border-radius: 6px; }
+  .nav-list-item svg, .tree-view-item-content svg { flex: none; }
+  h2 { margin: 16px 8px 4px; font-size: 12px; color: #59636e; }
+  /* The defect: level 1 rows get a 16px spacer although they have no chevron. */
+  [role=tree] [aria-level='1'] > .tree-view-item-content { padding-left: 24px; }
+</style>
+</head>
+<body>
+<nav class="sidebar" aria-label="Sidebar">
+  <ul class="nav-list">
+    <li><a class="nav-list-item" href="/fixtures/clean.html"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12"></rect></svg>Starred</a></li>
+    <li><a class="nav-list-item" href="/fixtures/yellow.html"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12"></rect></svg>Recent</a></li>
+  </ul>
+  <h2 id="pages">Pages</h2>
+  <ul role="tree" aria-labelledby="pages">
+    <li role="treeitem" aria-level="1" aria-selected="false"><div class="tree-view-item-content"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12"></rect></svg><span>Meeting notes</span></div></li>
+    <li role="treeitem" aria-level="1" aria-selected="false"><div class="tree-view-item-content"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12"></rect></svg><span>Budget</span></div></li>
+  </ul>
+</nav>
+</body>
+</html>

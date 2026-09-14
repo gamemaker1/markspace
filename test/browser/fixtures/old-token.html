@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="7:old-token">
+<title>Fixture: a colour from an old alias token</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  :root { --fgColor-muted: #59636e; --text-muted: var(--fgColor-muted); }
+  .note { color: var(--fgColor-muted); }
+  /* The defect: the hint still reads the old alias. */
+  .hint { color: var(--text-muted); }
+</style>
+</head>
+<body>
+<main>
+  <p class="note">Updated today.</p>
+  <p class="hint">Names can be changed later.</p>
+</main>
+</body>
+</html>

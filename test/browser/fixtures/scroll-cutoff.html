@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="2:cannot-scroll-into-view, 6:focus-obscured">
+<title>Fixture: scroll container cuts off its last button</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  header { height: 48px; }
+  /* The pane starts below the header but is as tall as the viewport minus 24px,
+     so its last 40px sit below the window and no scroll reveals them. */
+  .rail { position: fixed; top: 64px; right: 0; width: 320px; height: calc(100vh - 24px); overflow-y: auto; padding: 16px; border-left: 1px solid #d1d9e0; }
+  .rail button { display: block; width: 100%; margin: 0 0 8px; }
+  .rail button:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+<header><p>Harbour survey</p></header>
+<aside class="rail" aria-label="Share">
+  <button type="button">Person 1</button>
+  <button type="button">Person 2</button>
+  <button type="button">Person 3</button>
+  <button type="button">Person 4</button>
+  <button type="button">Person 5</button>
+  <button type="button">Link 1</button>
+  <button type="button">Link 2</button>
+  <button type="button">Link 3</button>
+  <button type="button">Copy link</button>
+  <button type="button">Revoke link</button>
+  <button type="button">Invite</button>
+  <button type="button">Share</button>
+  <button type="button">Settings</button>
+  <button type="button">Add public link</button>
+</aside>
+</body>
+</html>

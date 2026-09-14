@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="8:mixed-leading-visuals">
+<title>Fixture: a menu with icons on some items</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .menu { width: 240px; background: #ffffff; border: 1px solid #d1d9e0; border-radius: 12px; }
+  .action-list { margin: 0; padding: 8px 0; list-style: none; }
+  .action-list-item { display: flex; gap: 8px; align-items: center; margin: 0 8px; padding: 6px 8px; border-radius: 6px; }
+  .action-list-item:focus-visible { outline: 2px solid #bf3989; outline-offset: 0; }
+</style>
+</head>
+<body>
+<div class="menu" role="menu" aria-label="Account">
+  <ul class="action-list" role="none">
+    <li role="none"><div class="action-list-item" role="menuitem" tabindex="-1"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6"></circle></svg><span>Sync now</span></div></li>
+    <li role="none"><div class="action-list-item" role="menuitem" tabindex="-1"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12"></rect></svg><span>Settings</span></div></li>
+    <!-- The defect: these items have no leading visual. -->
+    <li role="none"><div class="action-list-item" role="menuitem" tabindex="-1"><span>Administration</span></div></li>
+    <li role="none"><div class="action-list-item" role="menuitem" tabindex="-1"><span>Sign out</span></div></li>
+  </ul>
+</div>
+</body>
+</html>

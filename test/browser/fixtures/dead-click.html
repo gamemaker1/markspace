@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="2:dead-click, 6:focus-obscured">
+<title>Fixture: a transparent layer takes the clicks</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  main { position: relative; max-width: 600px; }
+  /* The defect: a collapsed sidebar leaves a transparent layer over the content. */
+  .sidebar-scrim { position: fixed; top: 0; left: 0; width: 300px; height: 100vh; z-index: 10; background: transparent; }
+  .actions { margin-top: 16px; padding-left: 400px; }
+</style>
+</head>
+<body>
+<div class="sidebar-scrim"></div>
+<main>
+  <h1>Users</h1>
+  <button type="button">Invite people</button>
+  <div class="actions"><button type="button">Export list</button></div>
+</main>
+</body>
+</html>

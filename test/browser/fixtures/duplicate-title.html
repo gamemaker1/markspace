@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="1:duplicate-title">
+<title>Fixture: panel repeats its tab title</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .rail { width: 320px; border: 1px solid #d1d9e0; border-radius: 6px; }
+  [role=tablist] { display: flex; gap: 8px; padding: 8px 16px 0; border-bottom: 1px solid #d1d9e0; }
+  [role=tab] { margin-bottom: 8px; background: transparent; border-color: transparent; }
+  [role=tab][aria-selected=true] { font-weight: 600; }
+  [role=tabpanel] { padding: 16px; }
+  h2 { margin: 0 0 16px; font-size: 16px; line-height: 24px; }
+</style>
+</head>
+<body>
+<aside class="rail" aria-label="Page details">
+  <div role="tablist" aria-label="Page details">
+    <button role="tab" id="tab-comments" aria-selected="true" aria-controls="panel-comments">Comments</button>
+    <button role="tab" id="tab-history" aria-selected="false" aria-controls="panel-history" tabindex="-1">History</button>
+  </div>
+  <section role="tabpanel" id="panel-comments" aria-labelledby="tab-comments" tabindex="0">
+    <h2>Comments</h2>
+    <p>The tide table needs a check before Friday.</p>
+  </section>
+  <section role="tabpanel" id="panel-history" aria-labelledby="tab-history" hidden>
+    <p>No versions yet.</p>
+  </section>
+</aside>
+</body>
+</html>

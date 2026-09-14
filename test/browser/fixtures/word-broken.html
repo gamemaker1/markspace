@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="5:word-broken">
+<title>Fixture: a page title that breaks inside a word</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .page-header { display: flex; align-items: flex-start; gap: 8px; width: 358px; }
+  /* The defect: four actions squeeze the title, and overflow-wrap splits the word. */
+  .page-header h1 { min-width: 0; margin: 0; font-size: 24px; line-height: 32px; overflow-wrap: anywhere; }
+  .actions { display: flex; flex: none; gap: 8px; }
+</style>
+</head>
+<body>
+<div class="page-header">
+  <h1>Harbour survey</h1>
+  <div class="actions"><button type="button">Edit</button><button type="button">Comments</button><button type="button">Details</button></div>
+</div>
+</body>
+</html>

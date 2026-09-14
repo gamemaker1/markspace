@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="4:overlay-text-inset-left, 4:overlay-text-inset-top">
+<title>Fixture: over-padded sync overlay</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .anchored-overlay { position: absolute; top: 72px; left: 16px; min-width: 240px; background: #ffffff; border-radius: 12px; box-shadow: 0 8px 24px rgba(66, 74, 83, 0.2); }
+  /* The defect: 16px body padding stacked on the ActionList insets. */
+  .overlay-body { padding: 16px; }
+  .action-list { margin: 0; padding: 8px 0; list-style: none; }
+  .action-list-item { display: flex; gap: 8px; align-items: flex-start; width: calc(100% - 16px); height: auto; margin: 0 8px; padding: 6px 8px; font: inherit; text-align: start; background: transparent; border: 0; border-radius: 6px; }
+  .action-list-leading { display: flex; align-items: center; height: 20px; }
+</style>
+</head>
+<body>
+<button type="button">Sync status</button>
+<div class="anchored-overlay" role="dialog" aria-label="Sync status">
+  <div class="overlay-body" data-padding="none">
+    <ul class="action-list">
+      <li><div class="action-list-item"><span class="action-list-leading" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"></circle></svg></span><span class="action-list-label">All changes synced</span></div></li>
+      <li><button class="action-list-item" type="button"><span class="action-list-leading" aria-hidden="true"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12"></rect></svg></span><span class="action-list-label">Sync now</span></button></li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

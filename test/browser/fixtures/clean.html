@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="">
+<title>Fixture: correct layout, no findings</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  main { display: grid; grid-template-columns: 1fr 320px; gap: 24px; max-width: 1000px; }
+  .page-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .page-header h1 { flex: 1; margin: 0; font-size: 20px; line-height: 32px; font-weight: 600; }
+  .banner { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; padding: 8px; background: #ddf4ff; border: 1px solid #9ec5fe; border-radius: 6px; }
+  .banner-icon { display: flex; align-items: center; height: 36px; padding: 8px; }
+  .banner-container { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: start; }
+  .banner-content { margin-block: 8px; }
+  .banner-title { margin: 0; font-size: inherit; font-weight: 400; }
+  .banner-actions { display: flex; align-items: center; min-height: 32px; margin-block: 2px; }
+  .banner-actions button { height: 32px; }
+  .rail { border: 1px solid #d1d9e0; border-radius: 6px; }
+  [role=tablist] { display: flex; gap: 8px; padding: 8px 16px 0; border-bottom: 1px solid #d1d9e0; }
+  [role=tab] { margin-bottom: 8px; background: transparent; border-color: transparent; }
+  [role=tabpanel] { padding: 16px; }
+  .menu { position: relative; margin-top: 16px; width: 240px; background: #ffffff; border: 1px solid #d1d9e0; border-radius: 12px; }
+  .action-list { margin: 0; padding: 8px 0; list-style: none; }
+  .action-list-item { display: flex; gap: 8px; align-items: flex-start; margin: 0 8px; padding: 6px 8px; border-radius: 6px; }
+  .action-list-leading { display: flex; align-items: center; height: 20px; }
+  .action-list-item:focus-visible { outline: 2px solid #bf3989; outline-offset: 0; }
+</style>
+</head>
+<body>
+<main>
+  <div>
+    <div class="page-header"><h1>Harbour survey</h1><button type="button">Edit</button></div>
+    <section class="banner" data-ui-banner data-variant="info" aria-label="Information">
+      <div class="banner-icon" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"></circle></svg></div>
+      <div class="banner-container">
+        <div class="banner-content"><h2 class="banner-title">Moved “Meeting notes” to Archive</h2></div>
+        <div class="banner-actions"><button type="button">Undo</button></div>
+      </div>
+    </section>
+    <div class="menu" role="menu" aria-label="Note actions">
+      <ul class="action-list" role="none">
+        <li role="none"><div class="action-list-item" role="menuitem" tabindex="-1"><span class="action-list-leading" aria-hidden="true"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12"></rect></svg></span><span class="action-list-label">Rename</span></div></li>
+        <li role="none"><div class="action-list-item" role="menuitem" tabindex="-1"><span class="action-list-leading" aria-hidden="true"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12"></rect></svg></span><span class="action-list-label">Move to</span></div></li>
+      </ul>
+    </div>
+  </div>
+  <aside class="rail" aria-label="Page details">
+    <div role="tablist" aria-label="Page details">
+      <button role="tab" id="tab-comments" aria-selected="true" aria-controls="panel-comments">Comments</button>
+      <button role="tab" id="tab-history" aria-selected="false" aria-controls="panel-history" tabindex="-1">History</button>
+    </div>
+    <section role="tabpanel" id="panel-comments" aria-labelledby="tab-comments" tabindex="0">
+      <p>The tide table needs a check before Friday.</p>
+    </section>
+  </aside>
+</main>
+</body>
+</html>

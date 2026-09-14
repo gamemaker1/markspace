@@ -1,0 +1,347 @@
+{
+  "context": 32,
+  "make": [
+    {
+      "name": "selection inside bold markup",
+      "body": "# Plan\n\nShip the **sync** engine.\n\nThen ship the sync engine docs.\n",
+      "start": 19,
+      "end": 23,
+      "want": {
+        "exact": "sync",
+        "prefix": "# Plan\n\nShip the **",
+        "suffix": "** engine.\n\nThen ship the sync e",
+        "start": 19,
+        "end": 23
+      }
+    },
+    {
+      "name": "reversed offsets are swapped",
+      "body": "# Plan\n\nShip the **sync** engine.\n\nThen ship the sync engine docs.\n",
+      "start": 23,
+      "end": 19,
+      "want": {
+        "exact": "sync",
+        "prefix": "# Plan\n\nShip the **",
+        "suffix": "** engine.\n\nThen ship the sync e",
+        "start": 19,
+        "end": 23
+      }
+    },
+    {
+      "name": "selection covering the markup",
+      "body": "# Plan\n\nShip the **sync** engine.\n\nThen ship the sync engine docs.\n",
+      "start": 17,
+      "end": 25,
+      "want": {
+        "exact": "**sync**",
+        "prefix": "# Plan\n\nShip the ",
+        "suffix": " engine.\n\nThen ship the sync eng",
+        "start": 17,
+        "end": 25
+      }
+    },
+    {
+      "name": "clamped past the end",
+      "body": "short",
+      "start": 2,
+      "end": 99,
+      "want": {
+        "exact": "ort",
+        "prefix": "sh",
+        "suffix": "",
+        "start": 2,
+        "end": 5
+      }
+    },
+    {
+      "name": "empty selection gives no anchor",
+      "body": "# Plan\n\nShip the **sync** engine.\n\nThen ship the sync engine docs.\n",
+      "start": 5,
+      "end": 5,
+      "want": null
+    },
+    {
+      "name": "context stops at 32 units",
+      "body": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaTARGETbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "start": 40,
+      "end": 46,
+      "want": {
+        "exact": "TARGET",
+        "prefix": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "suffix": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "start": 40,
+        "end": 46
+      }
+    },
+    {
+      "name": "start inside a surrogate pair moves back",
+      "body": "x😀y",
+      "start": 2,
+      "end": 4,
+      "want": {
+        "exact": "😀y",
+        "prefix": "x",
+        "suffix": "",
+        "start": 1,
+        "end": 4
+      }
+    },
+    {
+      "name": "end inside a surrogate pair moves forward",
+      "body": "x😀y",
+      "start": 0,
+      "end": 2,
+      "want": {
+        "exact": "x😀",
+        "prefix": "",
+        "suffix": "y",
+        "start": 0,
+        "end": 3
+      }
+    },
+    {
+      "name": "prefix never starts inside a pair",
+      "body": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀HIT",
+      "start": 40,
+      "end": 43,
+      "want": {
+        "exact": "HIT",
+        "prefix": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀",
+        "suffix": "",
+        "start": 40,
+        "end": 43
+      }
+    },
+    {
+      "name": "CJK after an accented word",
+      "body": "café 你好 world",
+      "start": 5,
+      "end": 7,
+      "want": {
+        "exact": "你好",
+        "prefix": "café ",
+        "suffix": " world",
+        "start": 5,
+        "end": 7
+      }
+    }
+  ],
+  "resolve": [
+    {
+      "name": "unchanged text resolves exact",
+      "body": "# Plan\n\nShip the **sync** engine.\n\nThen ship the sync engine docs.\n",
+      "anchor": {
+        "exact": "sync",
+        "prefix": "# Plan\n\nShip the **",
+        "suffix": "** engine.\n\nThen ship the sync e",
+        "start": 19,
+        "end": 23
+      },
+      "want": {
+        "start": 19,
+        "end": 23,
+        "state": "exact"
+      }
+    },
+    {
+      "name": "insertion before moves the anchor",
+      "body": "Intro line.\n# Plan\n\nShip the **sync** engine.\n\nThen ship the sync engine docs.\n",
+      "anchor": {
+        "exact": "sync",
+        "prefix": "# Plan\n\nShip the **",
+        "suffix": "** engine.\n\nThen ship the sync e",
+        "start": 19,
+        "end": 23
+      },
+      "want": {
+        "start": 31,
+        "end": 35,
+        "state": "moved"
+      }
+    },
+    {
+      "name": "offsets landing on another copy of the text pick the context match",
+      "body": "# Plan\n\nShip the **sync** engine.\n\nThen ship the sync engine docs.\n",
+      "anchor": {
+        "exact": "sync",
+        "prefix": "# Plan\n\nShip the **",
+        "suffix": "** engine.\n\nThen ship the sync e",
+        "start": 49,
+        "end": 53
+      },
+      "want": {
+        "start": 19,
+        "end": 23,
+        "state": "moved"
+      }
+    },
+    {
+      "name": "repeated text uses prefix and suffix",
+      "body": "the sync step, then the sync step again",
+      "anchor": {
+        "exact": "sync",
+        "prefix": "the sync step, then the ",
+        "suffix": " step again",
+        "start": 0,
+        "end": 4
+      },
+      "want": {
+        "start": 24,
+        "end": 28,
+        "state": "moved"
+      }
+    },
+    {
+      "name": "repeated text with no context uses distance to the hint",
+      "body": "sync sync sync",
+      "anchor": {
+        "exact": "sync",
+        "start": 6,
+        "end": 10
+      },
+      "want": {
+        "start": 5,
+        "end": 9,
+        "state": "moved"
+      }
+    },
+    {
+      "name": "tie on distance picks the earlier occurrence",
+      "body": "ab ab",
+      "anchor": {
+        "exact": "ab",
+        "start": 1,
+        "end": 3
+      },
+      "want": {
+        "start": 0,
+        "end": 2,
+        "state": "moved"
+      }
+    },
+    {
+      "name": "deleted text is orphaned",
+      "body": "# Plan\n\nShip the engine.\n\nThen ship the engine docs.\n",
+      "anchor": {
+        "exact": "sync",
+        "prefix": "# Plan\n\nShip the **",
+        "suffix": "** engine.\n\nThen ship the sync e",
+        "start": 19,
+        "end": 23
+      },
+      "want": {
+        "start": -1,
+        "end": -1,
+        "state": "orphaned"
+      }
+    },
+    {
+      "name": "empty exact is orphaned",
+      "body": "# Plan\n\nShip the **sync** engine.\n\nThen ship the sync engine docs.\n",
+      "anchor": {
+        "exact": "",
+        "start": 0,
+        "end": 0
+      },
+      "want": {
+        "start": -1,
+        "end": -1,
+        "state": "orphaned"
+      }
+    },
+    {
+      "name": "out of range offsets still search",
+      "body": "tiny sync",
+      "anchor": {
+        "exact": "sync",
+        "start": 500,
+        "end": 504
+      },
+      "want": {
+        "start": 5,
+        "end": 9,
+        "state": "moved"
+      }
+    },
+    {
+      "name": "overlapping occurrences prefer full context over the stored offsets",
+      "body": "aaaa",
+      "anchor": {
+        "exact": "aa",
+        "prefix": "a",
+        "suffix": "a",
+        "start": 0,
+        "end": 2
+      },
+      "want": {
+        "start": 1,
+        "end": 3,
+        "state": "moved"
+      }
+    },
+    {
+      "name": "end not matching the exact length is not exact",
+      "body": "# Plan\n\nShip the **sync** engine.\n\nThen ship the sync engine docs.\n",
+      "anchor": {
+        "exact": "sync",
+        "prefix": "# Plan\n\nShip the **",
+        "suffix": "** engine.\n\nThen ship the sync e",
+        "start": 19,
+        "end": 24
+      },
+      "want": {
+        "start": 19,
+        "end": 23,
+        "state": "moved"
+      }
+    },
+    {
+      "name": "offsets count UTF-16 units around emoji",
+      "body": "x😀 sync 😀 sync",
+      "anchor": {
+        "exact": "sync",
+        "prefix": "x😀 sync 😀 ",
+        "suffix": "",
+        "start": 12,
+        "end": 16
+      },
+      "want": {
+        "start": 12,
+        "end": 16,
+        "state": "exact"
+      }
+    },
+    {
+      "name": "emoji inserted before shifts by two units",
+      "body": "😀x😀 sync 😀 sync",
+      "anchor": {
+        "exact": "sync",
+        "prefix": "x😀 sync 😀 ",
+        "suffix": "",
+        "start": 12,
+        "end": 16
+      },
+      "want": {
+        "start": 14,
+        "end": 18,
+        "state": "moved"
+      }
+    },
+    {
+      "name": "case differs so the text is orphaned",
+      "body": "# Plan\n\nShip the **Sync** engine.\n\nThen ship the Sync engine docs.\n",
+      "anchor": {
+        "exact": "sync",
+        "prefix": "# Plan\n\nShip the **",
+        "suffix": "** engine.\n\nThen ship the sync e",
+        "start": 19,
+        "end": 23
+      },
+      "want": {
+        "start": -1,
+        "end": -1,
+        "state": "orphaned"
+      }
+    }
+  ]
+}

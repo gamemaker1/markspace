@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="9:overlay-escape">
+<meta name="audit-open" content="#open">
+<meta name="audit-passes" content="overlays">
+<title>Fixture: a dialog that ignores Escape</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  dialog { width: 320px; padding: 0; border: 1px solid #d1d9e0; border-radius: 12px; }
+  .head { display: flex; align-items: center; justify-content: space-between; padding: 8px; }
+  .head h1 { margin: 0; padding: 6px 8px; font-size: 14px; }
+  .body { padding: 16px; }
+</style>
+</head>
+<body>
+<main><button type="button" id="open">Share</button></main>
+<dialog id="d" aria-labelledby="t">
+  <div class="head"><h1 id="t">Share note</h1><button type="button" aria-label="Close" id="close">×</button></div>
+  <div class="body"><p>Anyone with the link can view.</p></div>
+</dialog>
+<script>
+  const d = document.getElementById("d");
+  document.getElementById("open").addEventListener("click", () => d.showModal());
+  document.getElementById("close").addEventListener("click", () => d.close());
+  // The defect: Escape is swallowed.
+  d.addEventListener("cancel", (e) => e.preventDefault());
+</script>
+</body>
+</html>

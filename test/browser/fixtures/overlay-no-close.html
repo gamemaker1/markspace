@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="9:overlay-close-control">
+<meta name="audit-open" content="#open">
+<meta name="audit-passes" content="overlays">
+<title>Fixture: a dialog without a Close button</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  dialog { width: 320px; padding: 0; border: 1px solid #d1d9e0; border-radius: 12px; }
+  .head h1 { margin: 0; padding: 14px 16px; font-size: 14px; }
+  .body { padding: 16px; }
+</style>
+</head>
+<body>
+<main><button type="button" id="open">Sync status</button></main>
+<!-- The defect: no Close button. -->
+<dialog id="d" aria-labelledby="t">
+  <div class="head"><h1 id="t">Sync status</h1></div>
+  <div class="body"><p>All changes synced.</p></div>
+</dialog>
+<script>
+  const d = document.getElementById("d");
+  document.getElementById("open").addEventListener("click", () => d.showModal());
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="1:duplicate-title">
+<title>Fixture: a rail dialog titled like its selected tab</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .rail { width: 360px; border: 1px solid #d1d9e0; border-radius: 12px; }
+  .dialog-header { padding: 8px; }
+  .dialog-title { margin: 0; padding: 6px 8px; font-size: 14px; }
+  [role=tablist] { display: flex; gap: 8px; padding: 8px 16px 0; border-bottom: 1px solid #d1d9e0; }
+  [role=tab] { margin-bottom: 8px; background: transparent; border-color: transparent; }
+  [role=tabpanel] { padding: 16px; }
+</style>
+</head>
+<body>
+<!-- The defect: the dialog title copies the selected tab. -->
+<div class="rail" role="dialog" aria-labelledby="rail-title">
+  <div class="dialog-header"><h1 class="dialog-title" id="rail-title">Comments</h1></div>
+  <div role="tablist" aria-label="Page details">
+    <button role="tab" id="tab-outline" aria-selected="false" aria-controls="panel-outline" tabindex="-1">Outline</button>
+    <button role="tab" id="tab-comments" aria-selected="true" aria-controls="panel-comments">Comments</button>
+  </div>
+  <section role="tabpanel" id="panel-comments" aria-labelledby="tab-comments" tabindex="0"><p>The tide table needs a check.</p></section>
+</div>
+</body>
+</html>

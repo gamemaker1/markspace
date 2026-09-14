@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="3:single-line-centres">
+<title>Fixture: misaligned Moved banner</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .banner { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; max-width: 640px; padding: 8px; background: #ddf4ff; border: 1px solid #9ec5fe; border-radius: 6px; }
+  .banner-icon { display: flex; align-items: flex-start; padding: 8px; line-height: 20px; }
+  .banner-container { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: start; }
+  /* The defect: the text sits 6px lower than the icon and the action. */
+  .banner-content { margin-block: 14px 2px; }
+  .banner-title { margin: 0; font-size: inherit; font-weight: 400; }
+  .banner-actions { display: flex; align-items: center; min-height: 32px; margin-block: 2px; }
+  .banner-actions button { height: 32px; }
+</style>
+</head>
+<body>
+<section class="banner" data-ui-banner data-variant="info" aria-label="Information">
+  <div class="banner-icon" aria-hidden="true"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"></circle></svg></div>
+  <div class="banner-container">
+    <div class="banner-content"><h2 class="banner-title">Moved “Meeting notes” to Archive</h2></div>
+    <div class="banner-actions"><button type="button">Undo</button></div>
+  </div>
+</section>
+</body>
+</html>

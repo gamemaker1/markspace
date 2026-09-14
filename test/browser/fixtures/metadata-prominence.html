@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="8:metadata-prominence">
+<title>Fixture: heavy comment metadata</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .ms-thread { max-width: 360px; padding: 16px; border: 1px solid #d1d9e0; border-radius: 6px; }
+  .ms-comment-head { display: flex; gap: 6px; }
+  /* The defect: the author is bold and as large as the comment. */
+  .ms-comment-author { font-size: 14px; font-weight: 600; color: #1f2328; }
+  .ms-comment-time { font-size: 12px; color: #59636e; }
+  .ms-comment-body { margin-top: 4px; font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="ms-thread">
+    <div class="ms-comment">
+      <div class="ms-comment-head"><span class="ms-comment-author">Ada Lovelace</span><span class="ms-comment-time">2 hours ago</span></div>
+      <p class="ms-comment-body">Please check the tide table before Friday.</p>
+    </div>
+  </div>
+</main>
+</body>
+</html>

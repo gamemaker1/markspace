@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="2:no-click-effect">
+<meta name="audit-passes" content="clicks">
+<title>Fixture: a button without a handler</title>
+<link rel="stylesheet" href="base.css">
+</head>
+<body>
+<main>
+  <h1>Jobs</h1>
+  <button type="button" id="details" aria-expanded="false" aria-controls="panel">Show details</button>
+  <!-- The defect: this button has no handler. -->
+  <button type="button">Filter jobs</button>
+  <p id="panel" hidden>Two jobs ran today.</p>
+</main>
+<script>
+  document.getElementById("details").addEventListener("click", (e) => {
+    const p = document.getElementById("panel");
+    p.hidden = !p.hidden;
+    e.currentTarget.setAttribute("aria-expanded", String(!p.hidden));
+  });
+</script>
+</body>
+</html>

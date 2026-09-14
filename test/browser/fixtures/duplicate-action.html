@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="1:duplicate-action">
+<title>Fixture: New page twice in one viewport</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  header { display: flex; justify-content: flex-end; gap: 8px; padding-bottom: 16px; border-bottom: 1px solid #d1d9e0; }
+  .page-header { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
+  .page-header h1 { flex: 1; margin: 0; font-size: 20px; line-height: 32px; }
+</style>
+</head>
+<body>
+<header><button type="button">Search</button><button type="button">New page</button></header>
+<main>
+  <!-- The defect: the page header repeats the header's New page. -->
+  <div class="page-header"><h1>Harbour works</h1><button type="button">New page</button></div>
+  <p>Pages in this space.</p>
+</main>
+</body>
+</html>

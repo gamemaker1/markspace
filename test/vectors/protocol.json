@@ -1,0 +1,4238 @@
+{
+ "protocol": 1,
+ "description": "Conformance vectors for the Markspace plugin protocol in docs/plugins.md. sdk and sdk/python/markspace both load this file in their tests and must pass every case. The Markspace plugin host signs with sdk.",
+ "signature": {
+  "headers": {
+   "plugin": "X-Markspace-Plugin",
+   "delivery": "X-Markspace-Delivery",
+   "signature": "X-Markspace-Signature"
+  },
+  "key": "The HMAC key is the 32 bytes decoded from the base64 signingSecret. MARKSPACE_SIGNING_SECRET holds the same base64 text.",
+  "message": "The decimal timestamp, the HTTP method, the request path without the query, and the delivery id, each followed by one newline (0x0A), then the raw body bytes. The method is used as sent. The path is the path of the request line as sent, with percent-encoding kept.",
+  "grammar": "The header is exactly t=<unix seconds>,v1=<digest>. The timestamp is ASCII decimal from 1 to 9223372036854775807 with no sign and no leading zero. The digest is 64 lowercase hex characters. Any other text, whitespace, order or extra part is malformed.",
+  "windowSeconds": 300,
+  "window": "A request is expired when the absolute difference between now and t, both in whole seconds, exceeds windowSeconds. A difference of exactly windowSeconds is accepted.",
+  "checkOrder": [
+   "malformed",
+   "mismatch",
+   "expired",
+   "missing_delivery",
+   "replay"
+  ],
+  "replay": "After a request passes the signature and time checks, the receiver rejects it as a replay when it has already accepted the same delivery id with the same timestamp within the window. Markspace signs every attempt with a fresh timestamp, so a retry of one delivery passes. Rejected requests are not recorded. The cache is a bounded LRU, 10000 entries by default.",
+  "errorCodes": [
+   "malformed",
+   "mismatch",
+   "expired",
+   "missing_delivery",
+   "replay"
+  ],
+  "sign": [
+   {
+    "name": "event delivery",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "timestamp": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "01j9z3k5q8r2m4n6p7s8t9v0w1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=27bfab6f13c3dbf309a79698d5c7ff577092cad107946136ef372790d458c314"
+   },
+   {
+    "name": "empty body",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "timestamp": 1789300000,
+    "method": "POST",
+    "path": "/jobs/count-space",
+    "deliveryId": "d-2",
+    "bodyBase64": "",
+    "header": "t=1789300000,v1=fe0ae8368b5bce88703a882f07b4206c60ce437851481bbc38dbdb2d7c9b76f9"
+   },
+   {
+    "name": "utf-8 body",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "timestamp": 1789300001,
+    "method": "POST",
+    "path": "/commands/add-url",
+    "deliveryId": "d3",
+    "bodyBase64": "eyJtZXNzYWdlIjoiR3LDvMOfZSDimIMifQ==",
+    "header": "t=1789300001,v1=1022abcdc778d7269b8daea29fab69645e19b62e0c9b92ec2c71310164fbfc0a"
+   },
+   {
+    "name": "binary body",
+    "secretBase64": "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=",
+    "timestamp": 1,
+    "method": "POST",
+    "path": "/import/netscape",
+    "deliveryId": "x",
+    "bodyBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w==",
+    "header": "t=1,v1=e161c81bd62fa615148b40b02ce408bef73dd80f21445313e234348f5a3b3c22"
+   },
+   {
+    "name": "large timestamp",
+    "secretBase64": "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=",
+    "timestamp": 9999999999,
+    "method": "POST",
+    "path": "/actions/a.b_c-d",
+    "deliveryId": "d4",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=9999999999,v1=d13c857933f02f20196bdba352933ce3224cc42ec779653528c229d191353ca6"
+   },
+   {
+    "name": "percent-encoded path",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "timestamp": 1789300000,
+    "method": "POST",
+    "path": "/commands/a%20b",
+    "deliveryId": "d5",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=f457a3295e1510ea6de0249327524993fc078d1e032811e1307eb50cc398a972"
+   },
+   {
+    "name": "empty delivery id",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "timestamp": 1789300000,
+    "method": "POST",
+    "path": "/install",
+    "deliveryId": "",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=824243bddd7b949a5df9c97084b92b5d1241d1798ab2db87e1d197c97401c053"
+   },
+   {
+    "name": "body starting with newlines",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "timestamp": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d6",
+    "bodyBase64": "CgpkNgo=",
+    "header": "t=1789300000,v1=1f14da6735fd331a382c8f5922f367033851ff0f450d0a7f0fadaaf6fd474e96"
+   }
+  ],
+  "verify": [
+   {
+    "name": "valid",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": null
+   },
+   {
+    "name": "valid at window edge in the past",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300300,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": null
+   },
+   {
+    "name": "valid at window edge in the future",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789299700,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": null
+   },
+   {
+    "name": "expired by one second",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300301,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "expired"
+   },
+   {
+    "name": "future by one second",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789299699,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "expired"
+   },
+   {
+    "name": "tampered body",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTIiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "mismatch"
+   },
+   {
+    "name": "body with trailing newline",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQo=",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "mismatch"
+   },
+   {
+    "name": "wrong secret",
+    "secretBase64": "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "mismatch"
+   },
+   {
+    "name": "wrong secret and expired reports mismatch",
+    "secretBase64": "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=",
+    "now": 1789301000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "mismatch"
+   },
+   {
+    "name": "timestamp changed",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300001,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "mismatch"
+   },
+   {
+    "name": "empty body valid",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "",
+    "header": "t=1789300000,v1=bdee563fe01ef4f214821ee299748f701ffb6bcdbc6704c9946430402f088753",
+    "error": null
+   },
+   {
+    "name": "wrong method",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "PUT",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "mismatch"
+   },
+   {
+    "name": "lowercase method",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "post",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "mismatch"
+   },
+   {
+    "name": "wrong path",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/commands/x",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "mismatch"
+   },
+   {
+    "name": "path with trailing slash",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events/",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "mismatch"
+   },
+   {
+    "name": "path with query",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events?x=1",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "mismatch"
+   },
+   {
+    "name": "wrong delivery id",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d2",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "mismatch"
+   },
+   {
+    "name": "empty delivery id",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "mismatch"
+   },
+   {
+    "name": "delivery id moved into the body",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=e05b22b4d22aa2212e45b69bd0884bfdd40b952cee343d18c5f2f48dffe70e4d",
+    "error": "mismatch"
+   },
+   {
+    "name": "empty delivery id signed as empty",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=ecdf929c2abfd7fd105893996bf94a88ce3a63767374fcaeb7ed46ca1170275c",
+    "error": null
+   },
+   {
+    "name": "get request",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "GET",
+    "path": "/health",
+    "deliveryId": "d9",
+    "bodyBase64": "",
+    "header": "t=1789300000,v1=0049e7a25d7d609f0e1638153a6e26848868b4a14ad787e2fcec888ff082a66d",
+    "error": null
+   },
+   {
+    "name": "empty header",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "",
+    "error": "malformed"
+   },
+   {
+    "name": "missing v1",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000",
+    "error": "malformed"
+   },
+   {
+    "name": "missing t",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "swapped order",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8,t=1789300000",
+    "error": "malformed"
+   },
+   {
+    "name": "space after comma",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000, v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "leading space",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": " t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "trailing comma",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8,",
+    "error": "malformed"
+   },
+   {
+    "name": "extra v0 part",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8,v0=abc",
+    "error": "malformed"
+   },
+   {
+    "name": "second v1 part",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "duplicate t",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "uppercase hex",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956ADCD819089C895C2839BDCDA75EFBC59FA63FE09D1DC43FA281D8D265ADD8",
+    "error": "malformed"
+   },
+   {
+    "name": "short hex",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265ad",
+    "error": "malformed"
+   },
+   {
+    "name": "long hex",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add800",
+    "error": "malformed"
+   },
+   {
+    "name": "non-hex digest",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1=gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",
+    "error": "malformed"
+   },
+   {
+    "name": "non-numeric timestamp",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=abc,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "negative timestamp",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=-1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "plus sign timestamp",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=+1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "leading zero timestamp",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=01789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "zero timestamp",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=0,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "empty timestamp",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "timestamp overflows int64",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=99999999999999999999,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "uppercase key",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "T=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "scheme v2",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v2=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "equals in value",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=1789300000,v1==956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   },
+   {
+    "name": "unicode digits",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "now": 1789300000,
+    "method": "POST",
+    "path": "/events",
+    "deliveryId": "d1",
+    "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+    "header": "t=١٧٨٩٣٠٠٠٠٠,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+    "error": "malformed"
+   }
+  ],
+  "replaySequences": [
+   {
+    "name": "delivery sequence",
+    "secretBase64": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+    "requests": [
+     {
+      "note": "first delivery",
+      "now": 1789300000,
+      "method": "POST",
+      "path": "/events",
+      "deliveryId": "d1",
+      "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+      "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+      "error": null
+     },
+     {
+      "note": "exact replay",
+      "now": 1789300001,
+      "method": "POST",
+      "path": "/events",
+      "deliveryId": "d1",
+      "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+      "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+      "error": "replay"
+     },
+     {
+      "note": "the same header under another delivery id fails the HMAC",
+      "now": 1789300002,
+      "method": "POST",
+      "path": "/events",
+      "deliveryId": "d2",
+      "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+      "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+      "error": "mismatch"
+     },
+     {
+      "note": "retry of d1 signed at a new timestamp",
+      "now": 1789300005,
+      "method": "POST",
+      "path": "/events",
+      "deliveryId": "d1",
+      "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+      "header": "t=1789300005,v1=7d1b2fb4756346a650b9ef27c1f5926329beee00592bdfbc2b6f7d64095cf069",
+      "error": null
+     },
+     {
+      "note": "another delivery with the same body and timestamp",
+      "now": 1789300006,
+      "method": "POST",
+      "path": "/events",
+      "deliveryId": "d2",
+      "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+      "header": "t=1789300000,v1=363645da4af90c69722fd90c5b61c158a18337ec24ad77c29041b5e7ca665753",
+      "error": null
+     },
+     {
+      "note": "d1 at its first timestamp with another body",
+      "now": 1789300007,
+      "method": "POST",
+      "path": "/events",
+      "deliveryId": "d1",
+      "bodyBase64": "eyJldmVudHMiOltdfQ==",
+      "header": "t=1789300000,v1=33e60699fcc1fcdecb40a263e01ad8cd8a83c48d08a15c7564848283b3ad87fd",
+      "error": "replay"
+     },
+     {
+      "note": "d2 at the same timestamp on another path",
+      "now": 1789300008,
+      "method": "POST",
+      "path": "/commands/x",
+      "deliveryId": "d2",
+      "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+      "header": "t=1789300000,v1=46e74ae6fb114a34365ece78b370025b46cc2f086769e1d3e4a81ce0236a4157",
+      "error": "replay"
+     },
+     {
+      "note": "missing delivery id",
+      "now": 1789300009,
+      "method": "POST",
+      "path": "/events",
+      "deliveryId": "",
+      "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+      "header": "t=1789300009,v1=d15cb8834e80eb0aedfb1215b2cc7b7465dd5b36572c31150005fb3d8101868c",
+      "error": "missing_delivery"
+     },
+     {
+      "note": "bad signature is not recorded",
+      "now": 1789300010,
+      "method": "POST",
+      "path": "/events",
+      "deliveryId": "d4",
+      "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+      "header": "t=1789300010,v1=f60ae1f9113cf3b07e5b03fddf7771e7142dcf584b582c2eee0326e46dc91393",
+      "error": "mismatch"
+     },
+     {
+      "note": "d4 with a good signature after a rejected attempt",
+      "now": 1789300010,
+      "method": "POST",
+      "path": "/events",
+      "deliveryId": "d4",
+      "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+      "header": "t=1789300010,v1=118e9c00418aae1b94d207dfed36c7e40e9223a9c09c186a2bc4f36ce6363052",
+      "error": null
+     },
+     {
+      "note": "old replay outside the window is expired",
+      "now": 1789300400,
+      "method": "POST",
+      "path": "/events",
+      "deliveryId": "d1",
+      "bodyBase64": "eyJldmVudHMiOlt7ImlkIjoiZTEiLCJ0eXBlIjoibm90ZS51cGRhdGVkIn1dfQ==",
+      "header": "t=1789300000,v1=956adcd819089c895c2839bdcda75efbc59fa63fe09d1dc43fa281d8d265add8",
+      "error": "expired"
+     }
+    ]
+   }
+  ]
+ },
+ "ids": {
+  "rules": {
+   "pluginId": {
+    "pattern": "^[a-z0-9][a-z0-9-]{0,62}$",
+    "use": "manifest id, the X-Markspace-Plugin header, the first segment of a qualified id"
+   },
+   "localId": {
+    "pattern": "^[a-z0-9][a-z0-9._-]{0,62}$",
+    "use": "command, panel, action, importer and form ids and job kinds, as declared in the manifest and used in plugin URL paths"
+   },
+   "qualifiedId": {
+    "pattern": "^[a-z0-9][a-z0-9-]{0,62}\\.[a-z0-9][a-z0-9._-]{0,62}$",
+    "use": "<pluginId>.<localId>, as in openPanel.id. The plugin id ends at the first dot"
+   },
+   "objectId": {
+    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$",
+    "use": "job, item, space, user and delivery ids in host API paths. core.NewID values match"
+   },
+   "secretName": {
+    "pattern": "^[a-z0-9][a-z0-9_-]{0,62}$",
+    "use": "manifest secrets[].name and GET /secrets/{name}"
+   },
+   "storageKey": {
+    "pattern": null,
+    "use": "kv and blob keys. 1 to 512 bytes of UTF-8 with no control characters (U+0000 to U+001F and U+007F). Clients percent-encode every byte outside A-Z a-z 0-9 - . _ ~ in the path"
+   },
+   "eventPattern": {
+    "pattern": "^[a-z0-9*][a-z0-9._*-]{0,127}$",
+    "use": "@on and p.On patterns. * matches any run of characters, dots included. No other character is special"
+   }
+  },
+  "cases": [
+   {
+    "rule": "pluginId",
+    "value": "bookmark-wiki",
+    "valid": true
+   },
+   {
+    "rule": "pluginId",
+    "value": "a",
+    "valid": true
+   },
+   {
+    "rule": "pluginId",
+    "value": "0",
+    "valid": true
+   },
+   {
+    "rule": "pluginId",
+    "value": "word-count",
+    "valid": true
+   },
+   {
+    "rule": "pluginId",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "valid": true
+   },
+   {
+    "rule": "pluginId",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "valid": false
+   },
+   {
+    "rule": "pluginId",
+    "value": "",
+    "valid": false
+   },
+   {
+    "rule": "pluginId",
+    "value": "-a",
+    "valid": false
+   },
+   {
+    "rule": "pluginId",
+    "value": "Bookmark",
+    "valid": false
+   },
+   {
+    "rule": "pluginId",
+    "value": "a.b",
+    "valid": false
+   },
+   {
+    "rule": "pluginId",
+    "value": "a_b",
+    "valid": false
+   },
+   {
+    "rule": "pluginId",
+    "value": "a b",
+    "valid": false
+   },
+   {
+    "rule": "pluginId",
+    "value": "é",
+    "valid": false
+   },
+   {
+    "rule": "pluginId",
+    "value": "a\n",
+    "valid": false
+   },
+   {
+    "rule": "localId",
+    "value": "add-url",
+    "valid": true
+   },
+   {
+    "rule": "localId",
+    "value": "ingest",
+    "valid": true
+   },
+   {
+    "rule": "localId",
+    "value": "wiki.home",
+    "valid": true
+   },
+   {
+    "rule": "localId",
+    "value": "v1_2",
+    "valid": true
+   },
+   {
+    "rule": "localId",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "valid": true
+   },
+   {
+    "rule": "localId",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "valid": false
+   },
+   {
+    "rule": "localId",
+    "value": "",
+    "valid": false
+   },
+   {
+    "rule": "localId",
+    "value": ".hidden",
+    "valid": false
+   },
+   {
+    "rule": "localId",
+    "value": "_a",
+    "valid": false
+   },
+   {
+    "rule": "localId",
+    "value": "-a",
+    "valid": false
+   },
+   {
+    "rule": "localId",
+    "value": "a/b",
+    "valid": false
+   },
+   {
+    "rule": "localId",
+    "value": "A",
+    "valid": false
+   },
+   {
+    "rule": "localId",
+    "value": "a b",
+    "valid": false
+   },
+   {
+    "rule": "localId",
+    "value": "a%2f",
+    "valid": false
+   },
+   {
+    "rule": "localId",
+    "value": "a\n",
+    "valid": false
+   },
+   {
+    "rule": "qualifiedId",
+    "value": "bookmark-wiki.wiki",
+    "valid": true
+   },
+   {
+    "rule": "qualifiedId",
+    "value": "comments.panel",
+    "valid": true
+   },
+   {
+    "rule": "qualifiedId",
+    "value": "p.a.b",
+    "valid": true
+   },
+   {
+    "rule": "qualifiedId",
+    "value": "wiki",
+    "valid": false
+   },
+   {
+    "rule": "qualifiedId",
+    "value": ".wiki",
+    "valid": false
+   },
+   {
+    "rule": "qualifiedId",
+    "value": "p.",
+    "valid": false
+   },
+   {
+    "rule": "qualifiedId",
+    "value": "p..a",
+    "valid": false
+   },
+   {
+    "rule": "qualifiedId",
+    "value": "p_x.a",
+    "valid": false
+   },
+   {
+    "rule": "qualifiedId",
+    "value": "P.a",
+    "valid": false
+   },
+   {
+    "rule": "objectId",
+    "value": "01j9z3k5q8r2m4n6p7s8t9v0w1",
+    "valid": true
+   },
+   {
+    "rule": "objectId",
+    "value": "0ABCdef_-",
+    "valid": true
+   },
+   {
+    "rule": "objectId",
+    "value": "x",
+    "valid": true
+   },
+   {
+    "rule": "objectId",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "valid": true
+   },
+   {
+    "rule": "objectId",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "valid": false
+   },
+   {
+    "rule": "objectId",
+    "value": "",
+    "valid": false
+   },
+   {
+    "rule": "objectId",
+    "value": "-a",
+    "valid": false
+   },
+   {
+    "rule": "objectId",
+    "value": "a/b",
+    "valid": false
+   },
+   {
+    "rule": "objectId",
+    "value": "a.b",
+    "valid": false
+   },
+   {
+    "rule": "objectId",
+    "value": "..",
+    "valid": false
+   },
+   {
+    "rule": "objectId",
+    "value": "a b",
+    "valid": false
+   },
+   {
+    "rule": "secretName",
+    "value": "karakeep_token",
+    "valid": true
+   },
+   {
+    "rule": "secretName",
+    "value": "api-key",
+    "valid": true
+   },
+   {
+    "rule": "secretName",
+    "value": "",
+    "valid": false
+   },
+   {
+    "rule": "secretName",
+    "value": "_x",
+    "valid": false
+   },
+   {
+    "rule": "secretName",
+    "value": "Key",
+    "valid": false
+   },
+   {
+    "rule": "secretName",
+    "value": "a.b",
+    "valid": false
+   },
+   {
+    "rule": "storageKey",
+    "value": "a",
+    "valid": true
+   },
+   {
+    "rule": "storageKey",
+    "value": "url:https://example.com/a?b=c&d=%20",
+    "valid": true
+   },
+   {
+    "rule": "storageKey",
+    "value": "note/0abc",
+    "valid": true
+   },
+   {
+    "rule": "storageKey",
+    "value": "Grüße ☃",
+    "valid": true
+   },
+   {
+    "rule": "storageKey",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "valid": true
+   },
+   {
+    "rule": "storageKey",
+    "value": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé",
+    "valid": true
+   },
+   {
+    "rule": "storageKey",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "valid": false
+   },
+   {
+    "rule": "storageKey",
+    "value": "ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééa",
+    "valid": false
+   },
+   {
+    "rule": "storageKey",
+    "value": "",
+    "valid": false
+   },
+   {
+    "rule": "storageKey",
+    "value": "a\tb",
+    "valid": false
+   },
+   {
+    "rule": "storageKey",
+    "value": "a",
+    "valid": false
+   },
+   {
+    "rule": "storageKey",
+    "value": "a\u0000",
+    "valid": false
+   },
+   {
+    "rule": "storageKey",
+    "value": " leading space is fine",
+    "valid": true
+   },
+   {
+    "rule": "eventPattern",
+    "value": "note.updated",
+    "valid": true
+   },
+   {
+    "rule": "eventPattern",
+    "value": "*",
+    "valid": true
+   },
+   {
+    "rule": "eventPattern",
+    "value": "file.*",
+    "valid": true
+   },
+   {
+    "rule": "eventPattern",
+    "value": "plugin.word-count.*",
+    "valid": true
+   },
+   {
+    "rule": "eventPattern",
+    "value": "*.created",
+    "valid": true
+   },
+   {
+    "rule": "eventPattern",
+    "value": "",
+    "valid": false
+   },
+   {
+    "rule": "eventPattern",
+    "value": "Note.updated",
+    "valid": false
+   },
+   {
+    "rule": "eventPattern",
+    "value": ".note",
+    "valid": false
+   },
+   {
+    "rule": "eventPattern",
+    "value": "note?",
+    "valid": false
+   },
+   {
+    "rule": "eventPattern",
+    "value": "note updated",
+    "valid": false
+   },
+   {
+    "rule": "eventPattern",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "valid": true
+   },
+   {
+    "rule": "eventPattern",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "valid": false
+   }
+  ],
+  "eventMatches": [
+   {
+    "pattern": "note.updated",
+    "type": "note.updated",
+    "match": true
+   },
+   {
+    "pattern": "note.updated",
+    "type": "note.created",
+    "match": false
+   },
+   {
+    "pattern": "note.*",
+    "type": "note.updated",
+    "match": true
+   },
+   {
+    "pattern": "note.*",
+    "type": "note",
+    "match": false
+   },
+   {
+    "pattern": "note.*",
+    "type": "notebook.updated",
+    "match": false
+   },
+   {
+    "pattern": "*",
+    "type": "note.updated",
+    "match": true
+   },
+   {
+    "pattern": "*",
+    "type": "plugin.a.b",
+    "match": true
+   },
+   {
+    "pattern": "plugin.*",
+    "type": "plugin.word-count.counted",
+    "match": true
+   },
+   {
+    "pattern": "*.created",
+    "type": "folder.created",
+    "match": true
+   },
+   {
+    "pattern": "*.created",
+    "type": "folder.updated",
+    "match": false
+   },
+   {
+    "pattern": "note*",
+    "type": "note.updated",
+    "match": true
+   },
+   {
+    "pattern": "note*",
+    "type": "notes",
+    "match": true
+   },
+   {
+    "pattern": "n*e.*d",
+    "type": "note.updated",
+    "match": true
+   },
+   {
+    "pattern": "n*e.*d",
+    "type": "note.update",
+    "match": false
+   },
+   {
+    "pattern": "note.updated",
+    "type": "note.updated.x",
+    "match": false
+   },
+   {
+    "pattern": "**",
+    "type": "a",
+    "match": true
+   },
+   {
+    "pattern": "a.*.c",
+    "type": "a.b.c",
+    "match": true
+   },
+   {
+    "pattern": "a.*.c",
+    "type": "a..c",
+    "match": true
+   },
+   {
+    "pattern": "a.*.c",
+    "type": "a.c",
+    "match": false
+   }
+  ]
+ },
+ "ui": {
+  "limits": {
+   "maxNodes": 2000,
+   "maxBytes": 1048576,
+   "maxDepth": 32
+  },
+  "rules": [
+   "Checks run in three passes and report the first error only. Each invalid case below contains exactly one error.",
+   "Pass 1 checks size. Size is the compact JSON encoding in UTF-8 with no HTML escaping. A size above maxBytes is too_large at the root path.",
+   "Pass 2 checks limits. It visits every JSON object in the tree in pre-order, with object keys in ascending byte order and array elements in index order. Every object counts 1 toward maxNodes, including form fields, options, columns, list items, badges, table rows, action objects, link targets, payload objects and objects nested in payloads. The depth of an object is the number of objects on the path from the root to it, both included. Arrays add no depth. At each object the pass reports too_deep when the depth exceeds maxDepth, then too_many_nodes when the count exceeds maxNodes, at the path of that object.",
+   "Pass 3 walks the structure depth-first. At each UI node, form field, list item and table row it checks not_object, then type for UI nodes, then unknown fields in ascending byte order of the name, then each declared field in the order of fieldOrder. Nested values are checked when their field is reached. Payload contents are not checked.",
+   "UI nodes, form fields, list items and table rows report not_object when the value is not a JSON object. Any other value of the wrong JSON type reports invalid_field. That includes an action, link target, option, column or list item badge that is not an object.",
+   "A slot limited to button nodes reports unknown_type for a missing or unknown type and invalid_field for another known node type. List item actions, table rowActions and empty.action are button slots. The action of a button or form is an action object {id, payload}, and a form requires it.",
+   "A list item badge is an object with the badge fields label and tone, and an optional type that must be badge.",
+   "Table row values are strings, numbers, booleans or null.",
+   "Field values are strings, numbers, booleans or null. options is [{value, label}], required on select fields and not allowed on other field types. Field names are unique across fields and more.",
+   "Link urls use the http or https scheme, compared without case, have a host, and contain no whitespace or control characters. A link to has exactly one of itemId and url.",
+   "count is an integer of at least 0. progress value is a number of at least 0, max is a number above 0, and value above max reports invalid_field at value after max is checked. Booleans are not numbers.",
+   "A link target reports invalid_field when it is not an object or does not hold exactly one of itemId and url, after its unknown keys are checked."
+  ],
+  "fieldOrder": {
+   "stack": [
+    "children",
+    "gap"
+   ],
+   "section": [
+    "title",
+    "description",
+    "count",
+    "children"
+   ],
+   "form": [
+    "id",
+    "title",
+    "description",
+    "fields",
+    "submit",
+    "action",
+    "more"
+   ],
+   "field": [
+    "type",
+    "name",
+    "label",
+    "hint",
+    "value",
+    "required",
+    "options"
+   ],
+   "option": [
+    "value",
+    "label"
+   ],
+   "list": [
+    "items",
+    "empty"
+   ],
+   "listItem": [
+    "title",
+    "subtitle",
+    "icon",
+    "link",
+    "badge",
+    "actions"
+   ],
+   "listItemBadge": [
+    "type",
+    "label",
+    "tone"
+   ],
+   "table": [
+    "columns",
+    "rows",
+    "rowActions"
+   ],
+   "column": [
+    "key",
+    "label",
+    "numeric"
+   ],
+   "text": [
+    "value"
+   ],
+   "markdown": [
+    "value"
+   ],
+   "progress": [
+    "value",
+    "max",
+    "label",
+    "jobId"
+   ],
+   "badge": [
+    "label",
+    "tone"
+   ],
+   "button": [
+    "label",
+    "variant",
+    "action",
+    "confirm"
+   ],
+   "link": [
+    "label",
+    "to"
+   ],
+   "linkTarget": [
+    "itemId",
+    "url"
+   ],
+   "empty": [
+    "title",
+    "body",
+    "action"
+   ],
+   "code": [
+    "value",
+    "language"
+   ],
+   "action": [
+    "id",
+    "payload"
+   ]
+  },
+  "required": {
+   "stack": [
+    "children"
+   ],
+   "section": [
+    "title"
+   ],
+   "form": [
+    "id",
+    "fields",
+    "action"
+   ],
+   "field": [
+    "type",
+    "name"
+   ],
+   "option": [
+    "value",
+    "label"
+   ],
+   "list": [
+    "items"
+   ],
+   "listItem": [
+    "title"
+   ],
+   "listItemBadge": [
+    "label"
+   ],
+   "table": [
+    "columns",
+    "rows"
+   ],
+   "column": [
+    "key",
+    "label"
+   ],
+   "text": [
+    "value"
+   ],
+   "markdown": [
+    "value"
+   ],
+   "progress": [
+    "value"
+   ],
+   "badge": [
+    "label"
+   ],
+   "button": [
+    "label",
+    "action"
+   ],
+   "link": [
+    "label",
+    "to"
+   ],
+   "empty": [
+    "title"
+   ],
+   "code": [
+    "value"
+   ],
+   "action": [
+    "id"
+   ]
+  },
+  "enums": {
+   "stack.gap": [
+    "s",
+    "m",
+    "l"
+   ],
+   "badge.tone": [
+    "neutral",
+    "good",
+    "warn",
+    "bad",
+    "accent"
+   ],
+   "button.variant": [
+    "primary",
+    "secondary",
+    "danger"
+   ],
+   "field.type": [
+    "text",
+    "textarea",
+    "number",
+    "url",
+    "select",
+    "checkbox",
+    "file",
+    "note",
+    "folder",
+    "space"
+   ]
+  },
+  "errorCodes": [
+   "not_object",
+   "unknown_type",
+   "unknown_field",
+   "missing_field",
+   "invalid_field",
+   "invalid_id",
+   "invalid_url",
+   "duplicate_name",
+   "too_many_nodes",
+   "too_deep",
+   "too_large"
+  ],
+  "generators": {
+   "wide": "{type: stack, children: n copies of {type: text, value: \"x\"}}",
+   "wideUnknown": "{type: stack, children: n copies of {type: nope}}",
+   "wideList": "{type: list, items: n copies of {title: \"x\"}}",
+   "wideTable": "{type: table, columns: [{key: \"a\", label: \"A\"}], rows: n copies of {a: 1}}",
+   "buttons": "{type: stack, children: n copies of {type: button, label: \"b\", action: {id: \"a\"}}}",
+   "selectOptions": "{type: form, id: \"f\", action: {id: \"a\"}, fields: [{type: select, name: \"s\", options: n copies of {value: \"v\", label: \"V\"}}]}",
+   "deep": "n nested stacks. The innermost has children []",
+   "deepPayload": "{type: button, label: \"b\", action: {id: \"a\", payload: P}}, where P is n nested objects {a: {a: ... {}}} and the innermost is {}",
+   "bigText": "{type: text, value: n copies of \"a\"}. The encoded size is n + 26 bytes",
+   "bigUnknown": "{type: nope, value: n copies of \"a\"}"
+  },
+  "cases": [
+   {
+    "name": "empty stack",
+    "tree": {
+     "type": "stack",
+     "children": []
+    },
+    "error": null
+   },
+   {
+    "name": "every node type",
+    "tree": {
+     "type": "stack",
+     "gap": "m",
+     "children": [
+      {
+       "type": "section",
+       "title": "Counts",
+       "description": "Words in this note",
+       "count": 3,
+       "children": [
+        {
+         "type": "text",
+         "value": "412 words"
+        },
+        {
+         "type": "markdown",
+         "value": "**bold** <b>escaped</b>"
+        },
+        {
+         "type": "code",
+         "value": "print(1)",
+         "language": "python"
+        },
+        {
+         "type": "code",
+         "value": "plain"
+        }
+       ]
+      },
+      {
+       "type": "form",
+       "id": "import",
+       "title": "Import",
+       "description": "Upload a file",
+       "submit": "Import",
+       "action": {
+        "id": "import"
+       },
+       "fields": [
+        {
+         "type": "text",
+         "name": "title",
+         "label": "Title",
+         "hint": "Shown in the tree",
+         "value": "",
+         "required": true
+        },
+        {
+         "type": "textarea",
+         "name": "body"
+        },
+        {
+         "type": "number",
+         "name": "limit",
+         "value": 10
+        },
+        {
+         "type": "url",
+         "name": "url",
+         "value": "https://example.com"
+        },
+        {
+         "type": "select",
+         "name": "mode",
+         "value": "fast",
+         "options": [
+          {
+           "value": "fast",
+           "label": "Fast"
+          },
+          {
+           "value": "full",
+           "label": "Full"
+          }
+         ]
+        },
+        {
+         "type": "checkbox",
+         "name": "robots",
+         "value": true
+        },
+        {
+         "type": "file",
+         "name": "file"
+        },
+        {
+         "type": "note",
+         "name": "note"
+        },
+        {
+         "type": "folder",
+         "name": "folder"
+        },
+        {
+         "type": "space",
+         "name": "space",
+         "value": null
+        }
+       ],
+       "more": [
+        {
+         "type": "number",
+         "name": "concurrency",
+         "value": 4
+        }
+       ]
+      },
+      {
+       "type": "list",
+       "empty": "No pages",
+       "items": [
+        {
+         "title": "SQLite",
+         "subtitle": "entity",
+         "icon": "book",
+         "link": {
+          "itemId": "n1"
+         },
+         "badge": {
+          "type": "badge",
+          "label": "new",
+          "tone": "accent"
+         },
+         "actions": [
+          {
+           "type": "button",
+           "label": "Count",
+           "action": {
+            "id": "count-space",
+            "payload": {
+             "spaceId": "s1"
+            }
+           }
+          }
+         ]
+        },
+        {
+         "title": "External",
+         "link": {
+          "url": "https://example.com/a"
+         }
+        }
+       ]
+      },
+      {
+       "type": "table",
+       "columns": [
+        {
+         "key": "name",
+         "label": "Name"
+        },
+        {
+         "key": "words",
+         "label": "Words",
+         "numeric": true
+        }
+       ],
+       "rows": [
+        {
+         "name": "a",
+         "words": 1
+        },
+        {
+         "name": "b",
+         "words": 2.5,
+         "draft": false,
+         "note": null
+        }
+       ],
+       "rowActions": [
+        {
+         "type": "button",
+         "label": "Count",
+         "action": {
+          "id": "count-space",
+          "payload": {
+           "spaceId": "s1"
+          }
+         }
+        }
+       ]
+      },
+      {
+       "type": "progress",
+       "value": 3,
+       "max": 10,
+       "label": "Counting",
+       "jobId": "01j9z3k5q8r2m4n6p7s8t9v0w1"
+      },
+      {
+       "type": "progress",
+       "value": 0
+      },
+      {
+       "type": "badge",
+       "label": "ok"
+      },
+      {
+       "type": "badge",
+       "label": "bad",
+       "tone": "bad"
+      },
+      {
+       "type": "button",
+       "label": "Delete",
+       "variant": "danger",
+       "confirm": "Delete it?",
+       "action": {
+        "id": "delete"
+       }
+      },
+      {
+       "type": "link",
+       "label": "Open",
+       "to": {
+        "itemId": "n1"
+       }
+      },
+      {
+       "type": "link",
+       "label": "Site",
+       "to": {
+        "url": "http://example.com"
+       }
+      },
+      {
+       "type": "empty",
+       "title": "Nothing yet",
+       "body": "Run a count.",
+       "action": {
+        "type": "button",
+        "label": "Count",
+        "action": {
+         "id": "count-space",
+         "payload": {
+          "spaceId": "s1"
+         }
+        }
+       }
+      },
+      {
+       "type": "empty",
+       "title": "Nothing"
+      }
+     ]
+    },
+    "error": null
+   },
+   {
+    "name": "section without children",
+    "tree": {
+     "type": "section",
+     "title": "T"
+    },
+    "error": null
+   },
+   {
+    "name": "root is an array",
+    "tree": [],
+    "error": {
+     "code": "not_object",
+     "path": "$"
+    }
+   },
+   {
+    "name": "root is a string",
+    "tree": "text",
+    "error": {
+     "code": "not_object",
+     "path": "$"
+    }
+   },
+   {
+    "name": "child is null",
+    "tree": {
+     "type": "stack",
+     "children": [
+      null
+     ]
+    },
+    "error": {
+     "code": "not_object",
+     "path": "$.children[0]"
+    }
+   },
+   {
+    "name": "missing type",
+    "tree": {
+     "children": []
+    },
+    "error": {
+     "code": "unknown_type",
+     "path": "$"
+    }
+   },
+   {
+    "name": "type not a string",
+    "tree": {
+     "type": 3
+    },
+    "error": {
+     "code": "unknown_type",
+     "path": "$"
+    }
+   },
+   {
+    "name": "unknown type",
+    "tree": {
+     "type": "iframe",
+     "src": "x"
+    },
+    "error": {
+     "code": "unknown_type",
+     "path": "$"
+    }
+   },
+   {
+    "name": "field type used as node",
+    "tree": {
+     "type": "textarea",
+     "name": "x"
+    },
+    "error": {
+     "code": "unknown_type",
+     "path": "$"
+    }
+   },
+   {
+    "name": "unknown nested type",
+    "tree": {
+     "type": "stack",
+     "children": [
+      {
+       "type": "text",
+       "value": "a"
+      },
+      {
+       "type": "script"
+      }
+     ]
+    },
+    "error": {
+     "code": "unknown_type",
+     "path": "$.children[1]"
+    }
+   },
+   {
+    "name": "unknown field",
+    "tree": {
+     "type": "text",
+     "value": "a",
+     "html": "<b>"
+    },
+    "error": {
+     "code": "unknown_field",
+     "path": "$.html"
+    }
+   },
+   {
+    "name": "unknown fields report the smallest name",
+    "tree": {
+     "type": "text",
+     "value": "a",
+     "zeta": 1,
+     "alpha": 1
+    },
+    "error": {
+     "code": "unknown_field",
+     "path": "$.alpha"
+    }
+   },
+   {
+    "name": "unknown field before missing field",
+    "tree": {
+     "type": "text",
+     "extra": 1
+    },
+    "error": {
+     "code": "unknown_field",
+     "path": "$.extra"
+    }
+   },
+   {
+    "name": "stack missing children",
+    "tree": {
+     "type": "stack"
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.children"
+    }
+   },
+   {
+    "name": "stack children not array",
+    "tree": {
+     "type": "stack",
+     "children": {}
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.children"
+    }
+   },
+   {
+    "name": "stack bad gap",
+    "tree": {
+     "type": "stack",
+     "gap": "xl",
+     "children": []
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.gap"
+    }
+   },
+   {
+    "name": "section missing title",
+    "tree": {
+     "type": "section",
+     "children": []
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.title"
+    }
+   },
+   {
+    "name": "section negative count",
+    "tree": {
+     "type": "section",
+     "title": "a",
+     "count": -1
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.count"
+    }
+   },
+   {
+    "name": "section fractional count",
+    "tree": {
+     "type": "section",
+     "title": "a",
+     "count": 1.5
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.count"
+    }
+   },
+   {
+    "name": "section count as string",
+    "tree": {
+     "type": "section",
+     "title": "a",
+     "count": "3"
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.count"
+    }
+   },
+   {
+    "name": "text missing value",
+    "tree": {
+     "type": "text"
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.value"
+    }
+   },
+   {
+    "name": "text value not string",
+    "tree": {
+     "type": "text",
+     "value": 5
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.value"
+    }
+   },
+   {
+    "name": "markdown value null",
+    "tree": {
+     "type": "markdown",
+     "value": null
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.value"
+    }
+   },
+   {
+    "name": "code bad language type",
+    "tree": {
+     "type": "code",
+     "value": "",
+     "language": 1
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.language"
+    }
+   },
+   {
+    "name": "form missing id",
+    "tree": {
+     "type": "form",
+     "fields": [],
+     "action": {
+      "id": "a"
+     }
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.id"
+    }
+   },
+   {
+    "name": "form bad id",
+    "tree": {
+     "type": "form",
+     "id": "Bad Id",
+     "fields": [],
+     "action": {
+      "id": "a"
+     }
+    },
+    "error": {
+     "code": "invalid_id",
+     "path": "$.id"
+    }
+   },
+   {
+    "name": "form missing fields",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     }
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.fields"
+    }
+   },
+   {
+    "name": "form missing action",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "fields": []
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.action"
+    }
+   },
+   {
+    "name": "form field unknown type",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     },
+     "fields": [
+      {
+       "type": "color",
+       "name": "c"
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.fields[0].type"
+    }
+   },
+   {
+    "name": "form field missing type",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     },
+     "fields": [
+      {
+       "name": "c"
+      }
+     ]
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.fields[0].type"
+    }
+   },
+   {
+    "name": "form field missing name",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     },
+     "fields": [
+      {
+       "type": "text"
+      }
+     ]
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.fields[0].name"
+    }
+   },
+   {
+    "name": "form field empty name",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     },
+     "fields": [
+      {
+       "type": "text",
+       "name": ""
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.fields[0].name"
+    }
+   },
+   {
+    "name": "form field unknown key",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     },
+     "fields": [
+      {
+       "type": "text",
+       "name": "a",
+       "placeholder": "x"
+      }
+     ]
+    },
+    "error": {
+     "code": "unknown_field",
+     "path": "$.fields[0].placeholder"
+    }
+   },
+   {
+    "name": "form field required not bool",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     },
+     "fields": [
+      {
+       "type": "text",
+       "name": "a",
+       "required": "yes"
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.fields[0].required"
+    }
+   },
+   {
+    "name": "form field value object",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     },
+     "fields": [
+      {
+       "type": "text",
+       "name": "a",
+       "value": {}
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.fields[0].value"
+    }
+   },
+   {
+    "name": "select missing options",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     },
+     "fields": [
+      {
+       "type": "select",
+       "name": "a"
+      }
+     ]
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.fields[0].options"
+    }
+   },
+   {
+    "name": "options on a text field",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     },
+     "fields": [
+      {
+       "type": "text",
+       "name": "a",
+       "options": []
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.fields[0].options"
+    }
+   },
+   {
+    "name": "option missing label",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     },
+     "fields": [
+      {
+       "type": "select",
+       "name": "a",
+       "options": [
+        {
+         "value": "x"
+        }
+       ]
+      }
+     ]
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.fields[0].options[0].label"
+    }
+   },
+   {
+    "name": "option value not string",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     },
+     "fields": [
+      {
+       "type": "select",
+       "name": "a",
+       "options": [
+        {
+         "value": 1,
+         "label": "x"
+        }
+       ]
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.fields[0].options[0].value"
+    }
+   },
+   {
+    "name": "duplicate field name",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     },
+     "fields": [
+      {
+       "type": "text",
+       "name": "a"
+      },
+      {
+       "type": "number",
+       "name": "a"
+      }
+     ]
+    },
+    "error": {
+     "code": "duplicate_name",
+     "path": "$.fields[1].name"
+    }
+   },
+   {
+    "name": "duplicate field name across more",
+    "tree": {
+     "type": "form",
+     "id": "f",
+     "action": {
+      "id": "a"
+     },
+     "fields": [
+      {
+       "type": "text",
+       "name": "a"
+      }
+     ],
+     "more": [
+      {
+       "type": "text",
+       "name": "a"
+      }
+     ]
+    },
+    "error": {
+     "code": "duplicate_name",
+     "path": "$.more[0].name"
+    }
+   },
+   {
+    "name": "action missing id",
+    "tree": {
+     "type": "button",
+     "label": "x",
+     "action": {
+      "payload": {}
+     }
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.action.id"
+    }
+   },
+   {
+    "name": "action bad id",
+    "tree": {
+     "type": "button",
+     "label": "x",
+     "action": {
+      "id": "../x"
+     }
+    },
+    "error": {
+     "code": "invalid_id",
+     "path": "$.action.id"
+    }
+   },
+   {
+    "name": "action payload not object",
+    "tree": {
+     "type": "button",
+     "label": "x",
+     "action": {
+      "id": "a",
+      "payload": [
+       1
+      ]
+     }
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.action.payload"
+    }
+   },
+   {
+    "name": "action unknown key",
+    "tree": {
+     "type": "button",
+     "label": "x",
+     "action": {
+      "id": "a",
+      "url": "x"
+     }
+    },
+    "error": {
+     "code": "unknown_field",
+     "path": "$.action.url"
+    }
+   },
+   {
+    "name": "action not object",
+    "tree": {
+     "type": "button",
+     "label": "x",
+     "action": "a"
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.action"
+    }
+   },
+   {
+    "name": "button missing label",
+    "tree": {
+     "type": "button",
+     "action": {
+      "id": "a"
+     }
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.label"
+    }
+   },
+   {
+    "name": "button missing action",
+    "tree": {
+     "type": "button",
+     "label": "x"
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.action"
+    }
+   },
+   {
+    "name": "button bad variant",
+    "tree": {
+     "type": "button",
+     "label": "x",
+     "action": {
+      "id": "a"
+     },
+     "variant": "link"
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.variant"
+    }
+   },
+   {
+    "name": "badge bad tone",
+    "tree": {
+     "type": "badge",
+     "label": "x",
+     "tone": "red"
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.tone"
+    }
+   },
+   {
+    "name": "badge missing label",
+    "tree": {
+     "type": "badge"
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.label"
+    }
+   },
+   {
+    "name": "progress missing value",
+    "tree": {
+     "type": "progress",
+     "max": 3
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.value"
+    }
+   },
+   {
+    "name": "progress negative value",
+    "tree": {
+     "type": "progress",
+     "value": -1
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.value"
+    }
+   },
+   {
+    "name": "progress zero max",
+    "tree": {
+     "type": "progress",
+     "value": 0,
+     "max": 0
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.max"
+    }
+   },
+   {
+    "name": "progress value above max",
+    "tree": {
+     "type": "progress",
+     "value": 4,
+     "max": 3
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.value"
+    }
+   },
+   {
+    "name": "progress bool value",
+    "tree": {
+     "type": "progress",
+     "value": true
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.value"
+    }
+   },
+   {
+    "name": "progress bad job id",
+    "tree": {
+     "type": "progress",
+     "value": 1,
+     "jobId": "a/b"
+    },
+    "error": {
+     "code": "invalid_id",
+     "path": "$.jobId"
+    }
+   },
+   {
+    "name": "link missing to",
+    "tree": {
+     "type": "link",
+     "label": "x"
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.to"
+    }
+   },
+   {
+    "name": "link to both",
+    "tree": {
+     "type": "link",
+     "label": "x",
+     "to": {
+      "itemId": "a",
+      "url": "https://e.com"
+     }
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.to"
+    }
+   },
+   {
+    "name": "link to neither",
+    "tree": {
+     "type": "link",
+     "label": "x",
+     "to": {}
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.to"
+    }
+   },
+   {
+    "name": "link to unknown key",
+    "tree": {
+     "type": "link",
+     "label": "x",
+     "to": {
+      "path": "/a"
+     }
+    },
+    "error": {
+     "code": "unknown_field",
+     "path": "$.to.path"
+    }
+   },
+   {
+    "name": "link javascript url",
+    "tree": {
+     "type": "link",
+     "label": "x",
+     "to": {
+      "url": "javascript:alert(1)"
+     }
+    },
+    "error": {
+     "code": "invalid_url",
+     "path": "$.to.url"
+    }
+   },
+   {
+    "name": "link data url",
+    "tree": {
+     "type": "link",
+     "label": "x",
+     "to": {
+      "url": "data:text/html,x"
+     }
+    },
+    "error": {
+     "code": "invalid_url",
+     "path": "$.to.url"
+    }
+   },
+   {
+    "name": "link relative url",
+    "tree": {
+     "type": "link",
+     "label": "x",
+     "to": {
+      "url": "/s/docs"
+     }
+    },
+    "error": {
+     "code": "invalid_url",
+     "path": "$.to.url"
+    }
+   },
+   {
+    "name": "link url without host",
+    "tree": {
+     "type": "link",
+     "label": "x",
+     "to": {
+      "url": "https:///x"
+     }
+    },
+    "error": {
+     "code": "invalid_url",
+     "path": "$.to.url"
+    }
+   },
+   {
+    "name": "link uppercase scheme",
+    "tree": {
+     "type": "link",
+     "label": "x",
+     "to": {
+      "url": "HTTPS://example.com"
+     }
+    },
+    "error": null
+   },
+   {
+    "name": "link url with space",
+    "tree": {
+     "type": "link",
+     "label": "x",
+     "to": {
+      "url": "https://exa mple.com"
+     }
+    },
+    "error": {
+     "code": "invalid_url",
+     "path": "$.to.url"
+    }
+   },
+   {
+    "name": "link url with control character",
+    "tree": {
+     "type": "link",
+     "label": "x",
+     "to": {
+      "url": "https://example.com/\n"
+     }
+    },
+    "error": {
+     "code": "invalid_url",
+     "path": "$.to.url"
+    }
+   },
+   {
+    "name": "link empty item id",
+    "tree": {
+     "type": "link",
+     "label": "x",
+     "to": {
+      "itemId": ""
+     }
+    },
+    "error": {
+     "code": "invalid_id",
+     "path": "$.to.itemId"
+    }
+   },
+   {
+    "name": "list missing items",
+    "tree": {
+     "type": "list"
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.items"
+    }
+   },
+   {
+    "name": "list item missing title",
+    "tree": {
+     "type": "list",
+     "items": [
+      {
+       "subtitle": "a"
+      }
+     ]
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.items[0].title"
+    }
+   },
+   {
+    "name": "list item not object",
+    "tree": {
+     "type": "list",
+     "items": [
+      "a"
+     ]
+    },
+    "error": {
+     "code": "not_object",
+     "path": "$.items[0]"
+    }
+   },
+   {
+    "name": "list item bad badge",
+    "tree": {
+     "type": "list",
+     "items": [
+      {
+       "title": "a",
+       "badge": "new"
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.items[0].badge"
+    }
+   },
+   {
+    "name": "list item badge wrong type",
+    "tree": {
+     "type": "list",
+     "items": [
+      {
+       "title": "a",
+       "badge": {
+        "type": "text",
+        "label": "x"
+       }
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.items[0].badge.type"
+    }
+   },
+   {
+    "name": "list item badge without type",
+    "tree": {
+     "type": "list",
+     "items": [
+      {
+       "title": "a",
+       "badge": {
+        "label": "new",
+        "tone": "good"
+       }
+      }
+     ]
+    },
+    "error": null
+   },
+   {
+    "name": "list item badge missing label",
+    "tree": {
+     "type": "list",
+     "items": [
+      {
+       "title": "a",
+       "badge": {
+        "tone": "good"
+       }
+      }
+     ]
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.items[0].badge.label"
+    }
+   },
+   {
+    "name": "list item badge unknown field",
+    "tree": {
+     "type": "list",
+     "items": [
+      {
+       "title": "a",
+       "badge": {
+        "label": "x",
+        "value": 1
+       }
+      }
+     ]
+    },
+    "error": {
+     "code": "unknown_field",
+     "path": "$.items[0].badge.value"
+    }
+   },
+   {
+    "name": "list item badge bad tone",
+    "tree": {
+     "type": "list",
+     "items": [
+      {
+       "title": "a",
+       "badge": {
+        "label": "x",
+        "tone": "red"
+       }
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.items[0].badge.tone"
+    }
+   },
+   {
+    "name": "payload objects are not validated beyond limits",
+    "tree": {
+     "type": "button",
+     "label": "x",
+     "action": {
+      "id": "a",
+      "payload": {
+       "type": "nope",
+       "x": [
+        {
+         "y": {}
+        }
+       ]
+      }
+     }
+    },
+    "error": null
+   },
+   {
+    "name": "list item action not a button",
+    "tree": {
+     "type": "list",
+     "items": [
+      {
+       "title": "a",
+       "actions": [
+        {
+         "type": "text",
+         "value": "x"
+        }
+       ]
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.items[0].actions[0]"
+    }
+   },
+   {
+    "name": "list item bad link",
+    "tree": {
+     "type": "list",
+     "items": [
+      {
+       "title": "a",
+       "link": {
+        "url": "ftp://x"
+       }
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_url",
+     "path": "$.items[0].link.url"
+    }
+   },
+   {
+    "name": "list empty not string",
+    "tree": {
+     "type": "list",
+     "items": [],
+     "empty": {
+      "type": "empty",
+      "title": "x"
+     }
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.empty"
+    }
+   },
+   {
+    "name": "table missing columns",
+    "tree": {
+     "type": "table",
+     "rows": []
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.columns"
+    }
+   },
+   {
+    "name": "table missing rows",
+    "tree": {
+     "type": "table",
+     "columns": []
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.rows"
+    }
+   },
+   {
+    "name": "table column missing key",
+    "tree": {
+     "type": "table",
+     "columns": [
+      {
+       "label": "a"
+      }
+     ],
+     "rows": []
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.columns[0].key"
+    }
+   },
+   {
+    "name": "table column numeric not bool",
+    "tree": {
+     "type": "table",
+     "columns": [
+      {
+       "key": "a",
+       "label": "a",
+       "numeric": 1
+      }
+     ],
+     "rows": []
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.columns[0].numeric"
+    }
+   },
+   {
+    "name": "table row not object",
+    "tree": {
+     "type": "table",
+     "columns": [],
+     "rows": [
+      [
+       1,
+       2
+      ]
+     ]
+    },
+    "error": {
+     "code": "not_object",
+     "path": "$.rows[0]"
+    }
+   },
+   {
+    "name": "table row nested value",
+    "tree": {
+     "type": "table",
+     "columns": [],
+     "rows": [
+      {
+       "a": {
+        "b": 1
+       }
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.rows[0].a"
+    }
+   },
+   {
+    "name": "table row action not button",
+    "tree": {
+     "type": "table",
+     "columns": [],
+     "rows": [],
+     "rowActions": [
+      {
+       "type": "badge",
+       "label": "x"
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.rowActions[0]"
+    }
+   },
+   {
+    "name": "empty missing title",
+    "tree": {
+     "type": "empty",
+     "body": "x"
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.title"
+    }
+   },
+   {
+    "name": "empty action not button",
+    "tree": {
+     "type": "empty",
+     "title": "x",
+     "action": {
+      "id": "a"
+     }
+    },
+    "error": {
+     "code": "unknown_type",
+     "path": "$.action"
+    }
+   },
+   {
+    "name": "deep path",
+    "tree": {
+     "type": "stack",
+     "children": [
+      {
+       "type": "section",
+       "title": "a",
+       "children": [
+        {
+         "type": "list",
+         "items": [
+          {
+           "title": "x",
+           "actions": [
+            {
+             "type": "button",
+             "label": "b",
+             "action": {
+              "id": "B"
+             }
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "error": {
+     "code": "invalid_id",
+     "path": "$.children[0].children[0].items[0].actions[0].action.id"
+    }
+   },
+   {
+    "name": "unknown field checked before children",
+    "tree": {
+     "type": "stack",
+     "children": [
+      {
+       "type": "nope"
+      }
+     ],
+     "extra": true
+    },
+    "error": {
+     "code": "unknown_field",
+     "path": "$.extra"
+    }
+   },
+   {
+    "name": "2000 nodes",
+    "generate": {
+     "kind": "wide",
+     "n": 1999
+    },
+    "error": null
+   },
+   {
+    "name": "2001 nodes",
+    "generate": {
+     "kind": "wide",
+     "n": 2000
+    },
+    "error": {
+     "code": "too_many_nodes",
+     "path": "$.children[1999]"
+    }
+   },
+   {
+    "name": "limits are checked before structure",
+    "generate": {
+     "kind": "wideUnknown",
+     "n": 2000
+    },
+    "error": {
+     "code": "too_many_nodes",
+     "path": "$.children[1999]"
+    }
+   },
+   {
+    "name": "list items count as nodes",
+    "generate": {
+     "kind": "wideList",
+     "n": 2000
+    },
+    "error": {
+     "code": "too_many_nodes",
+     "path": "$.items[1999]"
+    }
+   },
+   {
+    "name": "table column and rows count as nodes",
+    "generate": {
+     "kind": "wideTable",
+     "n": 1998
+    },
+    "error": null
+   },
+   {
+    "name": "table rows over the limit",
+    "generate": {
+     "kind": "wideTable",
+     "n": 1999
+    },
+    "error": {
+     "code": "too_many_nodes",
+     "path": "$.rows[1998]"
+    }
+   },
+   {
+    "name": "999 buttons with actions",
+    "generate": {
+     "kind": "buttons",
+     "n": 999
+    },
+    "error": null
+   },
+   {
+    "name": "action objects count as nodes",
+    "generate": {
+     "kind": "buttons",
+     "n": 1000
+    },
+    "error": {
+     "code": "too_many_nodes",
+     "path": "$.children[999].action"
+    }
+   },
+   {
+    "name": "options count as nodes",
+    "generate": {
+     "kind": "selectOptions",
+     "n": 1997
+    },
+    "error": null
+   },
+   {
+    "name": "options over the limit",
+    "generate": {
+     "kind": "selectOptions",
+     "n": 1998
+    },
+    "error": {
+     "code": "too_many_nodes",
+     "path": "$.fields[0].options[1997]"
+    }
+   },
+   {
+    "name": "depth 32",
+    "generate": {
+     "kind": "deep",
+     "n": 32
+    },
+    "error": null
+   },
+   {
+    "name": "depth 33",
+    "generate": {
+     "kind": "deep",
+     "n": 33
+    },
+    "error": {
+     "code": "too_deep",
+     "path": "$.children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0]"
+    }
+   },
+   {
+    "name": "payload depth 32",
+    "generate": {
+     "kind": "deepPayload",
+     "n": 30
+    },
+    "error": null
+   },
+   {
+    "name": "payload objects add depth",
+    "generate": {
+     "kind": "deepPayload",
+     "n": 31
+    },
+    "error": {
+     "code": "too_deep",
+     "path": "$.action.payload.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a"
+    }
+   },
+   {
+    "name": "exactly 1 MiB",
+    "generate": {
+     "kind": "bigText",
+     "n": 1048550
+    },
+    "error": null
+   },
+   {
+    "name": "one byte over 1 MiB",
+    "generate": {
+     "kind": "bigText",
+     "n": 1048551
+    },
+    "error": {
+     "code": "too_large",
+     "path": "$"
+    }
+   },
+   {
+    "name": "size checked before structure",
+    "generate": {
+     "kind": "bigUnknown",
+     "n": 1048576
+    },
+    "error": {
+     "code": "too_large",
+     "path": "$"
+    }
+   }
+  ]
+ },
+ "commandResponses": {
+  "rules": [
+   "A command response is an object with exactly one of toast, openPanel, navigate, job and ui.",
+   "Check order is not_object, unknown keys in ascending byte order, empty_response, multiple_kinds, then the one kind.",
+   "toast is {message, kind}. message is a non-empty string. kind is info, success, warn or error, and defaults to info.",
+   "openPanel is {id, itemId}. id is a qualifiedId. itemId is an objectId.",
+   "navigate is a path inside Markspace of 1 to 2048 bytes. It starts with / and not with // or /\\, and contains no control characters.",
+   "job is {id} with an objectId.",
+   "ui is a UI tree. Its error paths start at $.ui."
+  ],
+  "errorCodes": [
+   "not_object",
+   "unknown_field",
+   "empty_response",
+   "multiple_kinds",
+   "missing_field",
+   "invalid_field",
+   "invalid_id",
+   "invalid_navigate"
+  ],
+  "cases": [
+   {
+    "name": "toast",
+    "response": {
+     "toast": {
+      "message": "Queued 412 bookmarks",
+      "kind": "info"
+     }
+    },
+    "error": null
+   },
+   {
+    "name": "toast without kind",
+    "response": {
+     "toast": {
+      "message": "Done"
+     }
+    },
+    "error": null
+   },
+   {
+    "name": "toast every kind",
+    "response": {
+     "toast": {
+      "message": "x",
+      "kind": "error"
+     }
+    },
+    "error": null
+   },
+   {
+    "name": "open panel",
+    "response": {
+     "openPanel": {
+      "id": "bookmark-wiki.wiki",
+      "itemId": "0abc"
+     }
+    },
+    "error": null
+   },
+   {
+    "name": "open panel without item",
+    "response": {
+     "openPanel": {
+      "id": "comments.comments"
+     }
+    },
+    "error": null
+   },
+   {
+    "name": "navigate",
+    "response": {
+     "navigate": "/s/docs/n/wiki/index"
+    },
+    "error": null
+   },
+   {
+    "name": "navigate with query",
+    "response": {
+     "navigate": "/jobs?id=1#top"
+    },
+    "error": null
+   },
+   {
+    "name": "job",
+    "response": {
+     "job": {
+      "id": "01j9z3k5q8r2m4n6p7s8t9v0w1"
+     }
+    },
+    "error": null
+   },
+   {
+    "name": "ui",
+    "response": {
+     "ui": {
+      "type": "stack",
+      "children": []
+     }
+    },
+    "error": null
+   },
+   {
+    "name": "not an object",
+    "response": [
+     "toast"
+    ],
+    "error": {
+     "code": "not_object",
+     "path": "$"
+    }
+   },
+   {
+    "name": "null",
+    "response": null,
+    "error": {
+     "code": "not_object",
+     "path": "$"
+    }
+   },
+   {
+    "name": "empty object",
+    "response": {},
+    "error": {
+     "code": "empty_response",
+     "path": "$"
+    }
+   },
+   {
+    "name": "two kinds",
+    "response": {
+     "toast": {
+      "message": "a"
+     },
+     "navigate": "/a"
+    },
+    "error": {
+     "code": "multiple_kinds",
+     "path": "$"
+    }
+   },
+   {
+    "name": "unknown key",
+    "response": {
+     "toast": {
+      "message": "a"
+     },
+     "redirect": "/a"
+    },
+    "error": {
+     "code": "unknown_field",
+     "path": "$.redirect"
+    }
+   },
+   {
+    "name": "unknown key alone",
+    "response": {
+     "redirect": "/a"
+    },
+    "error": {
+     "code": "unknown_field",
+     "path": "$.redirect"
+    }
+   },
+   {
+    "name": "toast not object",
+    "response": {
+     "toast": "hi"
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.toast"
+    }
+   },
+   {
+    "name": "toast missing message",
+    "response": {
+     "toast": {
+      "kind": "info"
+     }
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.toast.message"
+    }
+   },
+   {
+    "name": "toast empty message",
+    "response": {
+     "toast": {
+      "message": ""
+     }
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.toast.message"
+    }
+   },
+   {
+    "name": "toast bad kind",
+    "response": {
+     "toast": {
+      "message": "a",
+      "kind": "danger"
+     }
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.toast.kind"
+    }
+   },
+   {
+    "name": "toast unknown key",
+    "response": {
+     "toast": {
+      "message": "a",
+      "timeout": 5
+     }
+    },
+    "error": {
+     "code": "unknown_field",
+     "path": "$.toast.timeout"
+    }
+   },
+   {
+    "name": "open panel missing id",
+    "response": {
+     "openPanel": {
+      "itemId": "a"
+     }
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.openPanel.id"
+    }
+   },
+   {
+    "name": "open panel unqualified id",
+    "response": {
+     "openPanel": {
+      "id": "wiki"
+     }
+    },
+    "error": {
+     "code": "invalid_id",
+     "path": "$.openPanel.id"
+    }
+   },
+   {
+    "name": "open panel bad item id",
+    "response": {
+     "openPanel": {
+      "id": "p.wiki",
+      "itemId": "a/b"
+     }
+    },
+    "error": {
+     "code": "invalid_id",
+     "path": "$.openPanel.itemId"
+    }
+   },
+   {
+    "name": "navigate not string",
+    "response": {
+     "navigate": {
+      "to": "/a"
+     }
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.navigate"
+    }
+   },
+   {
+    "name": "navigate absolute url",
+    "response": {
+     "navigate": "https://example.com"
+    },
+    "error": {
+     "code": "invalid_navigate",
+     "path": "$.navigate"
+    }
+   },
+   {
+    "name": "navigate protocol relative",
+    "response": {
+     "navigate": "//evil.example"
+    },
+    "error": {
+     "code": "invalid_navigate",
+     "path": "$.navigate"
+    }
+   },
+   {
+    "name": "navigate backslash",
+    "response": {
+     "navigate": "/\\evil.example"
+    },
+    "error": {
+     "code": "invalid_navigate",
+     "path": "$.navigate"
+    }
+   },
+   {
+    "name": "navigate relative",
+    "response": {
+     "navigate": "s/docs"
+    },
+    "error": {
+     "code": "invalid_navigate",
+     "path": "$.navigate"
+    }
+   },
+   {
+    "name": "navigate empty",
+    "response": {
+     "navigate": ""
+    },
+    "error": {
+     "code": "invalid_navigate",
+     "path": "$.navigate"
+    }
+   },
+   {
+    "name": "navigate control character",
+    "response": {
+     "navigate": "/a\nb"
+    },
+    "error": {
+     "code": "invalid_navigate",
+     "path": "$.navigate"
+    }
+   },
+   {
+    "name": "navigate too long",
+    "response": {
+     "navigate": "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "error": {
+     "code": "invalid_navigate",
+     "path": "$.navigate"
+    }
+   },
+   {
+    "name": "navigate at max length",
+    "response": {
+     "navigate": "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "error": null
+   },
+   {
+    "name": "job missing id",
+    "response": {
+     "job": {}
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.job.id"
+    }
+   },
+   {
+    "name": "job bad id",
+    "response": {
+     "job": {
+      "id": "../x"
+     }
+    },
+    "error": {
+     "code": "invalid_id",
+     "path": "$.job.id"
+    }
+   },
+   {
+    "name": "ui invalid tree",
+    "response": {
+     "ui": {
+      "type": "stack",
+      "children": [
+       {
+        "type": "nope"
+       }
+      ]
+     }
+    },
+    "error": {
+     "code": "unknown_type",
+     "path": "$.ui.children[0]"
+    }
+   },
+   {
+    "name": "ui not object",
+    "response": {
+     "ui": "text"
+    },
+    "error": {
+     "code": "not_object",
+     "path": "$.ui"
+    }
+   }
+  ]
+ },
+ "install": {
+  "rules": [
+   "The body is an object. Unknown keys are ignored.",
+   "Checks run in the order pluginId, markspaceUrl, token, signingSecret, grants, permissions.",
+   "pluginId must equal the manifest id, else wrong_plugin.",
+   "markspaceUrl is an http or https URL with a host and no query or fragment, else invalid_url.",
+   "token is a non-empty string with no whitespace or control characters.",
+   "signingSecret is standard base64 with padding, matching ^[A-Za-z0-9+/]*={0,2}$, decoding to at least 32 bytes, else invalid_secret.",
+   "grants is an array of {spaceId, role} with role viewer, commenter or editor. permissions is an array of strings."
+  ],
+  "errorCodes": [
+   "not_object",
+   "missing_field",
+   "invalid_field",
+   "wrong_plugin",
+   "invalid_url",
+   "invalid_secret"
+  ],
+  "cases": [
+   {
+    "name": "valid",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": null
+   },
+   {
+    "name": "valid without grants and permissions",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8="
+    },
+    "error": null
+   },
+   {
+    "name": "unknown keys are ignored",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ],
+     "future": 1
+    },
+    "error": null
+   },
+   {
+    "name": "https url with path",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "https://notes.example.com/markspace",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": null
+   },
+   {
+    "name": "not an object",
+    "manifestId": "word-count",
+    "body": [
+     1
+    ],
+    "error": {
+     "code": "not_object",
+     "path": "$"
+    }
+   },
+   {
+    "name": "missing plugin id",
+    "manifestId": "word-count",
+    "body": {
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.pluginId"
+    }
+   },
+   {
+    "name": "wrong plugin id",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "bookmark-wiki",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "wrong_plugin",
+     "path": "$.pluginId"
+    }
+   },
+   {
+    "name": "missing url",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.markspaceUrl"
+    }
+   },
+   {
+    "name": "ftp url",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "ftp://markspace",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "invalid_url",
+     "path": "$.markspaceUrl"
+    }
+   },
+   {
+    "name": "url without host",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "invalid_url",
+     "path": "$.markspaceUrl"
+    }
+   },
+   {
+    "name": "url with query",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080/?a=1",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "invalid_url",
+     "path": "$.markspaceUrl"
+    }
+   },
+   {
+    "name": "missing token",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.token"
+    }
+   },
+   {
+    "name": "empty token",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.token"
+    }
+   },
+   {
+    "name": "token with newline",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_a\nb",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.token"
+    }
+   },
+   {
+    "name": "missing secret",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.signingSecret"
+    }
+   },
+   {
+    "name": "secret not base64",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "not base64!",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "invalid_secret",
+     "path": "$.signingSecret"
+    }
+   },
+   {
+    "name": "secret url-safe alphabet",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "-_v7-_v7-_v7-_v7-_v7-_v7-_v7-_v7-_v7-_v7-_s=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "invalid_secret",
+     "path": "$.signingSecret"
+    }
+   },
+   {
+    "name": "secret without padding",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "invalid_secret",
+     "path": "$.signingSecret"
+    }
+   },
+   {
+    "name": "secret too short",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "invalid_secret",
+     "path": "$.signingSecret"
+    }
+   },
+   {
+    "name": "secret with newline",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0O\nDxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "invalid_secret",
+     "path": "$.signingSecret"
+    }
+   },
+   {
+    "name": "grants not array",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": {},
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.grants"
+    }
+   },
+   {
+    "name": "grant bad role",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "owner"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.grants[0].role"
+    }
+   },
+   {
+    "name": "grant missing space",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "role": "viewer"
+      }
+     ],
+     "permissions": [
+      "items:read"
+     ]
+    },
+    "error": {
+     "code": "missing_field",
+     "path": "$.grants[0].spaceId"
+    }
+   },
+   {
+    "name": "permissions not strings",
+    "manifestId": "word-count",
+    "body": {
+     "pluginId": "word-count",
+     "markspaceUrl": "http://markspace:8080",
+     "token": "mspl_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "signingSecret": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+     "grants": [
+      {
+       "spaceId": "s1",
+       "role": "editor"
+      }
+     ],
+     "permissions": [
+      1
+     ]
+    },
+    "error": {
+     "code": "invalid_field",
+     "path": "$.permissions[0]"
+    }
+   }
+  ]
+ }
+}

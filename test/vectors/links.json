@@ -1,0 +1,1708 @@
+{
+  "comment": [
+    "Shared cases for internal/links (Go) and static/js/links.js (browser).",
+    "Offsets are UTF-8 byte offsets. The browser test converts them to UTF-16 code units.",
+    "Entries omit name, which is the last path segment. Rewrite wants are full bodies."
+  ],
+  "trees": {
+    "basic": [
+      {
+        "id": "f-proj",
+        "kind": "folder",
+        "path": "Projects"
+      },
+      {
+        "id": "n-proj",
+        "kind": "note",
+        "path": "Projects/index.md",
+        "title": "Project overview"
+      },
+      {
+        "id": "f-harb",
+        "kind": "folder",
+        "path": "Projects/harbour"
+      },
+      {
+        "id": "n-survey",
+        "kind": "note",
+        "path": "Projects/harbour/harbour-survey.md",
+        "title": "Harbour survey"
+      },
+      {
+        "id": "x-wall",
+        "kind": "file",
+        "path": "Projects/harbour/east wall.jpg"
+      },
+      {
+        "id": "x-report",
+        "kind": "file",
+        "path": "Projects/report.pdf"
+      },
+      {
+        "id": "n-start",
+        "kind": "note",
+        "path": "getting-started.md",
+        "title": "Getting started"
+      },
+      {
+        "id": "x-start",
+        "kind": "file",
+        "path": "Getting started.pdf"
+      },
+      {
+        "id": "f-arch",
+        "kind": "folder",
+        "path": "Archive"
+      },
+      {
+        "id": "n-arch-survey",
+        "kind": "note",
+        "path": "Archive/harbour-survey.md",
+        "title": "Harbour survey 2019"
+      },
+      {
+        "id": "x-arch-wall",
+        "kind": "file",
+        "path": "Archive/east wall.jpg"
+      },
+      {
+        "id": "x-arch-gs",
+        "kind": "file",
+        "path": "Archive/Getting started"
+      },
+      {
+        "id": "n-cn",
+        "kind": "note",
+        "path": "Archive/cn.md",
+        "title": "Café Notes"
+      },
+      {
+        "id": "n-draft",
+        "kind": "note",
+        "path": "Archive/My Draft.md",
+        "title": "Draft"
+      }
+    ],
+    "rw": [
+      {
+        "id": "n-readme",
+        "kind": "note",
+        "path": "readme.md",
+        "title": "Readme"
+      },
+      {
+        "id": "x-pdf",
+        "kind": "file",
+        "path": "report.pdf"
+      },
+      {
+        "id": "f-docs",
+        "kind": "folder",
+        "path": "docs"
+      },
+      {
+        "id": "n-a",
+        "kind": "note",
+        "path": "docs/a.md",
+        "title": "Alpha"
+      },
+      {
+        "id": "n-b",
+        "kind": "note",
+        "path": "docs/b.md",
+        "title": "Beta"
+      },
+      {
+        "id": "x-img",
+        "kind": "file",
+        "path": "docs/east wall.jpg"
+      },
+      {
+        "id": "x-dup2",
+        "kind": "file",
+        "path": "docs/photo.png"
+      },
+      {
+        "id": "f-sub",
+        "kind": "folder",
+        "path": "docs/sub"
+      },
+      {
+        "id": "n-c",
+        "kind": "note",
+        "path": "docs/sub/c.md",
+        "title": "Gamma"
+      },
+      {
+        "id": "x-c",
+        "kind": "file",
+        "path": "docs/sub/c.png"
+      },
+      {
+        "id": "f-other",
+        "kind": "folder",
+        "path": "other"
+      },
+      {
+        "id": "n-idx",
+        "kind": "note",
+        "path": "other/index.md",
+        "title": "Other home"
+      },
+      {
+        "id": "x-dup",
+        "kind": "file",
+        "path": "other/photo.png"
+      },
+      {
+        "id": "f-archive",
+        "kind": "folder",
+        "path": "archive"
+      }
+    ],
+    "ties": [
+      {
+        "id": "f-a",
+        "kind": "folder",
+        "path": "a"
+      },
+      {
+        "id": "f-b",
+        "kind": "folder",
+        "path": "b"
+      },
+      {
+        "id": "f-aa",
+        "kind": "folder",
+        "path": "aa"
+      },
+      {
+        "id": "f-c",
+        "kind": "folder",
+        "path": "c"
+      },
+      {
+        "id": "f-cd",
+        "kind": "folder",
+        "path": "c/dddddddd"
+      },
+      {
+        "id": "f-e",
+        "kind": "folder",
+        "path": "e"
+      },
+      {
+        "id": "f-p",
+        "kind": "folder",
+        "path": "p"
+      },
+      {
+        "id": "f-pq",
+        "kind": "folder",
+        "path": "p/q"
+      },
+      {
+        "id": "f-s",
+        "kind": "folder",
+        "path": "s"
+      },
+      {
+        "id": "f-sq",
+        "kind": "folder",
+        "path": "s/q"
+      },
+      {
+        "id": "x-ax",
+        "kind": "file",
+        "path": "a/x.png"
+      },
+      {
+        "id": "x-bx",
+        "kind": "file",
+        "path": "b/x.png"
+      },
+      {
+        "id": "x-bz",
+        "kind": "file",
+        "path": "b/z.png"
+      },
+      {
+        "id": "x-aaz",
+        "kind": "file",
+        "path": "aa/z.png"
+      },
+      {
+        "id": "x-cdw",
+        "kind": "file",
+        "path": "c/dddddddd/w.png"
+      },
+      {
+        "id": "x-ew",
+        "kind": "file",
+        "path": "e/w.png"
+      },
+      {
+        "id": "x-pqr",
+        "kind": "file",
+        "path": "p/q/r.png"
+      },
+      {
+        "id": "x-sqr",
+        "kind": "file",
+        "path": "s/q/r.png"
+      }
+    ]
+  },
+  "parse": [
+    {
+      "name": "wikilink with heading and label",
+      "body": "See [[Harbour survey#Findings|the survey]] now.",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "Harbour survey",
+          "heading": "Findings",
+          "label": "the survey",
+          "raw": "Harbour survey",
+          "start": 4,
+          "end": 42,
+          "targetStart": 6,
+          "targetEnd": 20,
+          "destStart": 6,
+          "destEnd": 20
+        }
+      ]
+    },
+    {
+      "name": "embed with size as label",
+      "body": "![[east wall.jpg|300]]",
+      "want": [
+        {
+          "form": "wikilink",
+          "embed": true,
+          "target": "east wall.jpg",
+          "label": "300",
+          "raw": "east wall.jpg",
+          "start": 0,
+          "end": 22,
+          "targetStart": 3,
+          "targetEnd": 16,
+          "destStart": 3,
+          "destEnd": 16
+        }
+      ]
+    },
+    {
+      "name": "path wikilinks",
+      "body": "[[Projects/harbour/survey]] and [[/Getting started.pdf]]",
+      "want": [
+        {
+          "form": "pathWikilink",
+          "target": "Projects/harbour/survey",
+          "raw": "Projects/harbour/survey",
+          "start": 0,
+          "end": 27,
+          "targetStart": 2,
+          "targetEnd": 25,
+          "destStart": 2,
+          "destEnd": 25
+        },
+        {
+          "form": "pathWikilink",
+          "target": "/Getting started.pdf",
+          "raw": "/Getting started.pdf",
+          "start": 32,
+          "end": 56,
+          "targetStart": 34,
+          "targetEnd": 54,
+          "destStart": 34,
+          "destEnd": 54
+        }
+      ]
+    },
+    {
+      "name": "markdown link with title",
+      "body": "[report](../report.pdf \"Report\")",
+      "want": [
+        {
+          "form": "markdownLink",
+          "target": "../report.pdf",
+          "label": "report",
+          "raw": "../report.pdf",
+          "start": 0,
+          "end": 32,
+          "targetStart": 9,
+          "targetEnd": 22,
+          "destStart": 9,
+          "destEnd": 22
+        }
+      ]
+    },
+    {
+      "name": "markdown image with percent escape",
+      "body": "![alt](east%20wall.jpg)",
+      "want": [
+        {
+          "form": "markdownImage",
+          "target": "east wall.jpg",
+          "label": "alt",
+          "raw": "east%20wall.jpg",
+          "start": 0,
+          "end": 23,
+          "targetStart": 7,
+          "targetEnd": 22,
+          "destStart": 7,
+          "destEnd": 22
+        }
+      ]
+    },
+    {
+      "name": "angle destination with heading",
+      "body": "[x](<east wall.jpg#top>)",
+      "want": [
+        {
+          "form": "markdownLink",
+          "angle": true,
+          "target": "east wall.jpg",
+          "heading": "top",
+          "label": "x",
+          "raw": "east wall.jpg",
+          "start": 0,
+          "end": 24,
+          "targetStart": 5,
+          "targetEnd": 18,
+          "destStart": 4,
+          "destEnd": 23
+        }
+      ]
+    },
+    {
+      "name": "external links and anchors",
+      "body": "[a](https://x.io) [b](#top) [c](mailto:a@b.c) [d](//host/x) [[#Local]] [e]()",
+      "want": [
+        {
+          "form": "markdownLink",
+          "external": true,
+          "target": "https://x.io",
+          "label": "a",
+          "raw": "https://x.io",
+          "start": 0,
+          "end": 17,
+          "targetStart": 4,
+          "targetEnd": 16,
+          "destStart": 4,
+          "destEnd": 16
+        },
+        {
+          "form": "markdownLink",
+          "external": true,
+          "target": "",
+          "heading": "top",
+          "label": "b",
+          "raw": "",
+          "start": 18,
+          "end": 27,
+          "targetStart": 22,
+          "targetEnd": 22,
+          "destStart": 22,
+          "destEnd": 26
+        },
+        {
+          "form": "markdownLink",
+          "external": true,
+          "target": "mailto:a@b.c",
+          "label": "c",
+          "raw": "mailto:a@b.c",
+          "start": 28,
+          "end": 45,
+          "targetStart": 32,
+          "targetEnd": 44,
+          "destStart": 32,
+          "destEnd": 44
+        },
+        {
+          "form": "markdownLink",
+          "external": true,
+          "target": "//host/x",
+          "label": "d",
+          "raw": "//host/x",
+          "start": 46,
+          "end": 59,
+          "targetStart": 50,
+          "targetEnd": 58,
+          "destStart": 50,
+          "destEnd": 58
+        },
+        {
+          "form": "wikilink",
+          "external": true,
+          "target": "",
+          "heading": "Local",
+          "raw": "",
+          "start": 60,
+          "end": 70,
+          "targetStart": 62,
+          "targetEnd": 62,
+          "destStart": 62,
+          "destEnd": 62
+        },
+        {
+          "form": "markdownLink",
+          "external": true,
+          "target": "",
+          "label": "e",
+          "raw": "",
+          "start": 71,
+          "end": 76,
+          "targetStart": 75,
+          "targetEnd": 75,
+          "destStart": 75,
+          "destEnd": 75
+        }
+      ]
+    },
+    {
+      "name": "fenced code is skipped",
+      "body": "```md\n[[no]]\n```\n[[yes]]\n~~~\n[x](no)\n~~~\n",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "yes",
+          "raw": "yes",
+          "start": 17,
+          "end": 24,
+          "targetStart": 19,
+          "targetEnd": 22,
+          "destStart": 19,
+          "destEnd": 22
+        }
+      ]
+    },
+    {
+      "name": "indented code is skipped but list continuation is not",
+      "body": "para\n    [[lazy]]\n\n    [[code]]\n\n- item\n\n  [[in list]]\n",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "lazy",
+          "raw": "lazy",
+          "start": 9,
+          "end": 17,
+          "targetStart": 11,
+          "targetEnd": 15,
+          "destStart": 11,
+          "destEnd": 15
+        },
+        {
+          "form": "wikilink",
+          "target": "in list",
+          "raw": "in list",
+          "start": 43,
+          "end": 54,
+          "targetStart": 45,
+          "targetEnd": 52,
+          "destStart": 45,
+          "destEnd": 52
+        }
+      ]
+    },
+    {
+      "name": "inline code spans are skipped",
+      "body": "`[[no]]` and ``[x](y) ` z`` [[yes]] `unclosed [[also yes]]",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "yes",
+          "raw": "yes",
+          "start": 28,
+          "end": 35,
+          "targetStart": 30,
+          "targetEnd": 33,
+          "destStart": 30,
+          "destEnd": 33
+        },
+        {
+          "form": "wikilink",
+          "target": "also yes",
+          "raw": "also yes",
+          "start": 46,
+          "end": 58,
+          "targetStart": 48,
+          "targetEnd": 56,
+          "destStart": 48,
+          "destEnd": 56
+        }
+      ]
+    },
+    {
+      "name": "escaped brackets",
+      "body": "\\[[no]] \\[x](y) [[a\\|b]] [x\\]](y)",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "a",
+          "label": "b",
+          "raw": "a",
+          "start": 16,
+          "end": 24,
+          "targetStart": 18,
+          "targetEnd": 19,
+          "destStart": 18,
+          "destEnd": 19
+        },
+        {
+          "form": "markdownLink",
+          "target": "y",
+          "label": "x\\]",
+          "raw": "y",
+          "start": 25,
+          "end": 33,
+          "targetStart": 31,
+          "targetEnd": 32,
+          "destStart": 31,
+          "destEnd": 32
+        }
+      ]
+    },
+    {
+      "name": "nested brackets in link text",
+      "body": "[a [b] c](x) [a [b](c) d](e)",
+      "want": [
+        {
+          "form": "markdownLink",
+          "target": "x",
+          "label": "a [b] c",
+          "raw": "x",
+          "start": 0,
+          "end": 12,
+          "targetStart": 10,
+          "targetEnd": 11,
+          "destStart": 10,
+          "destEnd": 11
+        },
+        {
+          "form": "markdownLink",
+          "target": "c",
+          "label": "b",
+          "raw": "c",
+          "start": 16,
+          "end": 22,
+          "targetStart": 20,
+          "targetEnd": 21,
+          "destStart": 20,
+          "destEnd": 21
+        }
+      ]
+    },
+    {
+      "name": "image nested in link text",
+      "body": "[![build](badge.png)](report.pdf)",
+      "want": [
+        {
+          "form": "markdownLink",
+          "target": "report.pdf",
+          "label": "![build](badge.png)",
+          "raw": "report.pdf",
+          "start": 0,
+          "end": 33,
+          "targetStart": 22,
+          "targetEnd": 32,
+          "destStart": 22,
+          "destEnd": 32
+        },
+        {
+          "form": "markdownImage",
+          "target": "badge.png",
+          "label": "build",
+          "raw": "badge.png",
+          "start": 1,
+          "end": 20,
+          "targetStart": 10,
+          "targetEnd": 19,
+          "destStart": 10,
+          "destEnd": 19
+        }
+      ]
+    },
+    {
+      "name": "table cells",
+      "body": "| a | b |\n| - | - |\n| [[x\\|y]] | [z](<a b.png>) |\n",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "x",
+          "label": "y",
+          "raw": "x",
+          "start": 22,
+          "end": 30,
+          "targetStart": 24,
+          "targetEnd": 25,
+          "destStart": 24,
+          "destEnd": 25
+        },
+        {
+          "form": "markdownLink",
+          "angle": true,
+          "target": "a b.png",
+          "label": "z",
+          "raw": "a b.png",
+          "start": 33,
+          "end": 47,
+          "targetStart": 38,
+          "targetEnd": 45,
+          "destStart": 37,
+          "destEnd": 46
+        }
+      ]
+    },
+    {
+      "name": "CRLF body",
+      "body": "[[a]]\r\n[b](c.md)\r\n\r\n```\r\n[[no]]\r\n```\r\n[[d]]\r\n",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "a",
+          "raw": "a",
+          "start": 0,
+          "end": 5,
+          "targetStart": 2,
+          "targetEnd": 3,
+          "destStart": 2,
+          "destEnd": 3
+        },
+        {
+          "form": "markdownLink",
+          "target": "c.md",
+          "label": "b",
+          "raw": "c.md",
+          "start": 7,
+          "end": 16,
+          "targetStart": 11,
+          "targetEnd": 15,
+          "destStart": 11,
+          "destEnd": 15
+        },
+        {
+          "form": "wikilink",
+          "target": "d",
+          "raw": "d",
+          "start": 38,
+          "end": 43,
+          "targetStart": 40,
+          "targetEnd": 41,
+          "destStart": 40,
+          "destEnd": 41
+        }
+      ]
+    },
+    {
+      "name": "unicode names",
+      "body": "[[日本語ノート]] ![😀](画像/写真%201.png) [[Café#Über]]",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "日本語ノート",
+          "raw": "日本語ノート",
+          "start": 0,
+          "end": 22,
+          "targetStart": 2,
+          "targetEnd": 20,
+          "destStart": 2,
+          "destEnd": 20
+        },
+        {
+          "form": "markdownImage",
+          "target": "画像/写真 1.png",
+          "label": "😀",
+          "raw": "画像/写真%201.png",
+          "start": 23,
+          "end": 53,
+          "targetStart": 31,
+          "targetEnd": 52,
+          "destStart": 31,
+          "destEnd": 52
+        },
+        {
+          "form": "wikilink",
+          "target": "Café",
+          "heading": "Über",
+          "raw": "Café",
+          "start": 54,
+          "end": 69,
+          "targetStart": 56,
+          "targetEnd": 61,
+          "destStart": 56,
+          "destEnd": 61
+        }
+      ]
+    },
+    {
+      "name": "HTML comments are skipped",
+      "body": "<!-- [[no]] -->[[yes]]\n\n<!--\n[[no]]\n\n-->\n[[yes2]]",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "yes2",
+          "raw": "yes2",
+          "start": 41,
+          "end": 49,
+          "targetStart": 43,
+          "targetEnd": 47,
+          "destStart": 43,
+          "destEnd": 47
+        }
+      ]
+    },
+    {
+      "name": "autolinks are skipped",
+      "body": "<https://x.io/[[no]]> [[yes]]",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "yes",
+          "raw": "yes",
+          "start": 22,
+          "end": 29,
+          "targetStart": 24,
+          "targetEnd": 27,
+          "destStart": 24,
+          "destEnd": 27
+        }
+      ]
+    },
+    {
+      "name": "wikilink closes on its own line",
+      "body": "[[a\nb]] [[c]]",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "c",
+          "raw": "c",
+          "start": 8,
+          "end": 13,
+          "targetStart": 10,
+          "targetEnd": 11,
+          "destStart": 10,
+          "destEnd": 11
+        }
+      ]
+    },
+    {
+      "name": "empty wikilink target or label",
+      "body": "[[|x]] [[x|]] [[ ]] [[ padded | label ]]",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "padded",
+          "label": "label",
+          "raw": "padded",
+          "start": 20,
+          "end": 40,
+          "targetStart": 23,
+          "targetEnd": 29,
+          "destStart": 23,
+          "destEnd": 29
+        }
+      ]
+    },
+    {
+      "name": "query and escaped parentheses",
+      "body": "[a](file.pdf?page=2#p3) [b](dir\\(1\\)/x.png)",
+      "want": [
+        {
+          "form": "markdownLink",
+          "target": "file.pdf",
+          "heading": "p3",
+          "label": "a",
+          "raw": "file.pdf",
+          "start": 0,
+          "end": 23,
+          "targetStart": 4,
+          "targetEnd": 12,
+          "destStart": 4,
+          "destEnd": 22
+        },
+        {
+          "form": "markdownLink",
+          "target": "dir(1)/x.png",
+          "label": "b",
+          "raw": "dir\\(1\\)/x.png",
+          "start": 24,
+          "end": 43,
+          "targetStart": 28,
+          "targetEnd": 42,
+          "destStart": 28,
+          "destEnd": 42
+        }
+      ]
+    },
+    {
+      "name": "link text and title across lines",
+      "body": "[multi\nline](a.md\n  \"t\")",
+      "want": [
+        {
+          "form": "markdownLink",
+          "target": "a.md",
+          "label": "multi\nline",
+          "raw": "a.md",
+          "start": 0,
+          "end": 24,
+          "targetStart": 13,
+          "targetEnd": 17,
+          "destStart": 13,
+          "destEnd": 17
+        }
+      ]
+    },
+    {
+      "name": "fence inside a blockquote",
+      "body": "> ```\n> [[no]]\n> ```\n> [[yes]]\n",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "yes",
+          "raw": "yes",
+          "start": 23,
+          "end": 30,
+          "targetStart": 25,
+          "targetEnd": 28,
+          "destStart": 25,
+          "destEnd": 28
+        }
+      ]
+    },
+    {
+      "name": "embed of a note heading",
+      "body": "![[Harbour survey#Findings]]",
+      "want": [
+        {
+          "form": "wikilink",
+          "embed": true,
+          "target": "Harbour survey",
+          "heading": "Findings",
+          "raw": "Harbour survey",
+          "start": 0,
+          "end": 28,
+          "targetStart": 3,
+          "targetEnd": 17,
+          "destStart": 3,
+          "destEnd": 17
+        }
+      ]
+    },
+    {
+      "name": "balanced and unbalanced parentheses",
+      "body": "[a](x(1).png) [b](x(1.png)",
+      "want": [
+        {
+          "form": "markdownLink",
+          "target": "x(1).png",
+          "label": "a",
+          "raw": "x(1).png",
+          "start": 0,
+          "end": 13,
+          "targetStart": 4,
+          "targetEnd": 12,
+          "destStart": 4,
+          "destEnd": 12
+        }
+      ]
+    },
+    {
+      "name": "link text may hold images and embeds but not links",
+      "body": "![a [[b]]](c.png) ![d ![[e]]](f.png) [g [h](i)](j)",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "b",
+          "raw": "b",
+          "start": 4,
+          "end": 9,
+          "targetStart": 6,
+          "targetEnd": 7,
+          "destStart": 6,
+          "destEnd": 7
+        },
+        {
+          "form": "markdownImage",
+          "target": "f.png",
+          "label": "d ![[e]]",
+          "raw": "f.png",
+          "start": 18,
+          "end": 36,
+          "targetStart": 30,
+          "targetEnd": 35,
+          "destStart": 30,
+          "destEnd": 35
+        },
+        {
+          "form": "wikilink",
+          "embed": true,
+          "target": "e",
+          "raw": "e",
+          "start": 22,
+          "end": 28,
+          "targetStart": 25,
+          "targetEnd": 26,
+          "destStart": 25,
+          "destEnd": 26
+        },
+        {
+          "form": "markdownLink",
+          "target": "i",
+          "label": "h",
+          "raw": "i",
+          "start": 40,
+          "end": 46,
+          "targetStart": 44,
+          "targetEnd": 45,
+          "destStart": 44,
+          "destEnd": 45
+        }
+      ]
+    },
+    {
+      "name": "link inside a wikilink label is not parsed",
+      "body": "[[a|[b](c)]] [[d|e]]",
+      "want": [
+        {
+          "form": "wikilink",
+          "target": "a",
+          "label": "[b](c)",
+          "raw": "a",
+          "start": 0,
+          "end": 12,
+          "targetStart": 2,
+          "targetEnd": 3,
+          "destStart": 2,
+          "destEnd": 3
+        },
+        {
+          "form": "wikilink",
+          "target": "d",
+          "label": "e",
+          "raw": "d",
+          "start": 13,
+          "end": 20,
+          "targetStart": 15,
+          "targetEnd": 16,
+          "destStart": 15,
+          "destEnd": 16
+        }
+      ]
+    }
+  ],
+  "resolve": [
+    {
+      "name": "file name exact",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "Getting started.pdf",
+      "form": "wikilink",
+      "want": "Getting started.pdf"
+    },
+    {
+      "name": "file name beats note title",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "Getting started",
+      "form": "wikilink",
+      "want": "Archive/Getting started"
+    },
+    {
+      "name": "slug match picks the nearest folder",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "Harbour Survey!",
+      "form": "wikilink",
+      "want": "Archive/harbour-survey.md"
+    },
+    {
+      "name": "slug match beats an exact title",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "Harbour survey",
+      "form": "wikilink",
+      "want": "Archive/harbour-survey.md"
+    },
+    {
+      "name": "slug match prefers the same folder",
+      "tree": "basic",
+      "from": "Projects/harbour/other.md",
+      "target": "harbour-survey",
+      "form": "wikilink",
+      "want": "Projects/harbour/harbour-survey.md"
+    },
+    {
+      "name": "slug match by tree distance",
+      "tree": "basic",
+      "from": "Projects/index.md",
+      "target": "harbour survey",
+      "form": "wikilink",
+      "want": "Projects/harbour/harbour-survey.md"
+    },
+    {
+      "name": "title is case-insensitive",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "harbour SURVEY 2019",
+      "form": "wikilink",
+      "want": "Archive/harbour-survey.md"
+    },
+    {
+      "name": "unicode title is case-insensitive",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "CAFÉ NOTES",
+      "form": "wikilink",
+      "want": "Archive/cn.md"
+    },
+    {
+      "name": "folder note by title",
+      "tree": "basic",
+      "from": "Archive/cn.md",
+      "target": "project OVERVIEW",
+      "form": "wikilink",
+      "want": "Projects/index.md"
+    },
+    {
+      "name": "folder note by folder name",
+      "tree": "basic",
+      "from": "Archive/cn.md",
+      "target": "PROJECTS",
+      "form": "wikilink",
+      "want": "Projects/index.md"
+    },
+    {
+      "name": "folder without folder note has no name match",
+      "tree": "basic",
+      "from": "Archive/cn.md",
+      "target": "harbour",
+      "form": "wikilink",
+      "want": null
+    },
+    {
+      "name": "file name in the same folder",
+      "tree": "basic",
+      "from": "Projects/harbour/harbour-survey.md",
+      "target": "east wall.jpg",
+      "form": "wikilink",
+      "want": "Projects/harbour/east wall.jpg"
+    },
+    {
+      "name": "file name nearest from the root",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "east wall.jpg",
+      "form": "wikilink",
+      "want": "Archive/east wall.jpg"
+    },
+    {
+      "name": "stem that is not a slug needs the title",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "My Draft",
+      "form": "wikilink",
+      "want": null
+    },
+    {
+      "name": "title of a note with a non-slug stem",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "draft",
+      "form": "wikilink",
+      "want": "Archive/My Draft.md"
+    },
+    {
+      "name": "index is not a name",
+      "tree": "basic",
+      "from": "Projects/harbour/harbour-survey.md",
+      "target": "index",
+      "form": "wikilink",
+      "want": null
+    },
+    {
+      "name": "empty target",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "",
+      "form": "wikilink",
+      "want": null
+    },
+    {
+      "name": "path wikilink without .md",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "Projects/harbour/harbour-survey",
+      "form": "pathWikilink",
+      "want": "Projects/harbour/harbour-survey.md"
+    },
+    {
+      "name": "path wikilink with .md",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "Archive/My Draft.md",
+      "form": "pathWikilink",
+      "want": "Archive/My Draft.md"
+    },
+    {
+      "name": "path wikilink to a folder",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "Projects/harbour",
+      "form": "pathWikilink",
+      "want": "Projects/harbour"
+    },
+    {
+      "name": "path wikilink by suffix",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "harbour/east wall.jpg",
+      "form": "pathWikilink",
+      "want": "Projects/harbour/east wall.jpg"
+    },
+    {
+      "name": "path wikilink suffix without .md",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "harbour/harbour-survey",
+      "form": "pathWikilink",
+      "want": "Projects/harbour/harbour-survey.md"
+    },
+    {
+      "name": "rooted path wikilink",
+      "tree": "basic",
+      "from": "Archive/cn.md",
+      "target": "/Getting started.pdf",
+      "form": "pathWikilink",
+      "want": "Getting started.pdf"
+    },
+    {
+      "name": "rooted path wikilink has no suffix match",
+      "tree": "basic",
+      "from": "Archive/cn.md",
+      "target": "/harbour/east wall.jpg",
+      "form": "pathWikilink",
+      "want": null
+    },
+    {
+      "name": "path match is case-sensitive",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "projects/harbour/harbour-survey",
+      "form": "pathWikilink",
+      "want": null
+    },
+    {
+      "name": "markdown relative with ..",
+      "tree": "basic",
+      "from": "Projects/harbour/harbour-survey.md",
+      "target": "../report.pdf",
+      "form": "markdownLink",
+      "want": "Projects/report.pdf"
+    },
+    {
+      "name": "markdown rooted",
+      "tree": "basic",
+      "from": "Projects/index.md",
+      "target": "/Archive/east wall.jpg",
+      "form": "markdownImage",
+      "want": "Archive/east wall.jpg"
+    },
+    {
+      "name": "markdown .. to the root and back",
+      "tree": "basic",
+      "from": "Projects/index.md",
+      "target": "../Getting started.pdf",
+      "form": "markdownLink",
+      "want": "Getting started.pdf"
+    },
+    {
+      "name": "markdown .. above the root",
+      "tree": "basic",
+      "from": "Projects/index.md",
+      "target": "../../Getting started.pdf",
+      "form": "markdownLink",
+      "want": null
+    },
+    {
+      "name": "markdown path that is the root",
+      "tree": "basic",
+      "from": "Projects/index.md",
+      "target": "..",
+      "form": "markdownLink",
+      "want": null
+    },
+    {
+      "name": "markdown has no name fallback",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "report.pdf",
+      "form": "markdownLink",
+      "want": null
+    },
+    {
+      "name": "markdown note without .md",
+      "tree": "basic",
+      "from": "getting-started.md",
+      "target": "Projects/harbour/harbour-survey",
+      "form": "markdownLink",
+      "want": "Projects/harbour/harbour-survey.md"
+    },
+    {
+      "name": "markdown dot is the note folder",
+      "tree": "basic",
+      "from": "Projects/harbour/harbour-survey.md",
+      "target": ".",
+      "form": "markdownLink",
+      "want": "Projects/harbour"
+    },
+    {
+      "name": "markdown dot slash",
+      "tree": "basic",
+      "from": "Projects/harbour/harbour-survey.md",
+      "target": "./east wall.jpg",
+      "form": "markdownImage",
+      "want": "Projects/harbour/east wall.jpg"
+    },
+    {
+      "name": "markdown folder with trailing slash",
+      "tree": "basic",
+      "from": "Projects/index.md",
+      "target": "harbour/",
+      "form": "markdownLink",
+      "want": "Projects/harbour"
+    },
+    {
+      "name": "tie on distance and length is lexical",
+      "tree": "ties",
+      "from": "n.md",
+      "target": "x.png",
+      "form": "wikilink",
+      "want": "a/x.png"
+    },
+    {
+      "name": "shorter path beats lexically smaller",
+      "tree": "ties",
+      "from": "n.md",
+      "target": "z.png",
+      "form": "wikilink",
+      "want": "b/z.png"
+    },
+    {
+      "name": "nearer folder beats shorter path",
+      "tree": "ties",
+      "from": "c/n.md",
+      "target": "w.png",
+      "form": "wikilink",
+      "want": "c/dddddddd/w.png"
+    },
+    {
+      "name": "same folder first",
+      "tree": "ties",
+      "from": "b/n.md",
+      "target": "x.png",
+      "form": "wikilink",
+      "want": "b/x.png"
+    },
+    {
+      "name": "tree distance through a common ancestor",
+      "tree": "ties",
+      "from": "e/sub/n.md",
+      "target": "w.png",
+      "form": "wikilink",
+      "want": "e/w.png"
+    },
+    {
+      "name": "suffix tie by distance",
+      "tree": "ties",
+      "from": "s/n.md",
+      "target": "q/r.png",
+      "form": "pathWikilink",
+      "want": "s/q/r.png"
+    },
+    {
+      "name": "suffix tie from the root is lexical",
+      "tree": "ties",
+      "from": "n.md",
+      "target": "q/r.png",
+      "form": "pathWikilink",
+      "want": "p/q/r.png"
+    }
+  ],
+  "rewrite": [
+    {
+      "name": "file rename updates name wikilinks and keeps labels",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "x-img",
+          "oldPath": "docs/east wall.jpg",
+          "newPath": "docs/north wall.jpg"
+        }
+      ],
+      "noteOld": "docs/a.md",
+      "noteNew": "docs/a.md",
+      "body": "![[east wall.jpg|300]] and [[east wall.jpg#top|wall]]",
+      "want": "![[north wall.jpg|300]] and [[north wall.jpg#top|wall]]"
+    },
+    {
+      "name": "file rename to parentheses uses angle brackets",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "x-img",
+          "oldPath": "docs/east wall.jpg",
+          "newPath": "docs/north(1).jpg"
+        }
+      ],
+      "noteOld": "docs/sub/c.md",
+      "noteNew": "docs/sub/c.md",
+      "body": "![](../east%20wall.jpg) [w](<../east wall.jpg>)",
+      "want": "![](<../north(1).jpg>) [w](<../north(1).jpg>)"
+    },
+    {
+      "name": "note rename updates path links and slug links but not title links",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "n-b",
+          "oldPath": "docs/b.md",
+          "newPath": "docs/beta-notes.md"
+        }
+      ],
+      "noteOld": "docs/a.md",
+      "noteNew": "docs/a.md",
+      "body": "[[docs/b]] [[docs/b.md]] [b](b.md) [[Beta]] [[b]]",
+      "want": "[[docs/beta-notes]] [[docs/beta-notes.md]] [b](beta-notes.md) [[Beta]] [[beta-notes]]"
+    },
+    {
+      "name": "moved note rewrites only relative links that broke",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "move",
+          "id": "n-a",
+          "oldPath": "docs/a.md",
+          "newPath": "other/a.md"
+        }
+      ],
+      "noteOld": "docs/a.md",
+      "noteNew": "other/a.md",
+      "body": "[r](../report.pdf) [c](sub/c.md) [[sub/c]] ![[east wall.jpg]]",
+      "want": "[r](../report.pdf) [c](../docs/sub/c.md) [[sub/c]] ![[east wall.jpg]]"
+    },
+    {
+      "name": "folder rename from a note outside it",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "f-docs",
+          "oldPath": "docs",
+          "newPath": "notes"
+        }
+      ],
+      "noteOld": "other/index.md",
+      "noteNew": "other/index.md",
+      "body": "[a](../docs/a.md) [[docs/sub/c]] [[Alpha]] [p](../docs/photo.png)",
+      "want": "[a](../notes/a.md) [[notes/sub/c]] [[Alpha]] [p](../notes/photo.png)"
+    },
+    {
+      "name": "folder rename keeps links between moved items",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "f-docs",
+          "oldPath": "docs",
+          "newPath": "notes"
+        }
+      ],
+      "noteOld": "docs/a.md",
+      "noteNew": "notes/a.md",
+      "body": "[c](sub/c.md) [r](../report.pdf) [[docs/b]]",
+      "want": "[c](sub/c.md) [r](../report.pdf) [[notes/b]]"
+    },
+    {
+      "name": "name wikilink becomes a path when the name resolves elsewhere",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "move",
+          "id": "x-dup2",
+          "oldPath": "docs/photo.png",
+          "newPath": "archive/photo.png"
+        }
+      ],
+      "noteOld": "docs/sub/c.md",
+      "noteNew": "docs/sub/c.md",
+      "body": "![[photo.png]]",
+      "want": "![[archive/photo.png]]"
+    },
+    {
+      "name": "name with # and brackets falls back to a markdown link",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "x-img",
+          "oldPath": "docs/east wall.jpg",
+          "newPath": "docs/wall #2 [draft].jpg"
+        }
+      ],
+      "noteOld": "docs/a.md",
+      "noteNew": "docs/a.md",
+      "body": "![[east wall.jpg|300]] [[east wall.jpg]]",
+      "want": "![300](<wall %232 %5Bdraft%5D.jpg>) [east wall.jpg](<wall %232 %5Bdraft%5D.jpg>)"
+    },
+    {
+      "name": "folder name with # falls back and keeps embed and heading",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "f-sub",
+          "oldPath": "docs/sub",
+          "newPath": "docs/C# notes"
+        }
+      ],
+      "noteOld": "other/index.md",
+      "noteNew": "other/index.md",
+      "body": "[[docs/sub/c#Intro]] ![[sub/c.png|200]]",
+      "want": "[docs/sub/c#Intro](<../docs/C%23 notes/c.md#Intro>) ![200](<../docs/C%23 notes/c.png>)"
+    },
+    {
+      "name": "rooted path wikilink stays rooted",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "x-pdf",
+          "oldPath": "report.pdf",
+          "newPath": "summary.pdf"
+        }
+      ],
+      "noteOld": "docs/a.md",
+      "noteNew": "docs/a.md",
+      "body": "[[/report.pdf]] [[report.pdf]]",
+      "want": "[[/summary.pdf]] [[summary.pdf]]"
+    },
+    {
+      "name": "rooted markdown link stays rooted",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "move",
+          "id": "x-pdf",
+          "oldPath": "report.pdf",
+          "newPath": "other/report.pdf"
+        }
+      ],
+      "noteOld": "docs/a.md",
+      "noteNew": "docs/a.md",
+      "body": "[r](/report.pdf)",
+      "want": "[r](/other/report.pdf)"
+    },
+    {
+      "name": "folder note links follow a folder rename",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "f-other",
+          "oldPath": "other",
+          "newPath": "elsewhere"
+        }
+      ],
+      "noteOld": "docs/a.md",
+      "noteNew": "docs/a.md",
+      "body": "[[other]] [[Other home]] [o](../other/index.md) [[other/index]]",
+      "want": "[[elsewhere]] [[Other home]] [o](../elsewhere/index.md) [[elsewhere/index]]"
+    },
+    {
+      "name": "relative path that looks like a scheme gets ./",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "x-pdf",
+          "oldPath": "report.pdf",
+          "newPath": "ab:c.pdf"
+        }
+      ],
+      "noteOld": "readme.md",
+      "noteNew": "readme.md",
+      "body": "[r](report.pdf) [[report.pdf]]",
+      "want": "[r](./ab:c.pdf) [[ab:c.pdf]]"
+    },
+    {
+      "name": "heading query and title are kept",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "x-pdf",
+          "oldPath": "report.pdf",
+          "newPath": "Q1 report.pdf"
+        }
+      ],
+      "noteOld": "docs/a.md",
+      "noteNew": "docs/a.md",
+      "body": "[r](../report.pdf#page=2 \"Report\") [s](../report.pdf?x=1)",
+      "want": "[r](<../Q1 report.pdf#page=2> \"Report\") [s](<../Q1 report.pdf?x=1>)"
+    },
+    {
+      "name": "no changes leave the body alone",
+      "tree": "rw",
+      "changes": [],
+      "noteOld": "docs/a.md",
+      "noteNew": "docs/a.md",
+      "body": "[[docs/b]] [x](b.md) ![[photo.png]]",
+      "want": "[[docs/b]] [x](b.md) ![[photo.png]]"
+    },
+    {
+      "name": "new page inside converts a note to a folder note",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "move",
+          "id": "n-b",
+          "oldPath": "docs/b.md",
+          "newPath": "docs/b/index.md"
+        }
+      ],
+      "noteOld": "docs/a.md",
+      "noteNew": "docs/a.md",
+      "body": "[[docs/b]] [b](b.md) [[b]] [[Beta]]",
+      "want": "[[docs/b/index]] [b](b/index.md) [[b]] [[Beta]]"
+    },
+    {
+      "name": "converted note rewrites its own relative links",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "move",
+          "id": "n-b",
+          "oldPath": "docs/b.md",
+          "newPath": "docs/b/index.md"
+        }
+      ],
+      "noteOld": "docs/b.md",
+      "noteNew": "docs/b/index.md",
+      "body": "[a](a.md) [[Alpha]] [s](sub/c.md)",
+      "want": "[a](../a.md) [[Alpha]] [s](../sub/c.md)"
+    },
+    {
+      "name": "unicode and percent in a new name",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "x-c",
+          "oldPath": "docs/sub/c.png",
+          "newPath": "docs/sub/日本 50%.png"
+        }
+      ],
+      "noteOld": "docs/a.md",
+      "noteNew": "docs/a.md",
+      "body": "![](sub/c.png) ![[c.png]]",
+      "want": "![](<sub/日本 50%25.png>) ![[日本 50%.png]]"
+    },
+    {
+      "name": "CRLF body",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "n-b",
+          "oldPath": "docs/b.md",
+          "newPath": "docs/bee.md"
+        }
+      ],
+      "noteOld": "docs/a.md",
+      "noteNew": "docs/a.md",
+      "body": "[[docs/b]]\r\n[b](b.md)\r\n",
+      "want": "[[docs/bee]]\r\n[b](bee.md)\r\n"
+    },
+    {
+      "name": "image nested in a link and two changes",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "x-img",
+          "oldPath": "docs/east wall.jpg",
+          "newPath": "docs/east-wall.jpg"
+        },
+        {
+          "kind": "move",
+          "id": "x-pdf",
+          "oldPath": "report.pdf",
+          "newPath": "other/report.pdf"
+        }
+      ],
+      "noteOld": "docs/a.md",
+      "noteNew": "docs/a.md",
+      "body": "[![](east%20wall.jpg)](../report.pdf)",
+      "want": "[![](east-wall.jpg)](../other/report.pdf)"
+    },
+    {
+      "name": "sequential folder rename then move",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "f-docs",
+          "oldPath": "docs",
+          "newPath": "notes"
+        },
+        {
+          "kind": "move",
+          "id": "n-c",
+          "oldPath": "notes/sub/c.md",
+          "newPath": "other/c.md"
+        }
+      ],
+      "noteOld": "other/index.md",
+      "noteNew": "other/index.md",
+      "body": "[[docs/sub/c]] [c](../docs/sub/c.md)",
+      "want": "[[other/c]] [c](c.md)"
+    },
+    {
+      "name": "suffix path wikilink becomes a full path",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "move",
+          "id": "n-c",
+          "oldPath": "docs/sub/c.md",
+          "newPath": "docs/c.md"
+        }
+      ],
+      "noteOld": "other/index.md",
+      "noteNew": "other/index.md",
+      "body": "[[sub/c]] ![[docs/sub/c#Intro]]",
+      "want": "[[docs/c]] ![[docs/c#Intro]]"
+    },
+    {
+      "name": "title link shadowed by a renamed file uses the stem",
+      "tree": "rw",
+      "changes": [
+        {
+          "kind": "rename",
+          "id": "x-c",
+          "oldPath": "docs/sub/c.png",
+          "newPath": "docs/sub/Alpha"
+        }
+      ],
+      "noteOld": "docs/b.md",
+      "noteNew": "docs/b.md",
+      "body": "[[Alpha]]",
+      "want": "[[a]]"
+    }
+  ]
+}

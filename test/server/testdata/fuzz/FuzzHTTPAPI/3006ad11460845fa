@@ -1,0 +1,8 @@
+go test fuzz v1
+byte('=')
+byte('\x00')
+byte('\x00')
+byte('\x00')
+string("ʍP\xa7IK\xf1")
+[]byte("--fuzzb\r\nContent-Disposition: form-data; name=\"spaceId\"\r\n\r\n$SPACE\r\n--fuzzb\r\nContent-Disposition: form-data; name=\"onConflict\"\r\n\r\nrename\r\n--fuzzb\r\nContent-Disposition: form-data; name=\"file\"; filename=\"a.txt\"\r\n\r\nhello\r\n--fuzzb-\xaf\xaf\xaf")
+byte('\x00')

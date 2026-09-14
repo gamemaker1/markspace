@@ -1,0 +1,9 @@
+/* Neutral styles for the self-test fixtures: black text on white, 40px
+   controls, visible focus rings. A fixture adds only the defect it tests. */
+* { box-sizing: border-box; }
+html, body { margin: 0; font: 14px/20px system-ui, sans-serif; color: #1f2328; background: #ffffff; }
+body { padding: 16px; }
+button { height: 40px; min-width: 44px; padding: 0 12px; font: inherit; color: #1f2328; background: #f6f8fa; border: 1px solid #818b98; border-radius: 6px; }
+button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px solid #bf3989; outline-offset: -2px; }
+svg { display: block; width: 16px; height: 16px; fill: #59636e; }
+p { margin: 0; }

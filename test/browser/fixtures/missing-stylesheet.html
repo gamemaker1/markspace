@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="audit-expect" content="6:failed-static-asset">
+<title>Fixture: missing stylesheet</title>
+<link rel="stylesheet" href="base.css">
+<!-- The defect: a stylesheet that answers 404. -->
+<link rel="stylesheet" href="/static/audit-missing.css">
+</head>
+<body>
+<p>The page renders without its component styles.</p>
+</body>
+</html>
