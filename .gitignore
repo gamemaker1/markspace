@@ -1,0 +1,25 @@
+# /.gitignore
+# Tells git to ignore these files.
+
+# build output
+/markspace
+/markspace-*
+
+# local instances, their configuration and the local demo
+/data/
+/demo/
+markspace.yaml
+*.db
+*.db-shm
+*.db-wal
+
+# dependencies and caches
+node_modules/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+
+# layout audit output
+test/browser/raw.json
+test/browser/report.json
+test/browser/report.md

@@ -1,0 +1,9 @@
+# /.gitattributes
+# Keeps line endings as LF and marks vendored and generated files.
+
+* text=auto eol=lf
+*.png binary
+
+internal/web/static/vendor/** linguist-vendored
+internal/web/static/js/octicons.js linguist-generated
+internal/web/icons.go linguist-generated
