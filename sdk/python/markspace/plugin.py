@@ -16,7 +16,7 @@ from .context import (ActionContext, CommandContext, Event, EventBatch, ImportCo
                       PanelContext, User)
 from .errors import JobCanceled, SignatureError, ValidationError
 from .host import Host
-from .install import DEFAULT_DATA_DIR, ENV_DATA, ENV_TOKEN, InstallStore
+from .install import DEFAULT_DATA_DIR, DEFAULT_INSTALL_WINDOW, ENV_DATA, ENV_INSTALL_WINDOW, ENV_TOKEN, InstallStore
 from .responses import validate_command_response, validate_install
 from .signature import HEADER_PLUGIN, ReplayGuard, verify_request
 
@@ -86,12 +86,31 @@ class _JobRun:
         self.exc: BaseException | None = None
 
 
+def _install_window(env: Mapping[str, str]) -> float:
+    """Return the install window from $PLUGIN_INSTALL_WINDOW, or the default.
+
+    The value is a number of seconds, and 0 means no limit. Anything else fails
+    at startup, so a typo does not silently keep the default.
+    """
+    raw = env.get(ENV_INSTALL_WINDOW, "").strip()
+    if not raw:
+        return DEFAULT_INSTALL_WINDOW
+    try:
+        value = float(raw)
+    except ValueError:
+        value = -1.0
+    if value < 0 or value != value or value == float("inf"):
+        raise ValueError(f"{ENV_INSTALL_WINDOW} must be a number of seconds, 0 for no limit, got {raw!r}")
+    return value
+
+
 class Plugin:
     """A Markspace plugin: its manifest, its handlers and its HTTP server.
 
     data_dir defaults to $PLUGIN_DATA, then /data. install_window is the number
     of seconds after startup during which an unsigned first install is
-    accepted. job_wait is the number of seconds a job call waits for the
+    accepted. It defaults to $PLUGIN_INSTALL_WINDOW, then 600, and 0 accepts an
+    unsigned first install at any time. job_wait is the number of seconds a job call waits for the
     handler before it answers 202.
     """
 
@@ -100,7 +119,7 @@ class Plugin:
         manifest: dict,
         *,
         data_dir: str | None = None,
-        install_window: float = 600.0,
+        install_window: float | None = None,
         job_wait: float = 25.0,
         heartbeat_every: float = 20.0,
         env: Mapping[str, str] | None = None,
@@ -112,7 +131,7 @@ class Plugin:
         self.id: str = manifest["id"]
         self.env = os.environ if env is None else env
         self.data_dir = data_dir or self.env.get(ENV_DATA) or DEFAULT_DATA_DIR
-        self.install_window = install_window
+        self.install_window = install_window if install_window is not None else _install_window(self.env)
         self.job_wait = job_wait
         self.heartbeat_every = heartbeat_every
         self.clock = clock
@@ -257,7 +276,7 @@ class Plugin:
                                   exc.code)
             elif self.env.get(ENV_TOKEN):
                 return _error(403, "install is configured from the environment", "install_closed")
-            elif self.clock() - self.started_at > self.install_window:
+            elif self.install_window > 0 and self.clock() - self.started_at > self.install_window:
                 return _error(403, "install window closed. Restart the plugin to reopen it", "install_closed")
             try:
                 data = json.loads(body)
@@ -473,7 +492,10 @@ class Plugin:
             if self.env.get(ENV_TOKEN):
                 log.warning("MARKSPACE_TOKEN is set but the URL or signing secret is missing")
             else:
-                log.info("waiting for POST /install for %.0f s", self.install_window)
+                if self.install_window > 0:
+                    log.info("waiting for POST /install for %.0f s", self.install_window)
+                else:
+                    log.info("waiting for POST /install")
         try:
             server.serve_forever()
         except KeyboardInterrupt:

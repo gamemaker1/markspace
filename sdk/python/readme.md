@@ -86,7 +86,12 @@ it, and renames it over the old file. A successful install answers 200 with
 
 - no signing secret is known yet, from `install.json` or from the environment,
 - `MARKSPACE_TOKEN` is not set in the environment,
-- the plugin started less than `install_window` seconds ago, 600 by default.
+- the install window is open.
+
+The install window lasts `install_window` seconds after the plugin starts. The
+argument sets it, then `PLUGIN_INSTALL_WINDOW`, then the default of 600.
+Setting it to `0` keeps the window open until the first install. Use `0` only
+when nothing but Markspace can reach the plugin port. A value that is not a non-negative number fails at startup.
 
 When a signing secret is known, `/install` accepts only a request signed with
 that secret. Markspace uses this to rotate the token or the secret.

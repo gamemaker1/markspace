@@ -59,6 +59,30 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(status, 403, resp)
         self.assertFalse(os.path.exists(os.path.join(self.dir, "install.json")))
 
+    def test_window_from_environment(self):
+        p = self.make(env={"PLUGIN_INSTALL_WINDOW": "30"})
+        self.assertEqual(p.install_window, 30)
+        self.now += 31
+        status, resp, _ = self.post(p, support.install_payload("word-count", "http://markspace:8080"))
+        self.assertEqual(status, 403, resp)
+
+    def test_zero_window_never_closes(self):
+        p = self.make(env={"PLUGIN_INSTALL_WINDOW": "0"})
+        self.now += 30 * 24 * 3600
+        status, resp, _ = self.post(p, support.install_payload("word-count", "http://markspace:8080"))
+        self.assertEqual(status, 200, resp)
+
+    def test_argument_overrides_environment_window(self):
+        p = self.make(env={"PLUGIN_INSTALL_WINDOW": "0"}, install_window=60)
+        self.now += 61
+        status, resp, _ = self.post(p, support.install_payload("word-count", "http://markspace:8080"))
+        self.assertEqual(status, 403, resp)
+
+    def test_invalid_window_fails_at_startup(self):
+        for raw in ("-1", "ten", "inf", "nan"):
+            with self.assertRaises(ValueError, msg=raw):
+                self.make(env={"PLUGIN_INSTALL_WINDOW": raw})
+
     def test_env_token_disables_unsigned_install(self):
         p = self.make(env={"MARKSPACE_TOKEN": "mspl_env"})
         status, resp, _ = self.post(p, support.install_payload("word-count", "http://markspace:8080"))

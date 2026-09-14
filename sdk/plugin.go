@@ -7,14 +7,21 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"math"
 	"net/http"
 	"os"
 	"runtime/debug"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/gamemaker1/markspace/sdk/ui"
 )
+
+// DefaultInstallWindow is how long after startup an unsigned first install is
+// accepted when neither InstallWindow nor $PLUGIN_INSTALL_WINDOW sets it.
+const DefaultInstallWindow = 10 * time.Minute
 
 // Body limits for requests from Markspace.
 const (
@@ -28,7 +35,9 @@ type Plugin struct {
 	// DataDir holds install.json. The default is $PLUGIN_DATA or /data.
 	DataDir string
 	// InstallWindow is how long after startup an unsigned first install is
-	// accepted. The default is 10 minutes.
+	// accepted. Zero reads $PLUGIN_INSTALL_WINDOW in seconds, where 0 means no
+	// limit, and falls back to DefaultInstallWindow. A negative value means no
+	// limit.
 	InstallWindow time.Duration
 	// JobWait is how long a job call waits for the handler before it answers
 	// 202. The default is 25 s.
@@ -175,9 +184,6 @@ func (p *Plugin) init() {
 	if p.DataDir == "" {
 		p.DataDir = DefaultDataDir(p.Getenv)
 	}
-	if p.InstallWindow <= 0 {
-		p.InstallWindow = 10 * time.Minute
-	}
 	if p.JobWait <= 0 {
 		p.JobWait = 25 * time.Second
 	}
@@ -186,6 +192,9 @@ func (p *Plugin) init() {
 	}
 	if p.Logger == nil {
 		p.Logger = slog.Default()
+	}
+	if p.InstallWindow == 0 {
+		p.InstallWindow = installWindowFromEnv(p.Getenv, p.Logger)
 	}
 	p.start = p.now()
 	p.envToken = p.Getenv(EnvToken) != ""
@@ -208,6 +217,26 @@ func (p *Plugin) init() {
 	mux.HandleFunc("POST /actions/{id}", p.signed(p.serveAction))
 	mux.HandleFunc("POST /import/{importer}", p.signed(p.serveImport))
 	p.handler = mux
+}
+
+// installWindowFromEnv reads $PLUGIN_INSTALL_WINDOW in seconds. It returns -1
+// for 0, which means no limit, and DefaultInstallWindow for an empty value. An
+// invalid value logs an error and keeps the default, because the handler has
+// no way to fail at startup.
+func installWindowFromEnv(getenv func(string) string, logger *slog.Logger) time.Duration {
+	raw := strings.TrimSpace(getenv(EnvInstallWindow))
+	if raw == "" {
+		return DefaultInstallWindow
+	}
+	secs, err := strconv.ParseFloat(raw, 64)
+	if err != nil || secs < 0 || math.IsInf(secs, 0) || math.IsNaN(secs) {
+		logger.Error("invalid install window, keeping the default", "env", EnvInstallWindow, "value", raw, "default", DefaultInstallWindow)
+		return DefaultInstallWindow
+	}
+	if secs == 0 {
+		return -1
+	}
+	return time.Duration(secs * float64(time.Second))
 }
 
 // Handler returns the HTTP handler for the plugin routes. The first call
@@ -316,7 +345,7 @@ func (p *Plugin) serveInstall(w http.ResponseWriter, r *http.Request) {
 			writeError(w, http.StatusForbidden, "install is configured from the environment", "install_closed", "")
 			return
 		}
-		if now.Sub(p.start) > p.InstallWindow {
+		if p.InstallWindow > 0 && now.Sub(p.start) > p.InstallWindow {
 			writeError(w, http.StatusForbidden, "install window closed", "install_closed", "")
 			return
 		}

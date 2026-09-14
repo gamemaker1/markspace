@@ -211,6 +211,37 @@ func TestInstallWindowAndEnv(t *testing.T) {
 	if rec := hs.do("POST", "/install", hs.installBody("mspl_one"), false); rec.Code != 403 {
 		t.Fatalf("env token %d", rec.Code)
 	}
+	hs = newHarness(t, map[string]string{EnvInstallWindow: "30"}, nil)
+	hs.clock.Add(31 * time.Second)
+	if rec := hs.do("POST", "/install", hs.installBody("mspl_one"), false); rec.Code != 403 {
+		t.Fatalf("env window of 30 s after 31 s %d", rec.Code)
+	}
+	hs = newHarness(t, map[string]string{EnvInstallWindow: "0"}, nil)
+	hs.clock.Add(30 * 24 * time.Hour)
+	if rec := hs.do("POST", "/install", hs.installBody("mspl_one"), false); rec.Code != 200 {
+		t.Fatalf("env window of 0 after 30 days %d %s", rec.Code, rec.Body)
+	}
+}
+
+func TestInstallWindowFromEnv(t *testing.T) {
+	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+	cases := map[string]time.Duration{
+		"":     DefaultInstallWindow,
+		"0":    -1,
+		"90":   90 * time.Second,
+		"1.5":  1500 * time.Millisecond,
+		"-1":   DefaultInstallWindow,
+		"ten":  DefaultInstallWindow,
+		"inf":  DefaultInstallWindow,
+		"NaN":  DefaultInstallWindow,
+		" 45 ": 45 * time.Second,
+	}
+	for raw, want := range cases {
+		got := installWindowFromEnv(func(string) string { return raw }, logger)
+		if got != want {
+			t.Errorf("%q: got %v, want %v", raw, got, want)
+		}
+	}
 }
 
 func TestCredentialPrecedence(t *testing.T) {

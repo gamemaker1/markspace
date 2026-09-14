@@ -35,7 +35,7 @@ def _space_missing(exc: SpaceNotSet) -> dict:
 
 
 def create_plugin(*, data_dir: str | None = None, env: dict | None = None, job_wait: float = 25.0,
-                  install_window: float = 600.0, host_options: dict | None = None, now: Clock = utcnow,
+                  install_window: float | None = None, host_options: dict | None = None, now: Clock = utcnow,
                   gate: HostGate | None = None, transport: Transport | None = None) -> Plugin:
     plugin = Plugin(MANIFEST, data_dir=data_dir, env=env, job_wait=job_wait, install_window=install_window,
                     host_options=host_options)

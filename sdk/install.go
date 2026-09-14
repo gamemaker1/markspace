@@ -19,6 +19,7 @@ const (
 	EnvToken         = "MARKSPACE_TOKEN"
 	EnvSigningSecret = "MARKSPACE_SIGNING_SECRET"
 	EnvPluginData    = "PLUGIN_DATA"
+	EnvInstallWindow = "PLUGIN_INSTALL_WINDOW"
 )
 
 // Grant is one space the plugin may use.
