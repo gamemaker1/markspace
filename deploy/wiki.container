@@ -18,6 +18,9 @@ AutoUpdate=registry
 Network=markspace.network
 Volume=wiki.volume:/data:Z
 Environment=PLUGIN_DATA=/data
+# only containers on the markspace network reach the plugin, so its unsigned
+# first install stays open until Markspace installs it
+Environment=PLUGIN_INSTALL_WINDOW=0
 ReadOnly=true
 Tmpfs=/tmp
 NoNewPrivileges=true

@@ -506,8 +506,11 @@ captured body cannot be sent to another route.
   A later request with the same pair within the window is a replay. It does
   not record rejected requests, and the record holds at most 10 000 entries.
 - A first install call is unsigned when the plugin holds no signing secret.
-  The SDKs accept it only when `MARKSPACE_TOKEN` is not set and the plugin
-  started less than 10 minutes ago.
+  The SDKs accept it only when `MARKSPACE_TOKEN` is not set and the install
+  window is open. The window lasts 10 minutes after the plugin starts.
+  `PLUGIN_INSTALL_WINDOW` sets it in seconds, and `0` keeps it open until the
+  first install. Use `0` only when nothing but Markspace can reach the plugin
+  port.
 
 The SDKs answer a failed check with 401 and one of these codes:
 

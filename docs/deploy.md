@@ -179,6 +179,11 @@ plugin reaches Markspace at `http://markspace:8080`.
    permissions the plugin asks for, and installs it with the spaces and roles
    you choose.
 
+`wiki.container` sets `PLUGIN_INSTALL_WINDOW=0`, so the plugin accepts its
+first install at any time instead of only in the 10 minutes after it starts.
+The plugin publishes no port, so only containers on the `markspace` network
+can reach it. `docs/plugins.md` describes the install window.
+
 When the install call cannot reach the plugin, the page shows the plugin
 token and signing secret once. Store them as Podman secrets and uncomment the
 `Secret=` lines in `wiki.container`. `docs/plugins.md` specifies the protocol,
