@@ -1,0 +1,42 @@
+# /sdk/example/example.container
+# Quadlet unit that runs the word count example plugin.
+#
+# Build the image with podman build -f sdk/example/containerfile -t
+# markspace-example . from the repository root. Copy this file to
+# ~/.config/containers/systemd/ next to the Markspace units, then run
+# systemctl --user daemon-reload. In Markspace, add the plugin with the base
+# URL http://word-count:8090.
+
+[Unit]
+Description=Markspace word count example plugin
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+Image=localhost/markspace-example:latest
+ContainerName=word-count
+Network=markspace.network
+Volume=word-count:/data:Z
+Environment=PLUGIN_DATA=/data
+ReadOnly=true
+Tmpfs=/tmp
+NoNewPrivileges=true
+DropCapability=all
+HealthCmd=python3 -m markspace.health
+HealthInterval=30s
+HealthTimeout=5s
+HealthRetries=3
+# When the install call cannot reach the plugin, the admin page shows the
+# token and the signing secret once. Store them as Podman secrets and
+# uncomment these lines.
+#   printf %s 'mspl_...' | podman secret create word-count-token -
+#   printf %s 'base64...' | podman secret create word-count-signing-secret -
+#Environment=MARKSPACE_URL=http://markspace:8080
+#Secret=word-count-token,type=env,target=MARKSPACE_TOKEN
+#Secret=word-count-signing-secret,type=env,target=MARKSPACE_SIGNING_SECRET
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
