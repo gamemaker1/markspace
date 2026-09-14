@@ -1,0 +1,296 @@
+[
+ {
+  "model": "gpt-4o",
+  "vendor": "openai",
+  "catalog": "openrouter",
+  "want": "openai/gpt-4o",
+  "why": "plain id"
+ },
+ {
+  "model": "gpt-4o-mini",
+  "vendor": "openai",
+  "catalog": "openrouter",
+  "want": "openai/gpt-4o-mini",
+  "why": "mini is its own model"
+ },
+ {
+  "model": "gpt-4o",
+  "vendor": "openai",
+  "catalog": "litellm",
+  "want": "gpt-4o",
+  "why": "plain id in litellm"
+ },
+ {
+  "model": "gpt-4o-mini",
+  "vendor": "openai",
+  "catalog": "litellm",
+  "want": "gpt-4o-mini",
+  "why": "mini is its own model in litellm"
+ },
+ {
+  "model": "gpt-4o-2024-08-06",
+  "vendor": "openai",
+  "catalog": "openrouter",
+  "want": "openai/gpt-4o-2024-08-06",
+  "why": "an exact dated id wins"
+ },
+ {
+  "model": "gpt-4o-2024-05-13",
+  "vendor": "openai",
+  "catalog": "openrouter",
+  "want": "openai/gpt-4o",
+  "why": "a dated id falls back to the undated entry, never to :extended"
+ },
+ {
+  "model": "gpt-4o-mini-2024-07-18",
+  "vendor": "openai",
+  "catalog": "openrouter",
+  "want": "openai/gpt-4o-mini",
+  "why": "a dated mini never matches gpt-4o"
+ },
+ {
+  "model": "claude-sonnet-4-5-20250929",
+  "vendor": "anthropic",
+  "catalog": "openrouter",
+  "want": "anthropic/claude-sonnet-4.5",
+  "why": "dots and dashes in versions are equal"
+ },
+ {
+  "model": "claude-sonnet-4-5-20250929",
+  "vendor": "anthropic",
+  "catalog": "litellm",
+  "want": "claude-sonnet-4-5-20250929",
+  "why": "exact in litellm"
+ },
+ {
+  "model": "claude-sonnet-4-5",
+  "vendor": "",
+  "catalog": "openrouter",
+  "want": "anthropic/claude-sonnet-4.5",
+  "why": "no vendor, one vendor among candidates"
+ },
+ {
+  "model": "anthropic/claude-sonnet-4.5",
+  "vendor": "",
+  "catalog": "openrouter",
+  "want": "anthropic/claude-sonnet-4.5",
+  "why": "vendor from the id prefix"
+ },
+ {
+  "model": "claude-3-5-haiku-20241022",
+  "vendor": "anthropic",
+  "catalog": "openrouter",
+  "want": "anthropic/claude-3.5-haiku",
+  "why": "dated haiku"
+ },
+ {
+  "model": "claude-3.5-haiku",
+  "vendor": "openai",
+  "catalog": "openrouter",
+  "want": "",
+  "why": "wrong vendor"
+ },
+ {
+  "model": "gpt-4o",
+  "vendor": "anthropic",
+  "catalog": "openrouter",
+  "want": "",
+  "why": "wrong vendor"
+ },
+ {
+  "model": "llama-3.3-70b-instruct",
+  "vendor": "meta",
+  "catalog": "openrouter",
+  "want": "meta-llama/llama-3.3-70b-instruct",
+  "why": "paid wins over free"
+ },
+ {
+  "model": "meta-llama/llama-3.3-70b-instruct",
+  "vendor": "",
+  "catalog": "openrouter",
+  "want": "meta-llama/llama-3.3-70b-instruct",
+  "why": "paid wins over free with a prefix"
+ },
+ {
+  "model": "meta-llama/llama-3.3-70b-instruct:free",
+  "vendor": "",
+  "catalog": "openrouter",
+  "want": "meta-llama/llama-3.3-70b-instruct:free",
+  "why": "an exact free id stays free"
+ },
+ {
+  "model": "llama-3.2-3b-instruct",
+  "vendor": "meta",
+  "catalog": "openrouter",
+  "want": "meta-llama/llama-3.2-3b-instruct:free",
+  "why": "free only when nothing else exists"
+ },
+ {
+  "model": "models/gemini-2.0-flash",
+  "vendor": "google",
+  "catalog": "openrouter",
+  "want": "",
+  "why": "the -001 revision is a different base id"
+ },
+ {
+  "model": "models/gemini-2.0-flash",
+  "vendor": "google",
+  "catalog": "litellm",
+  "want": "gemini/gemini-2.0-flash",
+  "why": "models/ is not a vendor, gemini is google"
+ },
+ {
+  "model": "gemini-2.5-pro",
+  "vendor": "google",
+  "catalog": "litellm",
+  "want": "gemini/gemini-2.5-pro",
+  "why": "gemini and vertex_ai tie, lowest id wins"
+ },
+ {
+  "model": "gemini-2.5-pro",
+  "vendor": "google",
+  "catalog": "openrouter",
+  "want": "google/gemini-2.5-pro",
+  "why": "google prefix"
+ },
+ {
+  "model": "llama-3.3-70b-versatile",
+  "vendor": "groq",
+  "catalog": "litellm",
+  "want": "groq/llama-3.3-70b-versatile",
+  "why": "groq host as vendor"
+ },
+ {
+  "model": "llama-3.3-70b-versatile",
+  "vendor": "groq",
+  "catalog": "openrouter",
+  "want": "",
+  "why": "groq never matches meta-llama"
+ },
+ {
+  "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+  "vendor": "together",
+  "catalog": "litellm",
+  "want": "together_ai/meta-llama/Llama-3.3-70B-Instruct-Turbo",
+  "why": "the vendor argument wins over the id prefix"
+ },
+ {
+  "model": "Llama-3.3-70B-Instruct-Turbo",
+  "vendor": "together",
+  "catalog": "litellm",
+  "want": "together_ai/meta-llama/Llama-3.3-70B-Instruct-Turbo",
+  "why": "multi-segment key, base after the last slash"
+ },
+ {
+  "model": "mistral-large-latest",
+  "vendor": "mistral",
+  "catalog": "litellm",
+  "want": "mistral/mistral-large-latest",
+  "why": "mistral in litellm"
+ },
+ {
+  "model": "mistral-large",
+  "vendor": "mistral",
+  "catalog": "openrouter",
+  "want": "mistralai/mistral-large",
+  "why": "mistralai is mistral"
+ },
+ {
+  "model": "mistral-large-latest",
+  "vendor": "mistral",
+  "catalog": "openrouter",
+  "want": "",
+  "why": "-latest is part of the id"
+ },
+ {
+  "model": "deepseek-chat",
+  "vendor": "deepseek",
+  "catalog": "openrouter",
+  "want": "deepseek/deepseek-chat",
+  "why": "deepseek"
+ },
+ {
+  "model": "gpt-4o",
+  "vendor": "",
+  "catalog": "litellm",
+  "want": "",
+  "why": "candidates from openai, azure and openrouter are ambiguous"
+ },
+ {
+  "model": "gpt-4o",
+  "vendor": "azure",
+  "catalog": "litellm",
+  "want": "azure/gpt-4o",
+  "why": "azure"
+ },
+ {
+  "model": "text-embedding-3-small",
+  "vendor": "openai",
+  "catalog": "openrouter",
+  "want": "openai/text-embedding-3-small",
+  "why": "embedding"
+ },
+ {
+  "model": "gpt-3.5-turbo",
+  "vendor": "openai",
+  "catalog": "openrouter",
+  "want": "openai/gpt-3.5-turbo",
+  "why": "dotted version"
+ },
+ {
+  "model": "gpt-4.1",
+  "vendor": "openai",
+  "catalog": "openrouter",
+  "want": "openai/gpt-4.1",
+  "why": "gpt-4.1"
+ },
+ {
+  "model": "gpt-4",
+  "vendor": "openai",
+  "catalog": "openrouter",
+  "want": "",
+  "why": "gpt-4 never matches gpt-4.1"
+ },
+ {
+  "model": "o3-mini",
+  "vendor": "openai",
+  "catalog": "openrouter",
+  "want": "openai/o3-mini",
+  "why": "o3-mini"
+ },
+ {
+  "model": "grok-3-mini",
+  "vendor": "xai",
+  "catalog": "openrouter",
+  "want": "x-ai/grok-3-mini",
+  "why": "x-ai is xai"
+ },
+ {
+  "model": "grok-3-mini",
+  "vendor": "xai",
+  "catalog": "litellm",
+  "want": "xai/grok-3-mini",
+  "why": "xai in litellm"
+ },
+ {
+  "model": "qwen2.5-vl-72b-instruct",
+  "vendor": "",
+  "catalog": "openrouter",
+  "want": "",
+  "why": "qwen2.5 and qwen-2.5 differ"
+ },
+ {
+  "model": "dall-e-3",
+  "vendor": "openai",
+  "catalog": "litellm",
+  "want": "dall-e-3",
+  "why": "image model"
+ },
+ {
+  "model": "llama3.2:latest",
+  "vendor": "",
+  "catalog": "litellm",
+  "want": "",
+  "why": "unknown local model"
+ }
+]

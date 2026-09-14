@@ -1,0 +1,290 @@
+{
+ "sample_spec": {
+  "max_tokens": "LEGACY parameter. set to max_output_tokens if provider specifies it.",
+  "input_cost_per_token": 0.0,
+  "output_cost_per_token": 0.0,
+  "litellm_provider": "one of https://docs.litellm.ai/docs/providers",
+  "mode": "one of: chat, embedding, completion, image_generation, audio_transcription, audio_speech, image_generation, moderation, rerank",
+  "supports_vision": true
+ },
+ "gpt-4o": {
+  "litellm_provider": "openai",
+  "mode": "chat",
+  "max_input_tokens": 128000,
+  "max_tokens": 16384,
+  "max_output_tokens": 16384,
+  "input_cost_per_token": 2.5e-06,
+  "output_cost_per_token": 1e-05,
+  "supports_vision": true,
+  "supports_function_calling": true,
+  "cache_read_input_token_cost": 1.25e-06
+ },
+ "gpt-4o-mini": {
+  "litellm_provider": "openai",
+  "mode": "chat",
+  "max_input_tokens": 128000,
+  "max_tokens": 16384,
+  "max_output_tokens": 16384,
+  "input_cost_per_token": 1.5e-07,
+  "output_cost_per_token": 6e-07,
+  "supports_vision": true,
+  "supports_function_calling": true,
+  "cache_read_input_token_cost": 7.5e-08
+ },
+ "gpt-4o-2024-08-06": {
+  "litellm_provider": "openai",
+  "mode": "chat",
+  "max_input_tokens": 128000,
+  "max_tokens": 16384,
+  "max_output_tokens": 16384,
+  "input_cost_per_token": 2.5e-06,
+  "output_cost_per_token": 1e-05,
+  "supports_vision": true,
+  "supports_function_calling": true
+ },
+ "gpt-3.5-turbo": {
+  "litellm_provider": "openai",
+  "mode": "chat",
+  "max_input_tokens": 16385,
+  "max_tokens": 4096,
+  "max_output_tokens": 4096,
+  "input_cost_per_token": 5e-07,
+  "output_cost_per_token": 1.5e-06,
+  "supports_function_calling": true
+ },
+ "text-embedding-3-small": {
+  "litellm_provider": "openai",
+  "mode": "embedding",
+  "max_input_tokens": 8191,
+  "max_tokens": 8191,
+  "input_cost_per_token": 2e-08,
+  "output_cost_per_token": 0.0,
+  "output_vector_size": 1536
+ },
+ "dall-e-3": {
+  "litellm_provider": "openai",
+  "mode": "image_generation",
+  "output_cost_per_image": 0.04
+ },
+ "gpt-image-1": {
+  "litellm_provider": "openai",
+  "mode": "image_generation",
+  "input_cost_per_token": 5e-06,
+  "output_cost_per_token": 4e-05,
+  "supports_vision": true
+ },
+ "azure/gpt-4o": {
+  "litellm_provider": "azure",
+  "mode": "chat",
+  "max_input_tokens": 128000,
+  "max_tokens": 16384,
+  "max_output_tokens": 16384,
+  "input_cost_per_token": 2.5e-06,
+  "output_cost_per_token": 1e-05,
+  "supports_vision": true,
+  "supports_function_calling": true
+ },
+ "openrouter/openai/gpt-4o": {
+  "litellm_provider": "openrouter",
+  "mode": "chat",
+  "max_input_tokens": 128000,
+  "max_tokens": 4096,
+  "max_output_tokens": 4096,
+  "input_cost_per_token": 2.5e-06,
+  "output_cost_per_token": 1e-05,
+  "supports_vision": true,
+  "supports_function_calling": true
+ },
+ "claude-sonnet-4-5-20250929": {
+  "litellm_provider": "anthropic",
+  "mode": "chat",
+  "max_input_tokens": 200000,
+  "max_tokens": 64000,
+  "max_output_tokens": 64000,
+  "input_cost_per_token": 3e-06,
+  "output_cost_per_token": 1.5e-05,
+  "supports_vision": true,
+  "supports_function_calling": true,
+  "cache_read_input_token_cost": 3e-07,
+  "cache_creation_input_token_cost": 3.75e-06
+ },
+ "claude-3-5-haiku-20241022": {
+  "litellm_provider": "anthropic",
+  "mode": "chat",
+  "max_input_tokens": 200000,
+  "max_tokens": 8192,
+  "max_output_tokens": 8192,
+  "input_cost_per_token": 8e-07,
+  "output_cost_per_token": 4e-06,
+  "supports_vision": true,
+  "supports_function_calling": true
+ },
+ "claude-opus-4-1-20250805": {
+  "litellm_provider": "anthropic",
+  "mode": "chat",
+  "max_input_tokens": 200000,
+  "max_tokens": 32000,
+  "max_output_tokens": 32000,
+  "input_cost_per_token": 1.5e-05,
+  "output_cost_per_token": 7.5e-05,
+  "supports_vision": true,
+  "supports_function_calling": true
+ },
+ "gemini/gemini-2.0-flash": {
+  "litellm_provider": "gemini",
+  "mode": "chat",
+  "max_input_tokens": 1048576,
+  "max_tokens": 8192,
+  "max_output_tokens": 8192,
+  "input_cost_per_token": 1e-07,
+  "output_cost_per_token": 4e-07,
+  "supports_vision": true,
+  "supports_function_calling": true
+ },
+ "gemini/gemini-2.5-pro": {
+  "litellm_provider": "gemini",
+  "mode": "chat",
+  "max_input_tokens": 1048576,
+  "max_tokens": 65535,
+  "max_output_tokens": 65535,
+  "input_cost_per_token": 1.25e-06,
+  "output_cost_per_token": 1e-05,
+  "supports_vision": true,
+  "supports_function_calling": true
+ },
+ "vertex_ai/gemini-2.5-pro": {
+  "litellm_provider": "vertex_ai-language-models",
+  "mode": "chat",
+  "max_input_tokens": 1048576,
+  "max_tokens": 65535,
+  "max_output_tokens": 65535,
+  "input_cost_per_token": 1.25e-06,
+  "output_cost_per_token": 1e-05,
+  "supports_vision": true,
+  "supports_function_calling": true
+ },
+ "groq/llama-3.3-70b-versatile": {
+  "litellm_provider": "groq",
+  "mode": "chat",
+  "max_input_tokens": 128000,
+  "max_tokens": 32768,
+  "max_output_tokens": 32768,
+  "input_cost_per_token": 5.9e-07,
+  "output_cost_per_token": 7.9e-07,
+  "supports_function_calling": true
+ },
+ "groq/llama-3.1-8b-instant": {
+  "litellm_provider": "groq",
+  "mode": "chat",
+  "max_input_tokens": 128000,
+  "max_tokens": 8192,
+  "max_output_tokens": 8192,
+  "input_cost_per_token": 5e-08,
+  "output_cost_per_token": 8e-08,
+  "supports_function_calling": true
+ },
+ "together_ai/meta-llama/Llama-3.3-70B-Instruct-Turbo": {
+  "litellm_provider": "together_ai",
+  "mode": "chat",
+  "input_cost_per_token": 8.8e-07,
+  "output_cost_per_token": 8.8e-07,
+  "supports_function_calling": true
+ },
+ "mistral/mistral-large-latest": {
+  "litellm_provider": "mistral",
+  "mode": "chat",
+  "max_input_tokens": 128000,
+  "max_tokens": 128000,
+  "max_output_tokens": 128000,
+  "input_cost_per_token": 2e-06,
+  "output_cost_per_token": 6e-06,
+  "supports_function_calling": true
+ },
+ "mistral/mistral-small-latest": {
+  "litellm_provider": "mistral",
+  "mode": "chat",
+  "max_input_tokens": 32000,
+  "max_tokens": 8191,
+  "max_output_tokens": 8191,
+  "input_cost_per_token": 1e-07,
+  "output_cost_per_token": 3e-07,
+  "supports_function_calling": true
+ },
+ "mistral/mistral-embed": {
+  "litellm_provider": "mistral",
+  "mode": "embedding",
+  "max_input_tokens": 8192,
+  "max_tokens": 8192,
+  "input_cost_per_token": 1e-07
+ },
+ "deepseek/deepseek-chat": {
+  "litellm_provider": "deepseek",
+  "mode": "chat",
+  "max_input_tokens": 65536,
+  "max_tokens": 8192,
+  "max_output_tokens": 8192,
+  "input_cost_per_token": 2.7e-07,
+  "output_cost_per_token": 1.1e-06,
+  "supports_function_calling": true
+ },
+ "deepseek/deepseek-reasoner": {
+  "litellm_provider": "deepseek",
+  "mode": "chat",
+  "max_input_tokens": 65536,
+  "max_tokens": 8192,
+  "max_output_tokens": 8192,
+  "input_cost_per_token": 5.5e-07,
+  "output_cost_per_token": 2.19e-06
+ },
+ "xai/grok-3-mini": {
+  "litellm_provider": "xai",
+  "mode": "chat",
+  "max_input_tokens": 131072,
+  "max_tokens": 131072,
+  "max_output_tokens": 131072,
+  "input_cost_per_token": 3e-07,
+  "output_cost_per_token": 5e-07,
+  "supports_function_calling": true
+ },
+ "bedrock/anthropic.claude-3-5-sonnet-20240620-v1:0": {
+  "litellm_provider": "bedrock",
+  "mode": "chat",
+  "max_input_tokens": 200000,
+  "max_tokens": 4096,
+  "max_output_tokens": 4096,
+  "input_cost_per_token": 3e-06,
+  "output_cost_per_token": 1.5e-05,
+  "supports_vision": true,
+  "supports_function_calling": true
+ },
+ "embed-english-v3.0": {
+  "litellm_provider": "cohere",
+  "mode": "embedding",
+  "max_input_tokens": 1024,
+  "max_tokens": 1024,
+  "input_cost_per_token": 1e-07,
+  "output_cost_per_token": 0.0
+ },
+ "ollama/llama3": {
+  "litellm_provider": "ollama",
+  "mode": "chat",
+  "max_input_tokens": 8192,
+  "max_tokens": 8192,
+  "max_output_tokens": 8192,
+  "input_cost_per_token": 0.0,
+  "output_cost_per_token": 0.0
+ },
+ "odd-types-model": {
+  "litellm_provider": "openai",
+  "mode": "chat",
+  "input_cost_per_token": "free",
+  "output_cost_per_token": 2e-06,
+  "max_input_tokens": "lots",
+  "supports_vision": "yes"
+ },
+ "no-price-model": {
+  "litellm_provider": "openai",
+  "mode": "chat",
+  "max_input_tokens": 4096
+ }
+}

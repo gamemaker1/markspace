@@ -1,0 +1,16 @@
+{"data":[
+ {"id":"openai/gpt-4o","canonical_slug":"openai/gpt-4o","name":"OpenAI: GPT-4o","created":1715367049,"context_length":128000,
+  "architecture":{"modality":"text+image->text","input_modalities":["text","image","file"],"output_modalities":["text"],"tokenizer":"GPT","instruct_type":null},
+  "pricing":{"prompt":"0.0000025","completion":"0.00001","request":"0","image":"0.003613","web_search":"0","internal_reasoning":"0","input_cache_read":"0.00000125"},
+  "top_provider":{"context_length":128000,"max_completion_tokens":16384,"is_moderated":true},
+  "supported_parameters":["max_tokens","temperature","tools","tool_choice"]},
+ {"id":"openrouter/auto","name":"Auto Router","context_length":2000000,
+  "architecture":{"modality":"text->text","input_modalities":["text"],"output_modalities":["text"]},
+  "pricing":{"prompt":"-1","completion":"-1"}},
+ {"id":"mistralai/codestral-2501","name":"Mistral: Codestral 2501","context_length":262144,
+  "architecture":{"input_modalities":["text"],"output_modalities":["text"]}},
+ {"id":"some/bare-model","name":"Bare"},
+ {"id":"openai/text-embedding-3-small","name":"OpenAI: Text Embedding 3 Small","context_length":8192,
+  "architecture":{"input_modalities":["text"],"output_modalities":["embeddings"]},
+  "pricing":{"prompt":"2e-8","completion":"0"}}
+]}

@@ -1,0 +1,5 @@
+{"models":[
+ {"name":"nomic-embed-text:latest","model":"nomic-embed-text:latest","size":274302450,"digest":"0a109f422b47","details":{"family":"nomic-bert","parameter_size":"137M"}},
+ {"name":"llama3.2:latest","model":"llama3.2:latest","size":2019393189,"digest":"a80c4f17acd5","details":{"family":"llama","parameter_size":"3.2B","quantization_level":"Q4_K_M"}},
+ {"name":"llava:7b","model":"llava:7b","size":4733363377,"digest":"8dd30f6b0cb1","details":{"family":"llama","parameter_size":"7B"}}
+]}

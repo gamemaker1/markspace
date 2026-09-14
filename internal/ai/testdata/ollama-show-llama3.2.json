@@ -1,0 +1,4 @@
+{"license":"LLAMA 3.2 COMMUNITY LICENSE","modelfile":"FROM llama3.2","parameters":"stop \"<|eot_id|>\"","template":"{{ .Prompt }}",
+ "details":{"parent_model":"","format":"gguf","family":"llama","families":["llama"],"parameter_size":"3.2B","quantization_level":"Q4_K_M"},
+ "model_info":{"general.architecture":"llama","general.parameter_count":3212749888,"llama.attention.head_count":24,"llama.context_length":131072,"llama.embedding_length":3072},
+ "capabilities":["completion","tools"],"modified_at":"2025-01-10T12:00:00Z"}

@@ -1,0 +1,1 @@
+{"CheckpointLoaderSimple":{"input":{"required":{"ckpt_name":["COMBO",{"options":["flux1-dev-fp8.safetensors","sd_xl_base_1.0.safetensors"],"tooltip":"The name of the checkpoint (model) to load."}]}},"output":["MODEL","CLIP","VAE"],"name":"CheckpointLoaderSimple","category":"loaders"}}
