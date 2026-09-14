@@ -38,7 +38,8 @@ ReadOnly=true
 Tmpfs=/tmp
 NoNewPrivileges=true
 DropCapability=all
-HealthCmd=markspace health
+# the image has no shell, so the check uses the exec form
+HealthCmd=["markspace", "health"]
 HealthInterval=30s
 HealthTimeout=5s
 HealthRetries=3

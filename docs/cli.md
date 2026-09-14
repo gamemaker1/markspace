@@ -162,11 +162,13 @@ markspace health [-config path] [-data dir] [-url url]
 
 `health` calls `GET /healthz` without a token and exits 0 when the server
 answers `ok` within 2 seconds. It prints one line either way. A quadlet uses
-it as the container health check.
+it as the container health check. The image has no shell, so `HealthCmd`
+must use the exec form, a JSON array. The plain form runs through `/bin/sh`
+and always fails.
 
 ```
 [Container]
-HealthCmd=markspace health
+HealthCmd=["markspace", "health"]
 HealthInterval=30s
 HealthRetries=3
 ```
