@@ -15,6 +15,6 @@
     "sqlite3 and ffmpeg": "Optional. sqlite3 adds 30 days of AI usage rows and paused and failed jobs. ffmpeg makes the seed video."
   },
   "devDependencies": {
-    "playwright-core": "1.63.0"
+    "playwright-core": "1.64.0"
   }
 }
